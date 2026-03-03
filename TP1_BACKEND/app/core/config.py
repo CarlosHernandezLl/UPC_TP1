@@ -1,0 +1,12 @@
+# app/core/config.py
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    # Define la variable con el mismo nombre que en el .env
+    DATABASE_URL: str
+
+    class Config:
+        env_file = ".env"  # Le indicamos dónde buscar
+
+# Instanciamos la clase para usarla en el resto de la app
+settings = Settings()
