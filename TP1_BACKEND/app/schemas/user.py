@@ -7,10 +7,12 @@ class UserBase(BaseModel):
     email: str
     nombre: str
     activo: bool = True
+    role: str
 
 # DTO para crear (Input) - similar a UserCreationDTO
 class UserCreate(UserBase):
     password: str
+    
 
 # DTO para responder (Output) - similar a UserResponseDTO
 class UserResponse(UserBase):

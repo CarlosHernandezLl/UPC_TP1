@@ -7,6 +7,10 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.user import User
+from app.repositories.audit_repository import AuditRepository
+from app.schemas.audit import AuditLogCreate
+
+import bcrypt
 
 # Configuración de encriptación
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -35,6 +39,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 # Esto le dice a FastAPI dónde está la ruta para obtener el token
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+# security = HTTPBearer()
 
 # Esta es nuestra función "Guardián"
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
@@ -59,3 +64,25 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     
     # Si todo está bien, devolvemos el usuario
     return user
+
+
+def check_role(required_roles: list[str]):
+    def role_checker(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+        if current_user.role not in required_roles:
+            audit_repo = AuditRepository(db)
+            audit_data = AuditLogCreate(
+                user_id=current_user.id,
+                action="ACCESO DENEGADO",
+                module="SEGURIDAD",
+                description=f"Intento de acceso a {required_roles} con rol {current_user.role}",
+                payload={"role_actual": current_user.role, "roles_requeridos": required_roles}
+            )
+
+            audit_repo.create_log(audit_data)
+
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="No tienes permisos suficientes para esta acción"
+            )
+        return current_user
+    return role_checker

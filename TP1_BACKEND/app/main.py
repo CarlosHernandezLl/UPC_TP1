@@ -5,6 +5,8 @@ from app.api.routers import users # Importamos nuestro router
 from app.core.database import Base, engine # Importamos la config de DB
 import app.models.user
 from app.api.routers import users, plc, auth
+from app.tasks.scheduler import start_scheduler
+
 
 # Esto crea las tablas en la BD automáticamente al iniciar (solo para desarrollo)
 Base.metadata.create_all(bind=engine)
@@ -34,3 +36,7 @@ app.include_router(auth.router)
 @app.get("/")
 def root():
     return {"mensaje": "¡Hola desde FastAPI!"}
+
+@app.on_event("startup")
+async def on_startup():
+    await start_scheduler()

@@ -1,23 +1,27 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
 from app.schemas.user import UserCreate, UserResponse, UserUpdate
-# Importamos nuestro nuevo servicio
-import app.services.user_service as UserService 
+from app.services.user_service import UserService
+from app.core.security import check_role
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 # --- El Router (El Mesero) ---
 
 @router.get("/", response_model=List[UserResponse])
-def read_users(db: Session = Depends(get_db)):
-    # El router solo "llama" al servicio
-    return UserService.get_all_users(db)
+def read_users(db: Session = Depends(get_db), current_admin: User = Depends(check_role(["admin"]))):
+    service = UserService(db)
+    return service.get_all_users()
 
-@router.post("/", response_model=UserResponse)
+@router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    return UserService.create_user(db, user)
+    service = UserService(db)
+    db_user = service.create_user(user)
+    if not db_user:
+        raise HTTPException(status_code=400, detail="El correo ya está registrado")
+    return db_user
 
 @router.put("/{user_id}", response_model=UserResponse)
 def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)):
