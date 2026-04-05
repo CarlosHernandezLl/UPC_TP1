@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 from sqlalchemy.orm import Session
 from app.repositories.hvac_repository import HvacRepository
@@ -6,6 +7,8 @@ from app.schemas.hvac import HvacReadingCreate
 from app.services.weather_service import get_external_weather
 import logging
 from app.models.raw_data import RawPlcData, RawDataloggerData, RawWeatherData
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -44,60 +47,59 @@ async def load_excel_data_to_db(db: Session):
     temp_ext = weather["temperatura_exterior"] if weather else 20.0
     hum_ext = weather["humedad_exterior"] if weather else 60.0
 
+    ## AQUI VA
+    total_rows = len(df_clean)
+    filas_por_dia = 144
+    
     count = 0
-    for _, row in df_clean.iterrows():
-        
-        #Timestamp PLC
+    for i, (index, row) in enumerate(df_clean.iterrows()):
+        # --- NUEVA LÓGICA DE CLIMA VARIABLE ---
+        # Calculamos la fase del día (de 0 a 1)
+        fase = (i % filas_por_dia) / filas_por_dia
+        t_ext_sim = float(22 + 5 * np.sin(2 * np.pi * (fase - 0.25))) # <-- Convertir aquí
+        h_ext_sim = float(70 - 15 * np.sin(2 * np.pi * (fase - 0.25)))
+
+        # Timestamp PLC (Tu lógica)
         ts_plc = pd.to_datetime(row["Timestamp_PLC"])
         
-        #Timestamp datalogger (Solo Hora)
+        # Timestamp datalogger (Tu lógica)
         try:
             hora_dl = pd.to_datetime(row["Timestamp_DL"]).time()
             ts_dl = datetime.combine(ts_plc.date(), hora_dl)
-            
-            #Ajuste por proximidad: si difiere demasiado, usar PLC
-            if abs((ts_dl- ts_plc).total_seconds()) > 30:
+            if abs((ts_dl - ts_plc).total_seconds()) > 30:
                 ts_dl = ts_plc
         except Exception:
             ts_dl = ts_plc
-        
-        
-        # if isinstance(ts_dl, str) or pd.isna(ts_dl):
-        #     #Convertir a hora
-        #     try:
-        #         hora_dl = pd.to_datetime(ts_dl).time()
-        #         ts_dl = datetime.combine(ts_plc.date(), hora_dl)
-        #     except Exception:
-        #         ts_dl = ts_plc  
-        #         # fallback: usar timestamp del PLC
 
-        
-        
-        # Insertar en tabla PLC
+        # 3. Inserción en las 3 tablas RAW
         plc_entry = RawPlcData(
-            timestamp = row["Timestamp_PLC"],
-            temp_secador = row["T secador"],
-            hum_secador = row["H secador"],
-            temp_uma = row["T uma"],
-            hum_uma = row["H uma"],
-            potencia = row["Potencia de secador %"]
+            timestamp=ts_plc,
+            temp_secador=row["T secador"],
+            hum_secador=row["H secador"],
+            temp_uma=row["T uma"],
+            hum_uma=row["H uma"],
+            potencia=row["Potencia de secador %"]
         )
         
-        # Insertar en tabla Datalogger
         dl_entry = RawDataloggerData(
-            timestamp= ts_dl,
+            timestamp=ts_dl,
             temp_sala=row["T sala"],
             hum_sala=row["H sala"]
         )
         
-        # Insertar en tabla Clima (Simulando que el clima actual se aplica a ese registro)
         weather_entry = RawWeatherData(
-            timestamp= ts_plc,
-            temp_ext=weather["temperatura_exterior"],
-            hum_ext=weather["humedad_exterior"]
+            timestamp=ts_plc,
+            temp_ext=round(t_ext_sim, 2), # Usamos el valor simulado
+            hum_ext=round(h_ext_sim, 2)  # Usamos el valor simulado
         )
         
-        db.add_all([plc_entry,dl_entry,weather_entry])
+        db.add_all([plc_entry, dl_entry, weather_entry])
+        count += 1
+
+        # Commit parcial cada 100 registros para eficiencia
+        if count % 100 == 0:
+            db.commit()
         
     db.commit()
-    print("Carga inicial completada")
+    print(f"Carga inicial completada: {count} registros con clima dinámico.")
+    return count

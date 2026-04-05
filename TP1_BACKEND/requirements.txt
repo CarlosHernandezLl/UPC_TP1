@@ -19,3 +19,7 @@ psycopg2
 passlib
 python-jose[cryptography]
 python-multipart
+scikit-learn
+pandas
+joblib
+matplotlib
