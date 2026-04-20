@@ -20,23 +20,42 @@ class PredictionService:
         
         # 1. Definir los nombres de las columnas EXACTAMENTE como se usaron en el entrenamiento
         # Si en tu MLService usaste 't_secador', 'h_secador', etc., pon esos aquí.
-        feature_names = [
+        """feature_names = [
             "temp_secador", "hum_secador",
             "temp_uma", "hum_uma", 
             "temp_sala", "hum_sala",
             "temp_ext", "hum_ext"
+        ]"""
+        
+        delta_calculado = data.hum_uma - data.hr_target
+        
+        feature_names = [
+            "temp_uma", "hum_uma", 
+            "temp_ext", "hum_ext",
+            "hr_target", "delta_h"  # Este es el 'norte' que guía la recomendación
         ]
         
         # 2. Crear un DataFrame con una sola fila
         # Esto mapea tus campos del esquema (temp_secador) a los del modelo (t_secador)
-        input_df = pd.DataFrame([[
+        """input_df = pd.DataFrame([[
             data.temp_secador, data.hum_secador, 
             data.temp_uma, data.hum_uma,
             data.temp_sala, data.hum_sala, 
             data.temp_ext, data.hum_ext
         ]], columns=feature_names)
+        """
+        input_df = pd.DataFrame([[
+            data.temp_uma, 
+            data.hum_uma,
+            data.temp_ext, 
+            data.hum_ext,
+            data.hr_target,
+            delta_calculado
+        ]], columns=feature_names)
         
         # 3. Realizar la predicción usando el DataFrame
         prediction = self.model.predict(input_df)
         
-        return float(prediction[0])
+        recommended_power = max(0, min(100, float(prediction[0])))
+        
+        return recommended_power

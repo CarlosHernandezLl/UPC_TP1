@@ -7,99 +7,113 @@ from app.schemas.hvac import HvacReadingCreate
 from app.services.weather_service import get_external_weather
 import logging
 from app.models.raw_data import RawPlcData, RawDataloggerData, RawWeatherData
-
-
+from sqlalchemy import text
 
 logger = logging.getLogger(__name__)
 
 async def load_excel_data_to_db(db: Session):
-    # Localización dinámica del archivo
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    FILE_PATH = os.path.join(BASE_DIR, "data", "data.xlsx")
+    FILE_PATH = os.path.join(BASE_DIR, "data", "dataset_19_04_2026.xlsx")
 
     if not os.path.exists(FILE_PATH):
-        print(f"Error: No se encontró el archivo en {FILE_PATH}")
+        logger.error(f"Error: No se encontró el archivo en {FILE_PATH}")
         return None
-
-    # Leemos el Excel. 
-    # 'skiprows=1' si es que la primera fila son títulos generales y la segunda los nombres de columnas
-    df = pd.read_excel(FILE_PATH, skiprows= 1, engine='openpyxl')
-    #print(df.head())
-    #print(df.columns.tolist())
     
-    plc_cols = ['T secador','H secador', 'T uma', 'H uma', 'Potencia de secador %']
-    # plc_time_col = df.columns[5]
-    datalogger_cols = ['H sala', 'T sala']
-
-    #Limpieza: eliminar filas con timestamps nulos
-    df = df.dropna(subset=["Timestamp_PLC", "Timestamp_DL"]).copy()
+    try:
+        db.execute(text("TRUNCATE TABLE raw_plc_data, raw_datalogger_data, raw_weather_data CASCADE"))
+        db.commit()
+        print("Bases de datos limpiadas para nueva simulación.")
+    except Exception as e:
+        db.rollback()
+        print(f"Aviso: No se pudo limpiar las tablas: {e}")
     
-    #Eliminar filas con valores nulos en PLC
-    df_clean = df.dropna(subset= plc_cols).copy()
+    # skiprows=1 si la primera fila son títulos y la segunda los nombres de columnas
+    # df = pd.read_excel(FILE_PATH, skiprows=1, engine='openpyxl')
+    df = pd.read_excel(FILE_PATH, engine='openpyxl')
     
-    #Rellenar valores faltantes en datalogger
-    df_clean[datalogger_cols] = df_clean[datalogger_cols].ffill()
+    column_mapping = {
+        'f20914t': 'T secador',
+        'f20914h': 'H secador',
+        'f20911t': 'T uma',
+        'f20911h': 'H uma',
+        'f209potsecador': 'Potencia de secador %',
+        'fecha': 'Timestamp_PLC',
+        
+        #Datos de Clima (API)
+        'timestamp': 'Timestamp_API',
+        'temp_ext': 't_ext',
+        'hum_ext': 'h_ext',
+        
+        #Datos del Datalogger (USB)
+        'Fecha': 'DL_Fecha',
+        'Hora': 'DL_Hora',
+        'Temperatura': 'T sala',
+        'Humedad': 'H sala',
+    }
     
-    hvac_repo = HvacRepository(db)
+    df = df.rename(columns=column_mapping)
     
-    # Obtenemos clima actual para completar las 8 variables
-    weather = await get_external_weather()
-    temp_ext = weather["temperatura_exterior"] if weather else 20.0
-    hum_ext = weather["humedad_exterior"] if weather else 60.0
-
-    ## AQUI VA
-    total_rows = len(df_clean)
-    filas_por_dia = 144
+    df['Timestamp_PLC'] = pd.to_datetime(df['Timestamp_PLC'])
+    df['Timestamp_API'] = pd.to_datetime(df['Timestamp_API'])
+    
+    #B. Unificar Datalogger: Combinar Fecha + Hora en un solo Timestamp
+    #Convertimos a string, concatenamos y luego a datetime
+    df['Timestamp_DL'] = pd.to_datetime(
+        df['DL_Fecha'].astype(str) + ' ' + df['DL_Hora'].astype(str)
+    )
+    
+    # df = df.dropna(subset=["Timestamp_PLC", "T secador", "T sala"]).copy()
+    df = df.dropna(subset=["Timestamp_PLC", "Timestamp_DL", "Timestamp_API"]).copy()
+    df['Timestamp_PLC'] = pd.to_datetime(df['Timestamp_PLC'])
+    
+    # El ffill es clave para el Datalogger (USB) si tiene menos muestras que el PLC
+    #df['T sala'] = df['T sala'].ffill()
+    #df['H sala'] = df['H sala'].ffill()
     
     count = 0
-    for i, (index, row) in enumerate(df_clean.iterrows()):
-        # --- NUEVA LÓGICA DE CLIMA VARIABLE ---
-        # Calculamos la fase del día (de 0 a 1)
-        fase = (i % filas_por_dia) / filas_por_dia
-        t_ext_sim = float(22 + 5 * np.sin(2 * np.pi * (fase - 0.25))) # <-- Convertir aquí
-        h_ext_sim = float(70 - 15 * np.sin(2 * np.pi * (fase - 0.25)))
+    batch_size = 100
+    
+    try:
+        for index, row in df.iterrows():
+            # ts_actual = row["Timestamp_PLC"]
 
-        # Timestamp PLC (Tu lógica)
-        ts_plc = pd.to_datetime(row["Timestamp_PLC"])
+            # 1. Objeto para Tabla PLC (Datos de control)
+            plc_entry = RawPlcData(
+                timestamp= row["Timestamp_PLC"],
+                temp_secador=float(row["T secador"]),
+                hum_secador=float(row["H secador"]),
+                temp_uma=float(row["T uma"]),
+                hum_uma=float(row["H uma"]),
+                potencia=float(row["Potencia de secador %"])
+            )
+            
+            # 2. Objeto para Tabla Datalogger (La "verdad" del USB)
+            dl_entry = RawDataloggerData(
+                timestamp= row["Timestamp_DL"],
+                temp_sala=float(row["T sala"]),
+                hum_sala=float(row["H sala"])
+            )
+            
+            # 3. Objeto para Tabla Clima (Datos de Lima)
+            weather_entry = RawWeatherData(
+                timestamp= row["Timestamp_API"],
+                temp_ext=float(row["t_ext"]),
+                hum_ext=float(row["h_ext"])
+            )
+            
+            db.add_all([plc_entry, dl_entry, weather_entry])
+            count += 1
+            
+            # Commit parcial cada 100 registros para no saturar la memoria
+            if count % batch_size == 0:
+                db.commit()
         
-        # Timestamp datalogger (Tu lógica)
-        try:
-            hora_dl = pd.to_datetime(row["Timestamp_DL"]).time()
-            ts_dl = datetime.combine(ts_plc.date(), hora_dl)
-            if abs((ts_dl - ts_plc).total_seconds()) > 30:
-                ts_dl = ts_plc
-        except Exception:
-            ts_dl = ts_plc
+        # --- FUERA DEL BUCLE ---
+        db.commit() # Guardamos el resto
+        print(f"✅ Carga completada: {count} registros procesados con éxito.")
+        return count
 
-        # 3. Inserción en las 3 tablas RAW
-        plc_entry = RawPlcData(
-            timestamp=ts_plc,
-            temp_secador=row["T secador"],
-            hum_secador=row["H secador"],
-            temp_uma=row["T uma"],
-            hum_uma=row["H uma"],
-            potencia=row["Potencia de secador %"]
-        )
-        
-        dl_entry = RawDataloggerData(
-            timestamp=ts_dl,
-            temp_sala=row["T sala"],
-            hum_sala=row["H sala"]
-        )
-        
-        weather_entry = RawWeatherData(
-            timestamp=ts_plc,
-            temp_ext=round(t_ext_sim, 2), # Usamos el valor simulado
-            hum_ext=round(h_ext_sim, 2)  # Usamos el valor simulado
-        )
-        
-        db.add_all([plc_entry, dl_entry, weather_entry])
-        count += 1
-
-        # Commit parcial cada 100 registros para eficiencia
-        if count % 100 == 0:
-            db.commit()
-        
-    db.commit()
-    print(f"Carga inicial completada: {count} registros con clima dinámico.")
-    return count
+    except Exception as e:
+        db.rollback()
+        logger.error(f"❌ Error durante la carga: {e}")
+        return None
