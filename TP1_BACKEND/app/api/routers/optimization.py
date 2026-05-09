@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.services.optimization_service import OptimizationService
-from app.schemas.optimization import OptimizationInput
+from app.schemas.optimization_schema import OptimizationInput
 
 router = APIRouter(prefix="/optimization", tags=["optimization"])
 

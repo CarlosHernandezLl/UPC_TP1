@@ -3,10 +3,8 @@ import logging
 from typing import Dict, Optional
 from app.core.config import settings
 from sqlalchemy.orm import Session
-from app.models.weather import RawExternalWeather
 from app.core.config import settings
 from datetime import datetime, timezone
-#from app.services.weather_service import fetch_and_save_weather
 
 logger = logging.getLogger(__name__)
 lat, lon = -12.046374, -77.042793 
@@ -37,16 +35,7 @@ async def fetch_and_save_weather(db: Session):
             description = data["weather"][0]["description"]
             wind_speed = data["wind"]["speed"]
             city = data["name"]
-            
-            # Registro en BD
-            new_record = RawExternalWeather(
-                timestamp= datetime.now(),
-                temp_ext=float(temp),
-                hum_ext=float(humidity)
-            )
-            db.add(new_record)
-            db.commit()
-            print('Inserto en bd')
+        
             return True
         except Exception as e:
             print(f"Error en ingesta de clima: {e}")

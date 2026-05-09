@@ -10,12 +10,8 @@ pytest-asyncio
 pytest-cov
 httpx
 pytest-mock
-pytest-cov
-pytest-asyncio
-requests
 apscheduler
 pydantic_settings
-psycopg2
 passlib
 python-jose[cryptography]
 python-multipart
@@ -23,3 +19,4 @@ scikit-learn
 pandas
 joblib
 matplotlib
+xlrd

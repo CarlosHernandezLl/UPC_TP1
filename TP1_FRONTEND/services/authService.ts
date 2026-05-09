@@ -18,6 +18,7 @@ export const authService = {
     }
 
     const data = await res.json();
+    console.log("Respuesta del login:", data);
     return data; // { access_token: "...", token_type: "bearer" }
   },
   

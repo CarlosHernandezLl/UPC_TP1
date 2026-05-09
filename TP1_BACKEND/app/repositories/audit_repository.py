@@ -1,23 +1,19 @@
 from sqlalchemy.orm import Session
-from app.models.audit import AuditLog
-from app.schemas.audit import AuditLogCreate
+from app.models.audit_model import AuditTrail
+from app.models.users_model import User
 
 class AuditRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_log(self, audit_in: AuditLogCreate) -> AuditLog:
-        db_obj = AuditLog(
-            user_id=audit_in.user_id,
-            action=audit_in.action,
-            module=audit_in.module,
-            description=audit_in.description,
-            payload=audit_in.payload
-        )
-        self.db.add(db_obj)
+    def create_log(self, log_data: AuditTrail):
+        self.db.add(log_data)
         self.db.commit()
-        self.db.refresh(db_obj)
-        return db_obj
+        self.db.refresh(log_data)
+        return log_data
 
-    def get_logs(self, skip: int = 0, limit: int = 100):
-        return self.db.query(AuditLog).offset(skip).limit(limit).all()
+    def get_all_logs(self):
+        return self.db.query(AuditTrail).join(User).order_by(AuditTrail.created_at.desc()).all()
+
+    def filter_by_action(self, action: str):
+        return self.db.query(AuditTrail).filter(AuditTrail.action == action).all()

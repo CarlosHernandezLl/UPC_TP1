@@ -3,7 +3,12 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from app.core.config import settings
 
 # 1. Crear el motor
-engine = create_engine(settings.DATABASE_URL)
+engine = create_engine(
+    settings.DATABASE_URL,
+    pool_pre_ping=True,  # Verifica si la conexión sigue viva antes de usarla
+    pool_size=10,        # Número de conexiones constantes
+    max_overflow=20      # Conexiones extra si hay mucha carga
+)
 
 # 2. Crear la sesión
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
