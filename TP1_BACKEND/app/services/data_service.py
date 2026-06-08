@@ -1,157 +1,153 @@
 # app/services/data_service.py
 from sqlalchemy.orm import Session
 import pandas as pd
-from app.models.hvac_model import HvacHistoricalData
-from fastapi import HTTPException
 import numpy as np
 import io
+import logging
+from fastapi import HTTPException
+from app.models.hvac_model import HvacHistoricalData
 
+logger = logging.getLogger(__name__)
 
 class DataService:
     def __init__(self, db: Session):
         self.db = db
         
-    def _calculate_psychrometrics(self, temp, hr):
+    def _calculate_psychrometrics(self, temp, hr, p_absolute):
+        """
+        Calcula la razón de humedad absoluta (W, g/kg) utilizando la formulación 
+        empírica exacta de Buck (1981) alineada al manuscrito y al diseño experimental.
+        """
         try:
-            if pd.isna(temp) or pd.isna(hr):
+            if pd.isna(temp) or pd.isna(hr) or pd.isna(p_absolute):
                 return 0.0
         
-            # Forzamos la conversión para detectar si hay texto
             t = float(temp)
-            h = float(hr)
+            rh = float(hr)
+            p = float(p_absolute)
 
-            es = 6.112 * np.exp((17.67 * t) / (t + 243.5))
-            ev = es * (h / 100)
-            p_atm = 1013.25
-            w = 0.622 * (ev / (p_atm - ev))
+            # Ecuación de Buck (1981) original del modelo matemático
+            es = 6.1121 * np.exp((18.678 - t / 234.5) * (t / (257.14 + t)))
+            e = (rh / 100.0) * es
+            
+            # Constante molecular precisa (epsilon = 0.62197)
+            w = 1000.0 * (0.62197 * e / (p - e))
             return round(w, 6)
         
-        except Exception as e:
-            # Esto te dirá exactamente qué valores causaron el fallo
-            print(f"❌ Error calculando 'w' con Temp: {temp} (Tipo: {type(temp)}) y HR: {hr} (Tipo: {type(hr)})")
-            print(f"Detalle: {e}")
-            return 0.0 # O lanza el error de nuevo tras el print
+        except Exception as err:
+            logger.error(f"❌ Error psicrométrico - Temp: {temp}, HR: {hr}, P: {p_absolute}. Detalle: {err}")
+            return 0.0
 
-    def _clean_sensor_noise(self, df: pd.DataFrame):
-        """Elimina valores físicamente imposibles en sensores HVAC."""
-        if 'hum_sala' in df.columns:
-            df = df[(df['hum_sala'] >= 0) & (df['hum_sala'] <= 100)]
-        if 'temp_sala' in df.columns:
-            df = df[(df['temp_sala'] >= -10) & (df['temp_sala'] <= 60)]
+    def _clean_sensor_noise(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Elimina valores físicamente imposibles para evitar heterocedasticidad y sesgos."""
+        if 'Humedad' in df.columns:
+            df = df[(df['Humedad'] >= 0) & (df['Humedad'] <= 100)]
+        if 'Temperatura' in df.columns:
+            df = df[(df['Temperatura'] >= -10) & (df['Temperatura'] <= 60)]
         return df
 
-    async def upload_and_sync(self, file_plc, file_logger, file_externo, start_date: str, end_date: str):
+    async def upload_and_sync(self, file_plc, file_logger, file_externo, start_date: str = None, end_date: str = None) -> dict:
         try:
-            # 1. Leer contenido de los UploadFiles           
+            # 1. Lectura asíncrona de los flujos binarios desde el Frontend
             plc_bytes = await file_plc.read()
             logger_bytes = await file_logger.read()
             externo_bytes = await file_externo.read()
             
-            filename = file_logger.filename.lower()
-            
-            # 2. Convertir a buffers para Pandas
+            # 2. Conversión a DataFrames de Pandas evaluando el formato del Datalogger
             df_plc = pd.read_csv(io.BytesIO(plc_bytes), sep=',')
             df_externo = pd.read_csv(io.BytesIO(externo_bytes), sep=',')
             
-            if filename.endswith(".csv") or filename.endswith(".xls"):
-                # Tratarlo como CSV
+            filename_log = file_logger.filename.lower()
+            if filename_log.endswith((".csv", ".txt")):
+                # Manejo del datalogger Rotronic tabulado (Saltando metadatos de configuración)
                 df_logger = pd.read_csv(io.BytesIO(logger_bytes), sep="\t", skiprows=20, encoding="latin1")
             else:
-                # Tratarlo como Excel real
                 df_logger = pd.read_excel(io.BytesIO(logger_bytes), skiprows=20, engine="openpyxl")
             
-            # Normalizar nombres de columnas
-            df_plc.columns = df_plc.columns.str.strip()
-            df_logger.columns = df_logger.columns.str.strip()
-            df_externo.columns = df_externo.columns.str.strip()
+            # Normalización y limpieza de espacios en las cabeceras de columnas
+            for df_node in [df_plc, df_logger, df_externo]:
+                df_node.columns = df_node.columns.str.strip()
             
-            # 2. ESTANDARIZACIÓN DE TIEMPOS
+            # 3. Estandarización y homogeneización de marcas de tiempo (Timestamps)
             df_plc['ts'] = pd.to_datetime(df_plc['fecha'], errors="coerce")
             df_externo['ts'] = pd.to_datetime(df_externo['timestamp'], errors="coerce")
             df_logger['ts'] = pd.to_datetime(df_logger['Fecha'] + ' ' + df_logger['Hora'], errors="coerce")
-
             
-            # 3. APLICAR PUNTO DE CORTE INDIVIDUAL (Limpieza temprana)
-            sd, ed = pd.to_datetime(start_date), pd.to_datetime(end_date)
-            if sd > ed:
-                sd, ed = ed, sd  # intercambia si están invertidas
-            print("Rango solicitado:", sd, ed)
-        
-            df_plc = df_plc[(df_plc['ts'] >= sd) & (df_plc['ts'] <= ed)]
-            df_logger = df_logger[(df_logger['ts'] >= sd) & (df_logger['ts'] <= ed)]
-            df_externo = df_externo[(df_externo['ts'] >= sd) & (df_externo['ts'] <= ed)]
+            # Limpieza temprana de ruido físico en datalogger
+            df_logger = self._clean_sensor_noise(df_logger)
+
+            # 4. CORRECCIÓN: Manejo inteligente de la ventana temporal (Solape Automático)
+            if not start_date or not end_date:
+                logger.info("⚠️ No se proporcionaron fechas de corte. Calculando área de intersección común de hardware...")
+                # El inicio común es el máximo de los valores mínimos válidos disponibles
+                sd = max(df_plc['ts'].dropna().min(), df_logger['ts'].dropna().min(), df_externo['ts'].dropna().min())
+                # El fin común es el mínimo de los valores máximos válidos disponibles
+                ed = min(df_plc['ts'].dropna().max(), df_logger['ts'].dropna().max(), df_externo['ts'].dropna().max())
+                logger.info(f"📅 Rango de solape auto-detectado: Desde {sd} hasta {ed}")
+            else:
+                # Si el usuario ingresó fechas desde la interfaz web, las parseamos
+                sd, ed = pd.to_datetime(start_date), pd.to_datetime(end_date)
+                if sd > ed:
+                    sd, ed = ed, sd
+
+            # Segmentar los DataFrames individuales bajo el horizonte temporal validado
+            df_plc = df_plc[(df_plc['ts'] >= sd) & (df_plc['ts'] <= ed)].sort_values('ts')
+            df_logger = df_logger[(df_logger['ts'] >= sd) & (df_logger['ts'] <= ed)].sort_values('ts')
+            df_externo = df_externo[(df_externo['ts'] >= sd) & (df_externo['ts'] <= ed)].sort_values('ts')
 
             if df_plc.empty or df_logger.empty or df_externo.empty:
-                raise ValueError("Uno de los archivos no tiene datos en el rango seleccionado.")
+                raise ValueError("La ventana temporal calculada o solicitada no contiene registros coincidentes en las tres fuentes.")
             
-            
-            # 4. SINCRONIZACIÓN (Merge Asof)
-            # Ordenar es obligatorio para merge_asof
-            df_plc = df_plc.sort_values('ts')
-            df_logger = df_logger.sort_values('ts')
-            df_externo = df_externo.sort_values('ts')
-            
-            print("PLC ts:", df_plc['ts'].dropna().min(), df_plc['ts'].dropna().max())
-            print("Logger ts:", df_logger['ts'].dropna().min(), df_logger['ts'].dropna().max())
-            print("Externo ts:", df_externo['ts'].dropna().min(), df_externo['ts'].dropna().max())
-            print("Rango solicitado:", sd, ed)
-
-
+            # 5. Sincronización Temporal Avanzada mediante remuestreo e interpolación lineal a 1 minuto
             merged = pd.merge_asof(df_plc, df_externo, on='ts', direction='nearest', tolerance=pd.Timedelta('1min'))
             merged = pd.merge_asof(merged, df_logger, on='ts', direction='nearest', tolerance=pd.Timedelta('1min'))
             
-            keep_cols = ['ts','f20911t','f20911h','f20910p','f209potsecador',
-                         'temp_ext','hum_ext','Temperatura','Humedad']
-            
+            keep_cols = ['ts', 'f20911t', 'f20911h', 'f20910p', 'f209potsecador', 'temp_ext', 'hum_ext', 'Temperatura', 'Humedad']
             merged = merged[keep_cols]
             
             for col in keep_cols:
                 if col != 'ts':
                     merged[col] = pd.to_numeric(merged[col], errors='coerce')
-                    
-            start_common = max(df_plc['ts'].min(), df_logger['ts'].min(), df_externo['ts'].min())
-            end_common = min(df_plc['ts'].max(), df_logger['ts'].max(), df_externo['ts'].max())
-            merged = merged[(merged['ts'] >= start_common) & (merged['ts'] <= end_common)]            
             
-
-            # 5. NORMALIZACIÓN A 1 MINUTO (Upsampling e Interpolación)
-            # Si ya está a 1 min, esto solo llena huecos vacíos si existen.
+            # Forzar remuestreo explícito a grilla exacta de 1 minuto e interpolar nulos menores
             merged.set_index('ts', inplace=True)
             merged = merged.resample('1min').interpolate(method='linear')
             merged.reset_index(inplace=True)
             
+            # 6. Resolución del Polimorfismo de Escala de Presión del PLC (Ecuación 5 del Paper)
+            p_mean = merged['f20910p'].mean()
+            if p_mean < 800:
+                # Entrada en Pascales relativos (ej. 150 Pa) -> Convertir a hPa absoluto dinámico
+                p_supply_dynamic = 1013.25 + (merged['f20910p'] / 100.0)
+            else:
+                # Entrada en Hectopascales absolutos directos
+                p_supply_dynamic = merged['f20910p']
             
-            # 6. CÁLCULO DE VARIABLES FÍSICAS
-            # Mapeo: PLC(f20911t=temp_uma, f20911h=hum_uma), LOG(Temperatura, Humedad), EXT(temp_ext, hum_ext)
-            merged['w_ext'] = merged.apply(lambda x: self._calculate_psychrometrics(x['temp_ext'], x['hum_ext']), axis=1)
-            merged['w_uma'] = merged.apply(lambda x: self._calculate_psychrometrics(x['f20911t'], x['f20911h']), axis=1)
-            merged['w_sala'] = merged.apply(lambda x: self._calculate_psychrometrics(x['Temperatura'], x['Humedad']), axis=1)
+            # 7. Ingesta de la Capa de Lógica Termodinámica
+            merged['w_ext'] = merged.apply(lambda x: self._calculate_psychrometrics(x['temp_ext'], x['hum_ext'], 1013.25), axis=1)
+            merged['w_sala'] = merged.apply(lambda x: self._calculate_psychrometrics(x['Temperatura'], x['Humedad'], 1013.50), axis=1)
+            merged['w_uma'] = merged.apply(lambda x: self._calculate_psychrometrics(x['f20911t'], x['f20911h'], p_supply_dynamic.loc[x.name]), axis=1)
             
+            # Tratar residuos nulos post-interpolación
             merged = merged.fillna(0.0)
-            
-            print("Columnas finales:", merged.columns)
-            print("Tipos de datos:", merged.dtypes)
-            print("Primeras filas:\n", merged.head(10))
-            print("Valores nulos por columna:\n", merged.isna().sum())
 
-
-            # 7. PERSISTENCIA EN BASE DE DATOS
+            # 8. Volcado masivo y persistencia bajo transaccionalidad segura en Base de Datos
             return self._save_records(merged)
 
         except Exception as e:
             self.db.rollback()
+            logger.error(f"Fallo crítico en el pipeline de datos del Gemelo Digital: {str(e)}")
             raise HTTPException(status_code=400, detail=f"Error en pipeline de datos: {str(e)}")
-
-    
-    def _save_records(self, df: pd.DataFrame):
+        
+    def _save_records(self, df: pd.DataFrame) -> dict:
         records = []
         for _, row in df.iterrows():
             record = HvacHistoricalData(
                 timestamp=row['ts'],
                 temp_ext=row['temp_ext'],
-                w_ext=row.get('w_ext'),
-                temp_uma=row['f20911t'], # Según tus headers
-                w_uma=row.get('w_uma'),
+                w_ext=row['w_ext'],
+                temp_uma=row['f20911t'],
+                w_uma=row['w_uma'],
                 potencia_secador=row['f209potsecador'],
                 temp_sala=row['Temperatura'],
                 hum_sala=row['Humedad']
@@ -160,4 +156,4 @@ class DataService:
         
         self.db.bulk_save_objects(records)
         self.db.commit()
-        return {"message": f"{len(records)} registros insertados exitosamente."}
+        return {"status": "success", "message": f"Pipeline completado con éxito. {len(records)} registros sincronizados e insertados."}

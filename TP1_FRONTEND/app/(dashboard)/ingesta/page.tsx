@@ -33,10 +33,13 @@ export default function DataIngestion() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* File Input: PLC */}
-                <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 hover:border-blue-400 transition-colors text-center">
+                <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 hover:border-blue-400 transition-colors text-center flex flex-col items-center">
                   <CloudArrowUpIcon className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                  <div>
+                    
                   <span className="block text-xs font-bold text-slate-500 uppercase mb-2">Datos PLC</span>
                   <input type="file" className="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                  </div>
                 </div>
 
                 {/* File Input: Datalogger */}
@@ -46,7 +49,6 @@ export default function DataIngestion() {
                   <input type="file" className="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
                 </div>
 
-                {/* File Input: Exterior */}
                 <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 hover:border-blue-400 transition-colors text-center">
                   <CloudArrowUpIcon className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                   <span className="block text-xs font-bold text-slate-500 uppercase mb-2">Clima Exterior</span>
@@ -55,7 +57,6 @@ export default function DataIngestion() {
               </div>
             </div>
 
-            {/* Tabla de logs de procesamiento */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
               <div className="p-4 border-b border-slate-100 bg-slate-50">
                 <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Historial de Procesamiento</h3>
@@ -95,7 +96,6 @@ export default function DataIngestion() {
             </div>
           </div>
 
-          {/* Columna Derecha: Configuración de Corte (1/3 de ancho) */}
           <div className="space-y-6">
             <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
               <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">

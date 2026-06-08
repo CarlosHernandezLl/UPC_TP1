@@ -20,3 +20,4 @@ pandas
 joblib
 matplotlib
 xlrd
+joblib

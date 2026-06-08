@@ -15,6 +15,44 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
+const mockupsAudit = [
+  {
+    id: 1,
+    action: "Inicio de Sesión",
+    user: "Carlos Pérez",
+    timestamp: "2024-06-15 08:45:23",
+    details: "Acceso exitoso desde IP 192.168.1.100",
+  },
+  {
+    id: 2,
+    action: "Creación de Usuario",
+    user: "Carlos Pérez",
+    timestamp: "2024-06-15 09:10:45",
+    details: "Usuario 'jdoe' creado con rol SUPERVISOR",
+  },
+  {
+    id: 3,
+    action: "Edición de Usuario",
+    user: "Carlos Pérez",
+    timestamp: "2024-06-15 10:05:12",
+    details: "Usuario'jdoe' actualizado: rol cambiado a GERENTE",
+  },
+  {
+    id: 4,
+    action: "Revocación de Usuario",
+    user: "Carlos Pérez",
+    timestamp: "2024-06-15 11:20:30",
+    details: "Usuario 'jdoe' revocado permanentemente",
+  },
+  {
+    id: 5,
+    action: "Exportación de Reporte",
+    user: "Carlos Pérez",
+    timestamp: "2024-06-15 14:45:00",
+    details: "Reporte de auditoría exportado en formato CSV",
+  },
+];
+
 export default function AuditAndUsers() {
   const [activeTab, setActiveTab] = useState<"audit" | "users">("users");
   const [users, setUsers] = useState<User[]>([]);
@@ -128,6 +166,28 @@ export default function AuditAndUsers() {
             </button>
           </div>
         </div>
+
+        {activeTab === "audit" && (
+          <div className="space-y-6 animate-fadeIn overflow-auto max-h-[70vh]">
+            {mockupsAudit.map((entry) => (
+              <div
+                key={entry.id}
+                className="bg-white border border-slate-100 rounded-2xl p-6"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="font-bold text-slate-900">{entry.action}</h3>
+                  <span className="text-[10px] text-slate-400">
+                    {entry.timestamp}
+                  </span>
+                </div>
+                <p className="text-slate-600 mb-2">{entry.user}</p>
+                <p className="text-[11px] text-slate-400 font-mono">
+                  {entry.details}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
 
         {activeTab === "users" && (
           <div className="space-y-6">
