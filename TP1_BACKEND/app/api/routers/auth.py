@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from app.schemas.user_schema import UserCreate
 from app.core.database import get_db
-from app.models.users_model import User
+from app.models.users_model import User, UserRole
+from app.schemas.user_schema import UserCreate
 from app.core.security import verify_password, create_access_token
 from datetime import timedelta
 import app.core.security as security
@@ -26,14 +28,12 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 
 @router.post("/register-first-user")
 def register_initial(db: Session = Depends(get_db)):
-    # Solo para inicializar la base de datos la primera vez
-    from app.models.users import UserRole
     auth_service = AuthService(db)
-    # Datos de ejemplo
-    class FakeSchema:
-        username = "admin_hvac"
-        password = "AdminPassword123!"
-        full_name = "Carlos Hernandez"
-        role = UserRole.ADMIN
-        
-    return auth_service.register_user(FakeSchema())
+    user_data = UserCreate(
+        username="admin_hvac",
+        password="AdminPassword123!",
+        full_name="Carlos Hernandez",
+        role=UserRole.ADMIN
+    )
+
+    return auth_service.register_user(user_data)

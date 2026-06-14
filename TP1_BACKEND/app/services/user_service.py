@@ -1,5 +1,5 @@
 from app.repositories.user_repository import UserRepository
-from app.schemas.user_schema import UserCreate
+from app.schemas.user_schema import UserCreate, UserUpdate
 from app.core.security import get_password_hash # Tu función de hashing
 
 class UserService:

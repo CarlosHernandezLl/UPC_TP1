@@ -21,3 +21,7 @@ joblib
 matplotlib
 xlrd
 joblib
+passlib[bcrypt]
+bcrypt
+openpyxl
+xgboost

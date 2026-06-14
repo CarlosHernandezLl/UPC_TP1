@@ -10,6 +10,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"  # Le indicamos dónde buscar
+        env_file_encoding = "utf-8"
 
 # Instanciamos la clase para usarla en el resto de la app
 settings = Settings()

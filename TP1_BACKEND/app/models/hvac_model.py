@@ -1,3 +1,4 @@
+import datetime
 from sqlalchemy import Column, Integer, String, Boolean, BigInteger, Float, DateTime
 from app.core.database import Base
 from sqlalchemy.orm import relationship
@@ -25,3 +26,13 @@ class HvacHistoricalData(Base):
     w_sala = Column(Float)
     
     is_clean = Column(Boolean, default=True)
+
+
+class DataIngestionLog(Base):
+    __tablename__ = "data_ingestion_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    fecha_carga = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+    rango_datos = Column(String(50), nullable=False)  # Guarda ej: "23/04 - 25/04"
+    registros = Column(Integer, nullable=False)       # Filas totales procesadas en el merge_asof
+    estado = Column(String(30), nullable=False)       # "SINCRONIZADO" o "ERROR"

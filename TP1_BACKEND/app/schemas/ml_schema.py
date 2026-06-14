@@ -13,3 +13,12 @@ class PredictionInput(BaseModel):
 class PredictionOutput(BaseModel):
     potencia_estimada: float
     unidad: str = "kW" # o % según tu escala
+    
+class SimRequest(BaseModel):
+    temp_ext: float
+    hum_ext: float
+    temp_uma: float
+    hum_uma: float
+    potencia_actual: float
+    hum_sala_actual: float
+    setpoint_humedad: float

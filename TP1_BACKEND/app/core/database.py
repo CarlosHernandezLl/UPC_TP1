@@ -2,6 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from app.core.config import settings
 
+print(repr(settings.DATABASE_URL))
+
 # 1. Crear el motor
 engine = create_engine(
     settings.DATABASE_URL,
