@@ -1,48 +1,61 @@
 # app/main.py
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routers import ai
-from app.api.routers import users # Importamos nuestro router
-from app.core.database import Base, engine # Importamos la config de DB
+from app.core.database import Base, engine 
 import app.models.users_model
-from app.api.routers import users, auth, data, gmp, audit
 
-# Esto crea las tablas en la BD automáticamente al iniciar (solo para desarrollo)
+# Importación unificada de routers (Limpia y sin duplicados para tu informe)
+from app.api.routers import users, auth, data, gmp, audit, ai
+
+# Esto crea las tablas en la BD automáticamente (Supabase lo asimilará al arrancar)
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(
+    title="SCADA HVAC AI Engine",
+    description="Backend industrial con optimización energética mediante XGBoost",
+    version="1.0.0"
+)
 
-# --- 2. Configurar los orígenes permitidos ---
+# --- 2. Configuración Dinámica de CORS para Producción ---
+# Mantenemos los accesos locales para tus pruebas en casa
 origins = [
     "http://localhost:3000",
-    "http://192.168.0.100:3000", 
+    "http://192.168.0.100:3000",
 ]
+
+# 💡 TRUCO DE INGENIERÍA: Si tienes tu URL de Vercel, la inyectamos dinámicamente.
+# Puedes agregar una variable llamada FRONTEND_URL en el panel de Render
+# o simplemente reemplazar el texto de abajo por tu URL de Vercel directamente.
+frontend_production_url = os.getenv("FRONTEND_URL")
+if frontend_production_url:
+    origins.append(frontend_production_url)
+else:
+    # Si no quieres usar variables de entorno en Render para esto, 
+    # simplemente pega tu URL de Vercel aquí abajo directamente:
+    origins.append("https://tu-proyecto-frontend.vercel.app") 
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"], # Permitir todos los métodos (GET, POST, etc.)
+    allow_credentials=True,  # ⚠️ OBLIGATORIO: Para que el navegador permita guardar las cookies JWT en producción
+    allow_methods=["*"], 
     allow_headers=["*"],
 )
-# ---------------------------------------------
+# ---------------------------------------------------------
 
-# Aquí "enchufamos" el router de usuarios
-# app.include_router(plc.router)
+# Inyección ordenada de endpoints en el ciclo de vida de FastAPI
 app.include_router(users.router)
 app.include_router(auth.router)
 app.include_router(data.router)
-# app.include_router(ml.router)
 app.include_router(gmp.router)
 app.include_router(audit.router)
 app.include_router(ai.router)
-# app.include_router(optimization.router)
 
 @app.get("/")
 def root():
-    return {"mensaje": "¡Hola desde FastAPI!"}
-
-
-# @app.on_event("startup")
-# async def on_startup():
-#     await start_scheduler()
+    return {
+        "status": "Online",
+        "context": "GXP Pharmaceutical HVAC Digital Twin Backend",
+        "engine": "XGBoost Active"
+    }
