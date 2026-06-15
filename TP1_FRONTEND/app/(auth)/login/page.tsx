@@ -28,8 +28,8 @@ export default function LoginPage() {
       localStorage.setItem("scada_userName", data.user_info.full_name);
       localStorage.setItem("scada_userEmail", username);
 
-      // 🚀 CORRECCIÓN CRÍTICA: Saltamos la raíz para evitar el bucle de re-redirección
-      router.push("/dashboard");
+      // 🎯 CORRECCIÓN FINAL: Apuntamos a la raíz protegida para ver el Home de bienvenida
+      router.push("/");
       router.refresh();
     } catch (err: any) {
       setError(err.message || "Error al iniciar sesión");
@@ -89,10 +89,9 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
             className={`w-full mt-2 py-3 px-4 rounded-xl font-black text-xs uppercase tracking-widest text-white transition-all
-              ${
-                loading
-                  ? "bg-blue-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 active:transform active:scale-[0.98] shadow-md shadow-blue-200"
+              ${loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 active:transform active:scale-[0.98] shadow-md shadow-blue-200"
               }`}
           >
             {loading ? "Autenticando Firma..." : "Ingresar al Sistema"}
