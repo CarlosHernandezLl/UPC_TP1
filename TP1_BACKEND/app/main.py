@@ -33,7 +33,7 @@ if frontend_production_url:
 else:
     # Si no quieres usar variables de entorno en Render para esto, 
     # simplemente pega tu URL de Vercel aquí abajo directamente:
-    origins.append("https://tu-proyecto-frontend.vercel.app") 
+    origins.append("https://upc-tp-1-xi.vercel.app/") 
 
 app.add_middleware(
     CORSMiddleware,
