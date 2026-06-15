@@ -5,7 +5,7 @@ from app.api.routers import ai
 from app.api.routers import users # Importamos nuestro router
 from app.core.database import Base, engine # Importamos la config de DB
 import app.models.users_model
-from app.api.routers import users, auth, ml, optimization, data, gmp, audit
+from app.api.routers import users, auth, data, gmp, audit
 
 # Esto crea las tablas en la BD automáticamente al iniciar (solo para desarrollo)
 Base.metadata.create_all(bind=engine)
@@ -32,7 +32,7 @@ app.add_middleware(
 app.include_router(users.router)
 app.include_router(auth.router)
 app.include_router(data.router)
-app.include_router(ml.router)
+# app.include_router(ml.router)
 app.include_router(gmp.router)
 app.include_router(audit.router)
 app.include_router(ai.router)
