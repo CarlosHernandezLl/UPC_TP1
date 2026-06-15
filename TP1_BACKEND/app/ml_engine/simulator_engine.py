@@ -17,7 +17,7 @@ class SimulatorEngine:
         # Rutas dinámicas
         base_path = os.path.dirname(__file__)
         self.model_path = os.path.join(base_path, "saved_models", "xgboost_hvac_v1.json")
-        self.metadata_path = os.path.join(base_path, "saved_models", "xgboost_metadata.json")
+        self.metadata_path = os.path.join(base_path, "saved_models", "model_metadata.json")
         
         # 1. Cargar el modelo físico
         try:
