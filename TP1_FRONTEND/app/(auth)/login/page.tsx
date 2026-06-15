@@ -19,16 +19,17 @@ export default function LoginPage() {
     try {
       const data = await authService.login(username, password);
 
-      // Configuración de Cookies (Accesibles por Middleware)
-      const cookieConfig = "path=/; max-age=86400; SameSite=Lax";
+      // 🔒 Configuración de Cookies con atributo Secure para producción en Vercel (HTTPS)
+      const cookieConfig = "path=/; max-age=86400; SameSite=Lax; Secure";
       document.cookie = `scada_token=${data.access_token}; ${cookieConfig}`;
       document.cookie = `scada_email=${username}; ${cookieConfig}`;
 
-      // Persistencia local para la UI
+      // Persistencia local para la UI del SideNav y saludos
       localStorage.setItem("scada_userName", data.user_info.full_name);
       localStorage.setItem("scada_userEmail", username);
 
-      router.push("/");
+      // 🚀 CORRECCIÓN CRÍTICA: Saltamos la raíz para evitar el bucle de re-redirección
+      router.push("/dashboard");
       router.refresh();
     } catch (err: any) {
       setError(err.message || "Error al iniciar sesión");
@@ -39,31 +40,31 @@ export default function LoginPage() {
 
   return (
     <div className="flex h-screen w-full items-center justify-center bg-slate-50">
-      <div className="w-full max-w-md p-8 bg-white border border-slate-200 rounded-xl shadow-lg">
+      <div className="w-full max-w-md p-8 bg-white border border-slate-200 rounded-2xl shadow-lg">
         {/* Encabezado */}
         <div className="mb-8 text-center">
-          <h2 className="text-2xl font-bold text-slate-800">HVAC Simulator</h2>
-          <p className="text-sm text-slate-500 mt-1">
+          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">HVAC Simulator</h2>
+          <p className="text-xs text-slate-500 mt-1 uppercase tracking-wider font-bold">
             Gestión de Eficiencia Energética
           </p>
         </div>
 
         {/* Mensaje de Error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg mb-6 text-center text-sm font-medium">
+          <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-xl mb-6 text-center text-sm font-semibold animate-fadeIn">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div>
-            <label className="block text-slate-700 text-sm font-semibold mb-1.5">
-              Usuario
+            <label className="block text-slate-700 text-xs font-black uppercase tracking-wider mb-1.5">
+              Usuario de Planta
             </label>
             <input
               type="text"
               placeholder="Ej. chernandez"
-              className="w-full px-4 py-2.5 rounded-lg bg-white text-slate-900 border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-slate-400"
+              className="w-full px-4 py-2.5 rounded-xl bg-white text-slate-900 border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-slate-400 font-medium"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -71,13 +72,13 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-slate-700 text-sm font-semibold mb-1.5">
-              Contraseña
+            <label className="block text-slate-700 text-xs font-black uppercase tracking-wider mb-1.5">
+              Firma Digital (Contraseña)
             </label>
             <input
               type="password"
               placeholder="••••••••"
-              className="w-full px-4 py-2.5 rounded-lg bg-white text-slate-900 border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              className="w-full px-4 py-2.5 rounded-xl bg-white text-slate-900 border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all font-medium"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -87,20 +88,20 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full mt-2 py-2.5 px-4 rounded-lg font-bold text-white transition-all
+            className={`w-full mt-2 py-3 px-4 rounded-xl font-black text-xs uppercase tracking-widest text-white transition-all
               ${
                 loading
                   ? "bg-blue-400 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700 active:transform active:scale-[0.98] shadow-md shadow-blue-200"
               }`}
           >
-            {loading ? "Autenticando..." : "Ingresar al Sistema"}
+            {loading ? "Autenticando Firma..." : "Ingresar al Sistema"}
           </button>
         </form>
 
-        {/* Footer opcional */}
-        <p className="mt-8 text-center text-xs text-slate-400 uppercase tracking-widest font-medium">
-          Control de Procesos Industrial
+        {/* Footer */}
+        <p className="mt-8 text-center text-[10px] text-slate-400 uppercase tracking-widest font-black">
+          Control de Procesos Industrial GxP
         </p>
       </div>
     </div>

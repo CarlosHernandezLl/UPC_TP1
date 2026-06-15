@@ -1,10 +1,23 @@
 import SideNav from "@/components/ui/SideNav";
+import { cookies } from 'next/headers'; // 🔒 Importación para leer cookies en servidor
+import { redirect } from 'next/navigation'; // 🔒 Importación para redirección nativa
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  
+  // 1. CONTROL DE ACCESO GxP: Validamos la sesión en el servidor antes de procesar el HTML
+  const cookieStore = await cookies();
+  const token = cookieStore.get('scada_token')?.value;
+
+  // Si el operador no tiene un token activo, lo expulsamos al Login inmediatamente
+  if (!token) {
+    redirect('/login');
+  }
+
+  // 2. RENDERIZADO DE LA INTERFAZ (Tu diseño original intacto)
   return (
     /* Cambiamos el contenedor principal a un blanco absoluto */
     <div className="flex h-screen flex-col md:flex-row md:overflow-hidden bg-white">
