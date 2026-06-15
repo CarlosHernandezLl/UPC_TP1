@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { userService, AuditLog } from "@/services/userService"; // Importa la nueva interfaz AuditLog
+import { userService, AuditLog } from "@/services/userService"; 
 import { User } from "@/types/user";
 import {
   UserPlusIcon,
@@ -18,7 +18,7 @@ export default function AuditAndUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
-  // Estados para Audit Trail (¡Nueva data real!)
+  // Estados para Audit Trail
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [loadingAudit, setLoadingAudit] = useState(false);
 
@@ -30,6 +30,7 @@ export default function AuditAndUsers() {
     full_name: "",
     role: "SUPERVISOR",
     password: "",
+    is_active: true // Nuevo campo para mantener la consistencia del tipo Omit<User, "id">
   });
 
   const loadUsers = async () => {
@@ -56,7 +57,6 @@ export default function AuditAndUsers() {
     }
   };
 
-  // El useEffect ahora reacciona a qué pestaña está activa
   useEffect(() => {
     if (activeTab === "users") loadUsers();
     if (activeTab === "audit") loadAuditLogs();
@@ -65,7 +65,7 @@ export default function AuditAndUsers() {
   // Manejo de Modal
   const openCreateModal = () => {
     setEditingUser(null);
-    setFormData({ username: "", full_name: "", role: "SUPERVISOR", password: "" });
+    setFormData({ username: "", full_name: "", role: "SUPERVISOR", password: "", is_active: true });
     setIsModalOpen(true);
   };
 
@@ -76,17 +76,28 @@ export default function AuditAndUsers() {
       full_name: user.full_name,
       role: user.role,
       password: "",
+      is_active: user.is_active // Inyectamos el estado actual para evitar problemas de tipado en la actualización
     });
     setIsModalOpen(true);
   };
 
+  // =================================================================
+  // AJUSTE CRÍTICO: Solución del Bug de Tipado para Vercel (Opción A)
+  // =================================================================
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoadingUsers(true);
     try {
       if (editingUser) {
-        const updatePayload = { ...formData };
+        // Combinamos la estructura del formulario e inyectamos el estado booleano actual
+        const updatePayload = { 
+          ...formData,
+          is_active: editingUser.is_active ?? true // Protegemos la consistencia del tipo Omit<User, "id">
+        };
+        
+        // Si no se digitó una nueva clave, removemos la propiedad para no sobreescribir hashes vacíos en FastAPI
         if (!updatePayload.password) delete (updatePayload as any).password;
+        
         await userService.updateUser(editingUser.id, updatePayload);
       } else {
         await userService.createUser(formData);
@@ -172,7 +183,7 @@ export default function AuditAndUsers() {
 
         {/* PESTAÑA: USUARIOS */}
         {activeTab === "users" && (
-          <div className="space-y-6 animate-fadeIn">
+          <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-bold">Directorio de Personal</h2>
               <button
@@ -217,10 +228,10 @@ export default function AuditAndUsers() {
           </div>
         )}
 
-        {/* MODAL UNIFICADO (Se mantiene igual) */}
+        {/* MODAL UNIFICADO */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-            <div className="bg-white w-full max-w-md p-8 rounded-3xl shadow-2xl relative animate-fadeIn">
+            <div className="bg-white w-full max-w-md p-8 rounded-3xl shadow-2xl relative">
               <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 text-slate-400 hover:text-slate-800 transition-colors">
                 <XMarkIcon className="w-6 h-6" />
               </button>
