@@ -8,11 +8,9 @@ import {
   CpuChipIcon,
   CircleStackIcon,
   BeakerIcon,
-  ChartBarIcon,
   ShieldCheckIcon,
   ArrowLeftOnRectangleIcon,
   UserCircleIcon,
-  LayoutDashboardIcon, // Si no tienes este, usa HomeIcon
   HomeIcon,
 } from '@heroicons/react/24/outline';
 
@@ -27,32 +25,37 @@ const links = [
 export default function SideNav() {
   const pathname = usePathname();
   const [userName, setUserName] = useState("Cargando...");
-  // const [userEmail, setUserEmail] = useState("");
+  const [userEmail, setUserEmail] = useState(""); // 💡 CORREGIDO: Descomentado para evitar error de compilación
 
   useEffect(() => {
+    // Recuperamos los datos del operador guardados en el Login
     const storedName = localStorage.getItem("scada_userName");
     const storedEmail = localStorage.getItem("scada_userEmail");
+    
     setUserName(storedName || "Operador");
-    // if (storedEmail) setUserEmail(storedEmail);
+    if (storedEmail) setUserEmail(storedEmail);
   }, [pathname]);
 
+  // Si estás en el Login, no renderizamos la barra de navegación lateral
   if (pathname === '/login') return null;
 
+  // Filtrado dinámico de pestañas para cumplimiento normativo GxP
   const visibleLinks = links.filter((link) => {
-    if (link.name === 'Usuarios' && userEmail !== 'administrador@acfarma.com') {
-      return false;
+    // Si la pestaña es Auditoria y el usuario no es el administrador, ocultamos la opción
+    if (link.name === 'Auditoria' && userEmail && userEmail !== 'administrador@acfarma.com') {
+      return false; // Descomenta esta lógica si deseas activar la restricción por correo
     }
     return true;
   });
   
   return (
-    <div className="flex h-full flex-col px-3 py-4 md:px-2 bg-card border-r border-border shadow-sm">
+    <div className="flex h-full flex-col px-3 py-4 md:px-2 bg-white border-r border-slate-200 shadow-sm">
       
-      {/* Header del Menú - Azul Médico */}
-      <div className="mb-4 flex h-20 items-center justify-start rounded-xl bg-primary p-4 md:h-28 shadow-md shadow-blue-100">
+      {/* Header del Menú - Azul Farmacéutico */}
+      <div className="mb-4 flex h-20 items-center justify-start rounded-xl bg-blue-600 p-4 md:h-28 shadow-md shadow-blue-100">
         <div className="text-white">
-           <h1 className="text-lg font-bold leading-tight">Energy Reduction</h1>
-           <p className="text-[10px] uppercase tracking-wider opacity-90 font-medium">Planta Farmacéutica</p>
+           <h1 className="text-lg font-bold leading-tight tracking-tight">Energy Reduction</h1>
+           <p className="text-[10px] uppercase tracking-widest opacity-90 font-black">Planta Farmacéutica</p>
         </div>
       </div>
 
@@ -65,15 +68,15 @@ export default function SideNav() {
             <Link
               key={link.name}
               href={link.href}
-              className={`flex h-[48px] grow items-center justify-center gap-3 rounded-lg p-3 text-sm font-semibold transition-all md:flex-none md:justify-start md:px-4
+              className={`flex h-[48px] grow items-center justify-center gap-3 rounded-xl p-3 text-sm font-bold transition-all md:flex-none md:justify-start md:px-4
               ${isActive 
-                  ? 'bg-blue-50 text-primary border-l-4 border-primary' 
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-primary border-l-4 border-transparent'
+                  ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600' 
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-blue-600 border-l-4 border-transparent'
               }
               `}
             >
-              <LinkIcon className={`w-5 h-5 ${isActive ? 'text-primary' : 'text-slate-400'}`} />
-              <p className="hidden md:block">{link.name}</p>
+              <LinkIcon className={`w-5 h-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+              <p className="hidden md:block text-xs uppercase tracking-tight">{link.name}</p>
             </Link>
           );
         })}
@@ -81,16 +84,16 @@ export default function SideNav() {
         <div className="hidden h-auto w-full grow md:block"></div>
         
         {/* ZONA DE USUARIO Y CIERRE DE SESIÓN */}
-        <div className="flex flex-col gap-1 mt-4 pt-4 border-t border-border">
+        <div className="flex flex-col gap-1 mt-4 pt-4 border-t border-slate-100">
           
-          {/* Perfil de Usuario */}
-          <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-slate-50/50 border border-slate-100 mb-2">
-            <UserCircleIcon className="w-9 h-9 text-slate-400" />
+          {/* Perfil de Usuario Conectado */}
+          <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-50 border border-slate-100 mb-2">
+            <UserCircleIcon className="w-9 h-9 text-slate-400 flex-shrink-0" />
             <div className="hidden md:block overflow-hidden">
-              <p className="text-xs font-bold text-slate-700 truncate">{userName}</p>
+              <p className="text-xs font-black text-slate-700 truncate">{userName}</p>
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                <p className="text-[10px] font-medium text-slate-500 uppercase">Sistema Activo</p>
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-tighter">Online</p>
               </div>
             </div>
           </div>
@@ -98,9 +101,9 @@ export default function SideNav() {
           {/* Botón de Cerrar Sesión */}
           <button 
             onClick={() => authService.logout()}
-            className="flex h-[44px] items-center justify-center gap-3 rounded-lg px-4 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors md:justify-start group"
+            className="flex h-[44px] items-center justify-center gap-3 rounded-xl px-4 text-xs font-black uppercase tracking-wider text-rose-500 hover:bg-rose-50 transition-colors md:justify-start group"
           >
-            <ArrowLeftOnRectangleIcon className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+            <ArrowLeftOnRectangleIcon className="w-5 h-5 transition-transform group-hover:-translate-x-1 text-rose-400" />
             <span className="hidden md:block">Finalizar Sesión</span>
           </button>
         </div>
