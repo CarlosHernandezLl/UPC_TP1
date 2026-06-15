@@ -249,7 +249,7 @@ export default function AuditAndUsers() {
                 </div>
                 <div>
                   <label className="block text-[9px] font-black text-slate-500 uppercase mb-1 tracking-wider">Rol de Acceso</label>
-                  <select className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium font-bold text-slate-700" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })}>
+                  <select className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-700" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })}>
                     <option value="ADMIN">ADMIN (Acceso Total)</option>
                     <option value="SUPERVISOR">SUPERVISOR (Aplica Recomendaciones)</option>
                     <option value="GERENTE">GERENTE (Visualiza ROI)</option>

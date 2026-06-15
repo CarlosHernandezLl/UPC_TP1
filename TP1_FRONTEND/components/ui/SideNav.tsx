@@ -68,7 +68,7 @@ export default function SideNav() {
             <Link
               key={link.name}
               href={link.href}
-              className={`flex h-[48px] grow items-center justify-center gap-3 rounded-xl p-3 text-sm font-bold transition-all md:flex-none md:justify-start md:px-4
+              className={`flex h-12 grow items-center justify-center gap-3 rounded-xl p-3 text-sm font-bold transition-all md:flex-none md:justify-start md:px-4
               ${isActive 
                   ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600' 
                   : 'text-slate-500 hover:bg-slate-50 hover:text-blue-600 border-l-4 border-transparent'
@@ -88,7 +88,7 @@ export default function SideNav() {
           
           {/* Perfil de Usuario Conectado */}
           <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-50 border border-slate-100 mb-2">
-            <UserCircleIcon className="w-9 h-9 text-slate-400 flex-shrink-0" />
+            <UserCircleIcon className="w-9 h-9 text-slate-400 shrink-0" />
             <div className="hidden md:block overflow-hidden">
               <p className="text-xs font-black text-slate-700 truncate">{userName}</p>
               <div className="flex items-center gap-1.5">
@@ -101,7 +101,7 @@ export default function SideNav() {
           {/* Botón de Cerrar Sesión */}
           <button 
             onClick={() => authService.logout()}
-            className="flex h-[44px] items-center justify-center gap-3 rounded-xl px-4 text-xs font-black uppercase tracking-wider text-rose-500 hover:bg-rose-50 transition-colors md:justify-start group"
+            className="flex h-11 items-center justify-center gap-3 rounded-xl px-4 text-xs font-black uppercase tracking-wider text-rose-500 hover:bg-rose-50 transition-colors md:justify-start group"
           >
             <ArrowLeftOnRectangleIcon className="w-5 h-5 transition-transform group-hover:-translate-x-1 text-rose-400" />
             <span className="hidden md:block">Finalizar Sesión</span>

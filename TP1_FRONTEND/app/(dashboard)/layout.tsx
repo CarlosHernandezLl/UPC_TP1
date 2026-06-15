@@ -32,7 +32,7 @@ export default async function DashboardLayout({
       {/* 2. AREA DE CONTENIDO 
           Eliminamos cualquier rastro de bg-gray-950 y forzamos bg-white.
       */}
-      <div className="flex-grow p-6 md:overflow-y-auto md:p-12 bg-white text-slate-900">
+      <div className="grow p-6 md:overflow-y-auto md:p-12 bg-white text-slate-900">
         {children}
       </div>
     </div>
