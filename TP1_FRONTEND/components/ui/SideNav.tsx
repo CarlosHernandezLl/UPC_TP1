@@ -41,10 +41,10 @@ export default function SideNav() {
 
   // Filtrado dinámico de pestañas para cumplimiento normativo GxP
   const visibleLinks = links.filter((link) => {
-    // Si la pestaña es Auditoria y el usuario no es el administrador, ocultamos la opción
-    if (link.name === 'Auditoria' && userEmail && userEmail !== 'administrador@acfarma.com') {
-      return false; // Descomenta esta lógica si deseas activar la restricción por correo
-    }
+    // // Si la pestaña es Auditoria y el usuario no es el administrador, ocultamos la opción
+    // if (link.name === 'Auditoria' && userEmail && userEmail !== 'administrador@acfarma.com') {
+    //   return false; // Descomenta esta lógica si deseas activar la restricción por correo
+    // }
     return true;
   });
   
