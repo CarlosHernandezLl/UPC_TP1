@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import Base, engine 
 import app.models.users_model
+import app.models.optimization_model
 
 # Importación unificada de routers (Limpia y sin duplicados para tu informe)
 from app.api.routers import users, auth, data, gmp, audit, ai

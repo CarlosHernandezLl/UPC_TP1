@@ -30,6 +30,20 @@ export interface SimulationResponse {
   explicacion_gemini?: string; // Para la integración con Vertex AI
 }
 
+export interface OptimizationLogPayload {
+  temp_ext: number;
+  hum_ext: number;
+  temp_uma: number;
+  hum_uma: number;
+  hum_sala_actual: number;
+  setpoint_humedad: number;
+  potencia_actual: number;
+  potencia_recomendada: number;
+  potencia_aplicada: number;
+  accion: string;
+  justificacion: string | null;
+}
+
 export interface ModelMetrics {
   r2_score: number;
   mse: number;
@@ -64,23 +78,18 @@ export const aiService = {
   },
 
   // 2. Para Simulator.tsx: Guarda en auditoría la decisión exacta del operador
-  async logOperatorAction(potenciaRecomendada: number, accion: "APLICADA" | "IGNORADA"): Promise<void> {
+  async logOperatorAction(payload: OptimizationLogPayload): Promise<void> {
     const token = getAuthToken();
-
-    // Lógica dinámica para la trazabilidad
-    const actionTexto = accion === "APLICADA" ? "RECOMENDACION_APLICADA" : "RECOMENDACION_IGNORADA";
-    const detailTexto = accion === "APLICADA"
-      ? `El operador APLICÓ la potencia recomendada del ${potenciaRecomendada}% sugerida por el Gemelo Digital.`
-      : `El operador IGNORÓ la recomendación de la IA (${potenciaRecomendada}%) y mantuvo los parámetros manuales.`;
-
-    await fetch(`${API_URL}/audit/log`, {
+    const res = await fetch(`${API_URL}/ai/log-action`, {
       method: "POST",
-      headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: actionTexto,
-        detail: detailTexto
-      }),
+      headers: { 
+        "Authorization": `Bearer ${token}`, 
+        "Content-Type": "application/json" 
+      },
+      body: JSON.stringify(payload), // Mandamos el snapshot completo
     });
+
+    if (!res.ok) throw new Error("Fallo al registrar la telemetría en el servidor");
   },
 
   // 3. Para IAControl.tsx: Dispara el reentrenamiento

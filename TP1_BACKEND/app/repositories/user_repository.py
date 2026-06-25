@@ -6,9 +6,12 @@ class UserRepository:
     def __init__(self, db: Session):
         self.db = db
 
+    def get_by_id(self, user_id: int):
+        return self.db.query(User).filter(User.id == user_id).first()
+    
     def get_by_username(self, username: str):
         return self.db.query(User).filter(User.username == username).first()
-
+    
     def get_all_users(self):
         return self.db.query(User).all()
 
@@ -17,7 +20,8 @@ class UserRepository:
             username=user_in.username,
             hashed_password = hashed_password,
             full_name = user_in.full_name,
-            role= user_in.role
+            role= user_in.role,
+            is_active = True
         )
         self.db.add(db_user)
         self.db.commit()
@@ -36,6 +40,8 @@ class UserRepository:
     def delete(self, user_id: int):
         db_user = self.db.query(User).filter(User.id == user_id).first()
         if db_user:
-            self.db.delete(db_user)
+            # self.db.delete(db_user)
+            db_user.is_active = False
             self.db.commit()
+            self.db.refresh(db_user)
         return db_user

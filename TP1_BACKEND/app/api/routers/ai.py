@@ -1,3 +1,5 @@
+# from google.cloud import aiplatform
+# from google.cloud import vertexai, GenerativeModel
 import json
 import os
 import math
@@ -9,11 +11,19 @@ from app.core.database import get_db
 from app.models.hvac_model import HvacHistoricalData
 from app.schemas.ml_schema import SimRequest
 from app.ml_engine.simulator_engine import SimulatorEngine
+from app.schemas.optimization_schema import OptimizationLogCreate
+from app.repositories.optimization_repository import OptimizationRepository
+from app.schemas.audit_schema import AuditCreate, AuditResponse
+from app.services.audit_service import AuditService
+from app.repositories.audit_repository import AuditRepository
 
 router = APIRouter(prefix="/ai", tags=["Inteligencia Artificial"])
 sim_engine = SimulatorEngine()
 
 METADATA_PATH = os.path.join(os.path.dirname(__file__), "../../ml_engine/model_metadata.json")
+
+# aiplatform.init(project=os.getenv("GCP_PROJECT_ID"), location="us-central1")
+
 
 def load_model_metadata():
     """Lee el archivo de persistencia del modelo. Si no existe, crea la v1.0.0 inicial."""
@@ -43,6 +53,58 @@ try:
     sim_engine.mse = current_meta["mse"]
 except Exception:
     pass
+
+
+@router.post("/log-action", status_code=status.HTTP_201_CREATED)
+def log_operator_decision(
+    payload: OptimizationLogCreate, 
+    db: Session = Depends(get_db),
+    current_user: any = Depends(get_current_user)
+):
+    """Guarda los números para el Dashboard REUTILIZANDO el Audit Trail de texto"""
+    try:
+        repo_opt = OptimizationRepository(db)
+        repo_opt.save_log(user_id=current_user.id, log_in=payload)
+        
+        repo_audit = AuditRepository(db)
+        service_audit = AuditService(repo_audit)
+        
+        if payload.accion == "RECOMENDACION_APLICADA":
+            detalle_texto = (
+                f"El operador APLICÓ la potencia recomendada del {payload.potencia_aplicada}% "
+                f"sugerida por el Gemelo Digital (Setpoint HR objetivo: {payload.setpoint_humedad}%)."
+            )
+        else:
+            detalle_texto = (
+                f"El operador IGNORÓ la recomendación de la IA ({payload.potencia_recomendada}%) "
+                f"y mantuvo la potencia manual al {payload.potencia_aplicada}%. Motivo: {payload.justificacion}"
+            )
+
+        service_audit.register_operator_action(
+            user_id=current_user.id,
+            action=payload.accion,
+            detail=detalle_texto
+        )
+        
+        return {
+            "status": "success", 
+            "message": "Telemetría guardada y Pista de Auditoría GxP generada mediante servicio reutilizado."
+        }
+        
+    except Exception as e:
+        db.rollback()
+
+        print("================ BACKEND ERROR LAYER ================")
+        import traceback
+        print(traceback.format_exc())
+        print("=====================================================")
+        
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Error en el guardado unificado: {str(e)}"
+        )
+    
+
 
 @router.get("/metrics")
 def get_model_performance_metadata(current_user: any = Depends(get_current_user)):
@@ -136,6 +198,26 @@ async def get_prediction(req: SimRequest):
         ahorro = 0.0
         if req.potencia_actual > potencia_ideal:
             ahorro = round(((req.potencia_actual - potencia_ideal) / req.potencia_actual) * 100, 1)
+
+        explicacion_ia = "Evaluación térmica completada por el motor XGBoost."
+        
+        try:
+            #vertexai.init(project=os.getenv("GCP_PROJECT_ID"), location="us-central1")
+            
+            #model = GenerativeModel("gemini-1.5-flash")
+            
+            prompt = f"""
+            Actúa como un ingeniero experto en sistemas HVAC farmacéuticos bajo normativas GxP.
+            El gemelo digital sugiere ajustar la potencia del {req.potencia_actual}% al {potencia_ideal}% para lograr un setpoint de humedad de {req.setpoint_humedad}%.
+            Condiciones de entrada: Temp Ext: {req.temp_ext}°C, Hum Ext: {req.hum_ext}%, Temp UMA: {req.temp_uma}°C, Hum UMA: {req.hum_uma}%.
+            Redacta una justificación técnica breve (máximo 2 líneas) dirigida al operador de planta, explicando por qué esta reducción de potencia garantiza la deshumidificación correcta y mantiene la seguridad operativa.
+            """
+            
+            #response = model.generate_content(prompt)
+            #explicacion_ia = response.text.strip()
+            
+        except Exception as ai_error:
+            print(f"Advertencia: Falló la conexión con Vertex AI - {str(ai_error)}")
 
         return {
             "potencia_recomendada": potencia_ideal,

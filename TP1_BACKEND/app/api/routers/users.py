@@ -83,22 +83,21 @@ def delete_user(
     audit_repo = AuditRepository(db)
     service = UserService(repo)
     
-    target_user = repo.get_by_id(user_id)  # O el método que uses para buscar por ID
-    username_target = target_user.username if target_user else f"ID {user_id}"
-
-    is_deleted = service.remove_user(user_id)
-    if not is_deleted:
+    target_user = repo.get_by_id(user_id)
+    if not target_user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
             detail="Usuario no encontrado"
         )
     
+    target_user.is_active = False
+    db.commit()
+    
     audit_log = AuditTrail(
         user_id=current_user.id,
         action="USER_REVOCATION",
         resource="SECURITY_MANAGEMENT",
-        detail=f"Revocación permanente de accesos para el identificador único: '{username_target}'."
-    )
+        detail=f"Inhabilitación de accesos (Soft Delete) para el usuario: '{target_user.username}' con rol {target_user.role}."    )
     audit_repo.create_log(audit_log)
     
     return {"mensaje": f"Usuario con ID {user_id} eliminado exitosamente"}
