@@ -3,7 +3,6 @@ import { User } from '../types/user';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// Función auxiliar para recuperar el token JWT desde la cookie de sesión
 const getAuthToken = (): string => {
   if (typeof window === "undefined") return "";
   const value = `; ${document.cookie}`;
@@ -21,13 +20,12 @@ export interface AuditLog {
 }
 
 export const userService = {
-  // 1. Obtener todos los usuarios (Auditado y Protegido)
   async getUsers(): Promise<User[]> {
     const token = getAuthToken();
     const res = await fetch(`${API_URL}/users`, {
       cache: 'no-store',
       headers: {
-        "Authorization": `Bearer ${token}` // ⬅️ ARREGLADO
+        "Authorization": `Bearer ${token}`
       }
     });
 
@@ -35,14 +33,13 @@ export const userService = {
     return res.json();
   },
 
-  // 2. Crear un usuario nuevo (Genera USER_CREATION en el Backend)
   async createUser(user: Omit<User, 'id'>): Promise<User> {
     const token = getAuthToken();
     const res = await fetch(`${API_URL}/users/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        "Authorization": `Bearer ${token}` // ⬅️ ARREGLADO
+        "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify(user),
     });
@@ -51,27 +48,25 @@ export const userService = {
     return res.json();
   },
 
-  // 3. Eliminar / Revocar accesos de un usuario (Genera USER_REVOCATION en el Backend)
   async deleteUser(id: number): Promise<void> {
     const token = getAuthToken();
     const res = await fetch(`${API_URL}/users/${id}`, {
       method: 'DELETE',
       headers: {
-        "Authorization": `Bearer ${token}` // ⬅️ ARREGLADO
+        "Authorization": `Bearer ${token}`
       }
     });
 
     if (!res.ok) throw new Error('Error al eliminar usuario');
   },
 
-  // 4. Actualizar parámetros de un usuario (Genera USER_MODIFICATION en el Backend)
   async updateUser(id: number, user: Omit<User, 'id'>): Promise<User> {
     const token = getAuthToken();
     const res = await fetch(`${API_URL}/users/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        "Authorization": `Bearer ${token}` // ⬅️ ARREGLADO
+        "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify(user),
     });
@@ -80,7 +75,6 @@ export const userService = {
     return res.json();
   },
 
-  // 5. Cargar el historial inmutable para la pestaña Audit Trail
   async getAuditLogs(): Promise<AuditLog[]> {
     const token = getAuthToken();
     const res = await fetch(`${API_URL}/audit/`, {
@@ -92,5 +86,19 @@ export const userService = {
 
     if (!res.ok) throw new Error("Error cargando el Audit Trail");
     return await res.json();
+  },
+
+  async exportAppliedRecommendationsCSV(): Promise<Blob> {
+    const token = getAuthToken();
+    const res = await fetch(`${API_URL}/audit/export-applied-csv`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}` // Enlace seguro obligatorio
+      }
+    });
+
+    if (!res.ok) throw new Error("No se pudo descargar el reporte de auditoría");
+
+    return await res.blob();
   }
 };

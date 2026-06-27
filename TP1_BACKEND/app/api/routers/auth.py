@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.schemas.user_schema import UserCreate
@@ -13,7 +13,12 @@ from app.services.auth_service import AuthService
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(
+    response: Response,
+    form_data: OAuth2PasswordRequestForm = Depends(), 
+    db: Session = Depends(get_db)
+    ):
+    
     auth_service = AuthService(db)
     result = auth_service.login_user(form_data.username, form_data.password)
     
@@ -23,6 +28,16 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
             detail="Credenciales incorrectas",
             headers={"WWW-Authenticate": "Bearer"},
         )
+        
+    response.set_cookie(
+        key="scada_token",
+        value=result["access_token"],
+        httponly=False,
+        max_age=3600,
+        samesite="lax",
+        secure=False
+    )
+    
     return result
 
 

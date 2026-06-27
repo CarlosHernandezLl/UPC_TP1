@@ -44,11 +44,23 @@ export interface OptimizationLogPayload {
   justificacion: string | null;
 }
 
+export interface MLOpsTrainingLog {
+  version: string;
+  triggered_by: string;
+  r2_score: number;
+  date: string;
+}
+
 export interface ModelMetrics {
   r2_score: number;
   mse: number;
   version: string;
   last_trained: string;
+  training_history?: MLOpsTrainingLog[];
+  gmp_limits?: {
+    min_humedad: number;
+    max_humedad: number;
+  };
 }
 
 // Estrictamente necesaria para que Dashboard.tsx funcione sin errores
@@ -82,9 +94,9 @@ export const aiService = {
     const token = getAuthToken();
     const res = await fetch(`${API_URL}/ai/log-action`, {
       method: "POST",
-      headers: { 
-        "Authorization": `Bearer ${token}`, 
-        "Content-Type": "application/json" 
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(payload), // Mandamos el snapshot completo
     });
@@ -114,5 +126,58 @@ export const aiService = {
 
     if (!res.ok) throw new Error("Error cargando métricas del dashboard");
     return await res.json();
-  }
+  },
+
+  async getModelPerformanceMetadata(): Promise<ModelMetrics> {
+    const token = getAuthToken();
+
+    const [metaRes, gmpRes] = await Promise.all([
+      fetch(`${API_URL}/ai/metrics`, { headers: { "Authorization": `Bearer ${token}` } }),
+      fetch(`${API_URL}/config/gmp/`, { headers: { "Authorization": `Bearer ${token}` } })
+    ]);
+
+    if (!metaRes.ok) {
+      const errorData = await metaRes.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Error ${metaRes.status} en el servicio de métricas analíticas de IA.`);
+    }
+
+    if (!gmpRes.ok) {
+      const errorData = await gmpRes.json().catch(() => ({}));
+      throw new Error(errorData.detail || `Error ${gmpRes.status} al consultar la configuración de umbrales GMP.`);
+    }
+
+    const metaData = await metaRes.json();
+    const gmpData = await gmpRes.json();
+
+    return {
+      ...metaData,
+      gmp_limits: {
+        min_humedad: gmpData.min_hum_limit,
+        max_humedad: gmpData.max_hum_limit
+      }
+    };
+  },
+
+  async updateGmpLimits(limits: { min_humedad: number; max_humedad: number }): Promise<any> {
+    const token = getAuthToken();
+
+    const res = await fetch(`${API_URL}/config/gmp/`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        min_hum_limit: limits.min_humedad,
+        max_hum_limit: limits.max_humedad
+      })
+    });
+
+    if (!res.ok) {
+      if (res.status === 403) throw new Error("No tienes permisos de Administrador para esta acción.");
+      throw new Error("Error al persistir las restricciones regulatorias.");
+    }
+    return await res.json();
+  },
+
 };

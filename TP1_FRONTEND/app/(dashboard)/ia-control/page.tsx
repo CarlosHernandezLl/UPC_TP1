@@ -10,30 +10,49 @@ import {
   ServerIcon,
   CheckBadgeIcon,
   ExclamationCircleIcon,
-  ArrowPathRoundedSquareIcon
+  ArrowPathRoundedSquareIcon,
+  ArrowUpTrayIcon
 } from '@heroicons/react/24/outline';
 
 import { aiService, ModelMetrics } from '@/services/aiService';
+import { useToast } from '@/components/ui/toast';
 
 export default function IAControl() {
+
+  const { showToast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
   const [isTraining, setIsTraining] = useState(false);
+  const [isSavingConfig, setIsSavingConfig] = useState(false);
 
   const [modelStats, setModelStats] = useState<ModelMetrics | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string>("SUPERVISOR");
+
+  const [minHum, setMinHum] = useState(40);
+  const [maxHum, setMaxHum] = useState(70);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const role = localStorage.getItem("scada_userRole") || "SUPERVISOR";
+      setUserRole(role);
+    }
+
     fetchCurrentMetrics();
   }, []);
 
   const fetchCurrentMetrics = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/metrics`);
-      if (res.ok) {
-        const data = await res.json();
-        setModelStats(data);
+      setIsLoading(true);
+      const data = await aiService.getModelPerformanceMetadata();
+      setModelStats(data);
+
+      if (data.gmp_limits) {
+        setMinHum(data.gmp_limits.min_humedad);
+        setMaxHum(data.gmp_limits.max_humedad);
       }
+
     } catch (err) {
       console.error("Error leyendo estadísticas iniciales", err);
+      showToast('error', 'Fallo al sincronizar con el microservicio de control analítico.');
     } finally {
       setIsLoading(false);
     }
@@ -44,13 +63,36 @@ export default function IAControl() {
     try {
       const nuevasMetricas = await aiService.triggerTraining();
       setModelStats(nuevasMetricas);
-      alert("¡Ciclo MLOps completado! El modelo ha sido actualizado de forma inmutable.");
+      showToast('success', '!Ciclo MLOps completado! El modelo ha sido actualizado')
     } catch (error) {
-      alert("Error durante la ejecución del entrenamiento en el servidor.");
+      showToast('error', 'Fallo crítico durante la ejecución del entrenamiento.');
     } finally {
       setIsTraining(false);
     }
   };
+
+
+  const handleSaveGmpConfig = async () => {
+    if (minHum >= maxHum) {
+      showToast('error', 'El límite mínimo de humedad no puede ser mayor o igual al límite máximo.');
+      return;
+    }
+
+    setIsSavingConfig(true);
+    try {
+      await aiService.updateGmpLimits({
+        min_humedad: minHum,
+        max_humedad: maxHum
+      });
+      showToast('success', 'Umbrales regulatorios actualizados. Cambio firmado en la pista de auditoría.');
+    } catch (error) {
+      showToast('error', 'Error al guardar las restricciones operacionales.');
+    } finally {
+      setIsSavingConfig(false);
+    }
+  };
+
+  const isAdmin = userRole === "ADMIN";
 
   if (isLoading) {
     return (
@@ -64,6 +106,8 @@ export default function IAControl() {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
+
+        {/* Encabezado */}
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-2xl font-bold text-slate-800">Centro de Control de IA</h1>
@@ -115,7 +159,7 @@ export default function IAControl() {
                 </div>
               </div>
 
-              {/* Métricas de Calidad Reales inyectadas dinámicamente */}
+              {/* Métricas de Calidad Reales */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 border border-slate-200 rounded-lg bg-white shadow-sm">
                   <span className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Precisión Real (R²)</span>
@@ -138,25 +182,43 @@ export default function IAControl() {
               </div>
             </div>
 
-            {/* Log de Auditoría Operacional */}
+            {/* Log de Auditoría Operacional Dinámico */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
               <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Log de MLOps</h3>
+                <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Historial de Pipelines (MLOps Log)</h3>
                 <span className="text-[10px] text-slate-400">Estado de Sincronización</span>
               </div>
-              <div className="divide-y divide-slate-100">
-                <div className="p-4 flex gap-3">
-                  <CheckBadgeIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs font-bold text-slate-700">Pipeline de Inferencia Operacional</p>
-                    <p className="text-[11px] text-slate-500">Última actualización registrada el: {modelStats ? modelStats.last_trained : 'Alineado'}</p>
+              <div className="divide-y divide-slate-100 max-h-64 overflow-y-auto">
+                {modelStats?.training_history && modelStats.training_history.length > 0 ? (
+                  modelStats.training_history.map((log, index) => (
+                    <div key={index} className="p-4 flex gap-3 hover:bg-slate-50/40 transition-colors">
+                      <CheckBadgeIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                      <div className="flex-1 md:flex md:justify-between md:items-center">
+                        <div>
+                          <p className="text-xs font-bold text-slate-700">Modelo re-entrenado exitosamente (v{log.version})</p>
+                          <p className="text-[11px] text-slate-400">Ejecutado por: <span className="font-semibold text-slate-600">@{log.triggered_by}</span></p>
+                        </div>
+                        <div className="text-left md:text-right mt-1 md:mt-0">
+                          <span className="inline-block text-[9px] font-black bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded mr-2">R²: {log.r2_score}%</span>
+                          <p className="text-[10px] text-slate-400 font-medium">{log.date}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-4 flex gap-3">
+                    <CheckBadgeIcon className="w-5 h-5 text-green-500 shrink-0" />
+                    <div>
+                      <p className="text-xs font-bold text-slate-700">Pipeline de Inferencia Operacional Base</p>
+                      <p className="text-[11px] text-slate-500">Última actualización registrada el: {modelStats ? modelStats.last_trained : 'Sincronizado'}</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Columna Derecha: Parámetros GMP */}
+          {/* Columna Derecha: Parámetros GMP Dinámicos y Configurables */}
           <div className="space-y-6">
             <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
               <h2 className="text-lg font-bold text-emerald-800 mb-6 flex items-center gap-2">
@@ -166,15 +228,46 @@ export default function IAControl() {
               <div className="space-y-6">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Humedad Relativa Mínima (%)</label>
-                  <input type="number" readOnly value="45" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-400 font-bold outline-none cursor-not-allowed" />
+                  <input
+                    type="number"
+                    readOnly={!isAdmin}
+                    value={minHum}
+                    onChange={(e) => setMinHum(parseInt(e.target.value) || 0)}
+                    className={`w-full p-2.5 border rounded-lg text-sm font-bold outline-none transition-all ${isAdmin
+                        ? "bg-white border-slate-200 text-slate-700 focus:ring-2 focus:ring-emerald-500"
+                        : "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
+                      }`}
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Humedad Relativa Máxima (%)</label>
-                  <input type="number" readOnly value="55" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-400 font-bold outline-none cursor-not-allowed" />
+                  <input
+                    type="number"
+                    readOnly={!isAdmin}
+                    value={maxHum}
+                    onChange={(e) => setMaxHum(parseInt(e.target.value) || 0)}
+                    className={`w-full p-2.5 border rounded-lg text-sm font-bold outline-none transition-all ${isAdmin
+                        ? "bg-white border-slate-200 text-slate-700 focus:ring-2 focus:ring-emerald-500"
+                        : "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
+                      }`}
+                  />
                 </div>
+
+                {/* 🎯 CONTROL DE ROL: El botón solo renderiza físicamente si eres ADMIN */}
+                {isAdmin && (
+                  <button
+                    onClick={handleSaveGmpConfig}
+                    disabled={isSavingConfig}
+                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
+                  >
+                    {isSavingConfig ? <ArrowPathIcon className="w-4 h-4 animate-spin" /> : <ArrowUpTrayIcon className="w-4 h-4" />}
+                    {isSavingConfig ? 'Guardando Umbrales...' : 'Guardar Límites'}
+                  </button>
+                )}
+
                 <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-100">
                   <p className="text-[11px] text-emerald-800 leading-relaxed font-medium">
-                    <span className="font-bold">Umbral Regulatorio Fijo:</span> Estos límites corresponden a las restricciones del diseño experimental validadas en el manuscrito para garantizar la estabilidad del empaque farmacéutico.
+                    <span className="font-bold">Estatus Operativo:</span> {isAdmin ? "Usted cuenta con credenciales de Administrador. Modificar estos valores alterará las alertas del simulador de planta inmediatamente." : "Umbral Regulatorio de Lectura. Solo las cuentas de tipo Administrador de Planta pueden alterar las directrices analíticas."}
                   </p>
                 </div>
               </div>

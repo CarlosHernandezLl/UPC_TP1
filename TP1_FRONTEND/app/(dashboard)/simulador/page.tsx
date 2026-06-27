@@ -8,8 +8,15 @@ import {
 } from '@heroicons/react/24/outline';
 
 import { aiService, SimulationResponse } from '@/services/aiService';
+import { useToast } from '@/components/ui/toast';
+import { JustificationModal } from '@/components/ui/justification-modal';
 
 export default function Simulator() {
+  // Modal Justificacion
+  const [isIgnoreModalOpen, setIsIgnoreModalOpen] = useState(false);
+  const [isLoggingAction, setIsLoggingAction] = useState(false);
+
+  const { showToast } = useToast();
   const [tempExt, setTempExt] = useState("");
   const [humExt, setHumExt] = useState("");
   const [tempUma, setTempUma] = useState("");
@@ -43,7 +50,7 @@ export default function Simulator() {
 
   const handleSimulate = async () => {
     if (!tempExt || !humExt || !tempUma || !humUma || !pwrActual || !humSala || !setpoint) {
-      alert("Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital.");
+      showToast('error', 'Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital.');
       return;
     }
 
@@ -64,14 +71,14 @@ export default function Simulator() {
 
       setResult(data);
     } catch (error) {
-      alert("Error de conexión con el motor del Gemelo Digital.");
+      showToast('error', 'Error de conexión con el motor del Gemelo Digital.');
+      // alert("Error de conexión con el motor del Gemelo Digital.");
       console.error(error);
     } finally {
       setIsCalculating(false);
     }
   };
 
-  // 🎯 CORRECCIÓN: Ahora empaqueta los 11 valores de pantalla para la base de datos
   const handleApplyRecommendation = async () => {
     if (!result) return;
     try {
@@ -84,32 +91,26 @@ export default function Simulator() {
         setpoint_humedad: parseFloat(setpoint),
         potencia_actual: parseFloat(pwrActual),
         potencia_recomendada: result.potencia_recomendada,
-        potencia_aplicada: result.potencia_recomendada, // El usuario acata el 100% de la IA
+        potencia_aplicada: result.potencia_recomendada,
         accion: "RECOMENDACION_APLICADA",
         justificacion: null
       });
       setActionLogged(true);
+      showToast('success', `Ajuste del ${result.potencia_recomendada}%. Transacción cifrada en Audit Trail.`);
     } catch (error) {
-      alert("No se pudo registrar la telemetría de la acción.");
+      showToast('error', 'No se pudo registrar la telemetría de la acción.');
     }
   };
 
-  // 🎯 CORRECCIÓN: Exige motivo de rechazo por normativa y guarda el estado manual previo
-  const handleIgnoreRecommendation = async () => {
+  const handleIgnoreRecommendation = () => {
     if (!result) return;
+    setIsIgnoreModalOpen(true);
+  };
 
-    // Control normativo en caliente para auditoría
-    const motivo = prompt(
-      "Para cumplimiento normativo GxP, ingrese la justificación técnica del descarte (ej: Mantenimiento de ductos, riesgo de condensación):"
-    );
-
-    if (motivo === null) return; // Si el usuario presiona Cancelar en el cuadro de diálogo
-    if (motivo.trim() === "") {
-      alert("La justificación es obligatoria para descartar una recomendación del Gemelo Digital.");
-      return;
-    }
-
+  const handleConfirmIgnore = async (motivo: string) => {
+    if (!result) return;
     try {
+      setIsLoggingAction(true);
       await aiService.logOperatorAction({
         temp_ext: parseFloat(tempExt),
         hum_ext: parseFloat(humExt),
@@ -123,9 +124,14 @@ export default function Simulator() {
         accion: "RECOMENDACION_IGNORADA",
         justificacion: motivo
       });
+
       setActionLogged(true);
+      setIsIgnoreModalOpen(false);
+      showToast('success', 'Descarte operativo registrado con éxito junto a su sustento técnico.');
     } catch (error) {
-      alert("No se pudo registrar la telemetría de la acción.");
+      showToast('error', 'Fallo del servidor al intentar registrar la bitácora de descarte.');
+    } finally {
+      setIsLoggingAction(false);
     }
   };
 
@@ -158,16 +164,16 @@ export default function Simulator() {
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Temp. Exterior (°C)</label>
                       <input
-                        type="number" step="0.1" min="-10" max="60" placeholder="Ej: 21.5"
+                        type="number" step="0.5" min="0" max="50" placeholder=""
                         value={tempExt}
-                        onChange={(e) => handleNumberChange(e.target.value, setTempExt, -10, 60)}
+                        onChange={(e) => handleNumberChange(e.target.value, setTempExt, 0, 50)}
                         className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
                       />
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Humedad Ext. (%)</label>
                       <input
-                        type="number" step="0.1" min="0" max="100" placeholder="Ej: 78"
+                        type="number" step="0.5" min="0" max="100" placeholder=""
                         value={humExt}
                         onChange={(e) => handleNumberChange(e.target.value, setHumExt, 0, 100)}
                         className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
@@ -185,16 +191,16 @@ export default function Simulator() {
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Temp. UMA (°C)</label>
                       <input
-                        type="number" step="0.1" min="-10" max="60" placeholder="Ej: 23.2"
+                        type="number" step="0.5" min="0" max="50" placeholder=""
                         value={tempUma}
-                        onChange={(e) => handleNumberChange(e.target.value, setTempUma, -10, 60)}
+                        onChange={(e) => handleNumberChange(e.target.value, setTempUma, 0, 50)}
                         className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
                       />
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Hum. UMA (%)</label>
                       <input
-                        type="number" step="0.1" min="0" max="100" placeholder="Ej: 42"
+                        type="number" step="0.5" min="0" max="100" placeholder=""
                         value={humUma}
                         onChange={(e) => handleNumberChange(e.target.value, setHumUma, 0, 100)}
                         className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
@@ -210,9 +216,9 @@ export default function Simulator() {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Potencia Actual (%)</label>
+                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Potencia Estimada (%)</label>
                       <input
-                        type="number" step="0.1" min="0" max="100" placeholder="Ej: 80"
+                        type="number" step="0.5" min="0" max="100" placeholder=""
                         value={pwrActual}
                         onChange={(e) => handleNumberChange(e.target.value, setPwrActual, 0, 100)}
                         className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
@@ -221,7 +227,7 @@ export default function Simulator() {
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Humedad Sala Actual (%)</label>
                       <input
-                        type="number" step="0.1" min="0" max="100" placeholder="Ej: 52.4"
+                        type="number" step="0.5" min="0" max="100" placeholder=""
                         value={humSala}
                         onChange={(e) => handleNumberChange(e.target.value, setHumSala, 0, 100)}
                         className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
@@ -230,7 +236,7 @@ export default function Simulator() {
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Setpoint Objetivo (%)</label>
                       <input
-                        type="number" step="0.1" min="0" max="100" placeholder="Ej: 50"
+                        type="number" step="0.5" min="0" max="100" placeholder=""
                         value={setpoint}
                         onChange={(e) => handleNumberChange(e.target.value, setSetpoint, 0, 100)}
                         className="w-full p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 border-2 border-blue-200 bg-blue-50/50 font-bold text-blue-800"
@@ -255,7 +261,7 @@ export default function Simulator() {
             {/* Alerta de Riesgo (Dinámica) */}
             {result?.alerta_gmp && (
               <div className="bg-rose-50 border border-rose-200 p-4 rounded-xl flex gap-4 animate-pulse">
-                <ExclamationTriangleIcon className="w-8 h-8 text-rose-500 flex-shrink-0" />
+                <ExclamationTriangleIcon className="w-8 h-8 text-rose-500 shrink-0" />
                 <div>
                   <h4 className="text-rose-800 font-bold text-sm uppercase">Alerta de Riesgo GMP</h4>
                   <p className="text-rose-700 text-xs mt-1">El setpoint solicitado, o las condiciones termodinámicas actuales, apuntan a un posible incumplimiento del límite del 55% de humedad relativa.</p>
@@ -350,6 +356,14 @@ export default function Simulator() {
 
         </div>
       </div>
+
+      <JustificationModal
+        isOpen={isIgnoreModalOpen}
+        onClose={() => setIsIgnoreModalOpen(false)}
+        onConfirm={handleConfirmIgnore}
+        isSubmitting={isLoggingAction}
+      />
+
     </div>
   );
 }

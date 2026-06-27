@@ -20,7 +20,7 @@ class AuthService:
         # 3. Validar estado (US005)
         if not user.is_active:
             raise HTTPException(
-                status_code=status.HTTP_403_FOR_FORBIDDEN,
+                status_code=status.HTTP_403_FORBIDDEN,
                 detail="Usuario inhabilitado por administración"
             )
             

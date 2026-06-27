@@ -84,7 +84,7 @@ export default function Dashboard() {
             <p className="text-sm text-slate-500">Evaluación de Desempeño mediante Modelo Estacionario XGBoost</p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <span className="text-[10px] font-black text-primary bg-blue-50 border border-blue-100 px-3 py-1 rounded-md uppercase text-blue-700">
+            <span className="text-[10px] font-black text-blue-700 bg-blue-50 border border-blue-100 px-3 py-1 rounded-md uppercase">
               Modelo Activo
             </span>
             <span className="text-[10px] font-medium text-slate-400">Datos en Tiempo Real de BD</span>
@@ -159,7 +159,7 @@ export default function Dashboard() {
           {/* Ajuste de Parámetros de Simulación */}
           <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Configuración de Costos</h2>
-            <div className="space-y-6 flex-grow">
+            <div className="space-y-6 grow">
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase mb-2">Costo kWh (USD)</label>
                 <div className="relative">
@@ -175,7 +175,7 @@ export default function Dashboard() {
 
               <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
                 <div className="flex gap-3">
-                  <ExclamationTriangleIcon className="text-blue-500 w-5 h-5 flex-shrink-0" />
+                  <ExclamationTriangleIcon className="text-blue-500 w-5 h-5 shrink-0" />
                   <p className="text-[10px] text-slate-600 font-medium leading-relaxed">
                     Al modificar la tarifa eléctrica, el panel recalcula automáticamente el ahorro del periodo basado en los <span className="font-bold text-blue-700">{metrics.kpi_diferencial.toFixed(1)} kWh</span> detectados como sobreconsumo por el Gemelo Digital.
                   </p>

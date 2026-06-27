@@ -13,8 +13,7 @@ class GmpService:
             user_id=user_id,
             action="GMP_LIMITS_UPDATE",
             resource="CONFIG_MODULE",
-            detail=f"Límites actualizados: Min={config_data['min_hum_limit']}%, Max={config_data['max_hum_limit']}%",
-            ip="127.0.0.1"
+            detail=f"Límites actualizados: Min={config_data['min_hum_limit']}%, Max={config_data['max_hum_limit']}%"
         )
         
         return updated_params

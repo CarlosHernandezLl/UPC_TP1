@@ -1,22 +1,26 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { userService, AuditLog } from "@/services/userService"; 
+import { userService, AuditLog } from "@/services/userService";
 import { User } from "@/types/user";
 import {
   UserPlusIcon,
   PencilSquareIcon,
   NoSymbolIcon,
   XMarkIcon,
-  ArrowPathRoundedSquareIcon
+  ArrowPathRoundedSquareIcon,
+  ArrowDownTrayIcon
 } from "@heroicons/react/24/outline";
+import { useToast } from "@/components/ui/toast";
 
 export default function AuditAndUsers() {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<"audit" | "users">("users");
 
   // Estados para Usuarios
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Estados para Audit Trail
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
@@ -30,16 +34,19 @@ export default function AuditAndUsers() {
     full_name: "",
     role: "SUPERVISOR",
     password: "",
-    is_active: true // Nuevo campo para mantener la consistencia del tipo Omit<User, "id">
+    is_active: true
   });
 
   const loadUsers = async () => {
     try {
       setLoadingUsers(true);
       const data = await userService.getUsers();
-      setUsers(data);
+
+      const activeUsers = data.filter((u: User) => u.is_active);
+      setUsers(activeUsers);
     } catch (error) {
-      console.error("Error cargando usuarios:", error);
+      // console.error("Error cargando usuarios:", error);
+      showToast('error', 'No se pudo sincronizar el directorio de personal.');
     } finally {
       setLoadingUsers(false);
     }
@@ -51,7 +58,8 @@ export default function AuditAndUsers() {
       const data = await userService.getAuditLogs();
       setAuditLogs(data);
     } catch (error) {
-      console.error("Error cargando Audit Trail:", error);
+      // console.error("Error cargando Audit Trail:", error);
+      showToast('error', 'Fallo al recuperar los registros inmutables del Audit Trail.');
     } finally {
       setLoadingAudit(false);
     }
@@ -61,6 +69,29 @@ export default function AuditAndUsers() {
     if (activeTab === "users") loadUsers();
     if (activeTab === "audit") loadAuditLogs();
   }, [activeTab]);
+
+  const handleExportCSV = async () => {
+    try {
+      setIsExporting(true);
+      const blob = await userService.exportAppliedRecommendationsCSV();
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `REPORTE_GXP_RECOMENDACIONES_APLICADAS_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      showToast('success', 'Reporte GxP exportado y descargado correctamente en formato CSV.');
+    } catch (error) {
+      // alert("Error técnico al intentar exportar la pista de auditoría.");
+      showToast('error', 'Error técnico al intentar compilar la pista de auditoría en la nube.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   // Manejo de Modal
   const openCreateModal = () => {
@@ -76,36 +107,34 @@ export default function AuditAndUsers() {
       full_name: user.full_name,
       role: user.role,
       password: "",
-      is_active: user.is_active // Inyectamos el estado actual para evitar problemas de tipado en la actualización
+      is_active: user.is_active
     });
     setIsModalOpen(true);
   };
 
-  // =================================================================
-  // AJUSTE CRÍTICO: Solución del Bug de Tipado para Vercel (Opción A)
-  // =================================================================
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoadingUsers(true);
     try {
       if (editingUser) {
-        // Combinamos la estructura del formulario e inyectamos el estado booleano actual
-        const updatePayload = { 
+        const updatePayload = {
           ...formData,
-          is_active: editingUser.is_active ?? true // Protegemos la consistencia del tipo Omit<User, "id">
+          is_active: editingUser.is_active ?? true
         };
-        
-        // Si no se digitó una nueva clave, removemos la propiedad para no sobreescribir hashes vacíos en FastAPI
+
         if (!updatePayload.password) delete (updatePayload as any).password;
-        
+
         await userService.updateUser(editingUser.id, updatePayload);
+        showToast('success', `Identidad GxP de [${formData.full_name}] actualizada con éxito.`);
       } else {
         await userService.createUser(formData);
+        showToast('success', `Nueva identidad GxP [${formData.username}] dada de alta en el sistema.`);
       }
       setIsModalOpen(false);
       loadUsers();
     } catch (error) {
-      alert("Error en la operación técnica.");
+      showToast('error', 'Transacción rechazada: Conflicto de unicidad en los datos de la cuenta.');
+      // alert("Error en la operación técnica.");
     } finally {
       setLoadingUsers(false);
     }
@@ -116,8 +145,10 @@ export default function AuditAndUsers() {
     try {
       await userService.deleteUser(id);
       setUsers((prev) => prev.filter((u) => u.id !== id));
+      showToast('success', 'Acceso revocado de manera inmutable en la base de datos de planta.');
     } catch (err) {
-      alert("Error al eliminar.");
+      // alert("Error al eliminar.");
+      showToast('error', 'No se pudo procesar la baja de la credencial.');
     }
   };
 
@@ -150,7 +181,25 @@ export default function AuditAndUsers() {
         {/* PESTAÑA: AUDIT TRAIL */}
         {activeTab === "audit" && (
           <div className="space-y-6 overflow-auto max-h-[75vh] pr-2">
-            <h2 className="text-xl font-bold mb-4">Registro Histórico Inmutable (21 CFR Part 11)</h2>
+
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h2 className="text-xl font-bold">Registro Histórico Inmutable (21 CFR Part 11)</h2>
+                <p className="text-xs text-slate-400 font-medium">Historial completo de auditorías del sistema.</p>
+              </div>
+              <button
+                onClick={handleExportCSV}
+                disabled={isExporting || loadingAudit}
+                className="bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 shadow-md flex items-center gap-2 transition-all disabled:bg-slate-300"
+              >
+                {isExporting ? (
+                  <ArrowPathRoundedSquareIcon className="w-4 h-4 animate-spin" />
+                ) : (
+                  <ArrowDownTrayIcon className="w-4 h-4" />
+                )}
+                {isExporting ? "Exportando..." : "Exportar Aplicadas"}
+              </button>
+            </div>
 
             {loadingAudit ? (
               <div className="py-20 flex flex-col items-center justify-center text-slate-400">
@@ -244,7 +293,7 @@ export default function AuditAndUsers() {
                   <input required type="text" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium" value={formData.full_name} onChange={(e) => setFormData({ ...formData, full_name: e.target.value })} />
                 </div>
                 <div>
-                  <label className="block text-[9px] font-black text-slate-500 uppercase mb-1 tracking-wider">ID Usuario (Username)</label>
+                  <label className="block text-[9px] font-black text-slate-500 uppercase mb-1 tracking-wider">Username</label>
                   <input required type="text" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium" value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
                 </div>
                 <div>
@@ -258,7 +307,7 @@ export default function AuditAndUsers() {
                 </div>
                 <div>
                   <label className="block text-[9px] font-black text-slate-500 uppercase mb-1 tracking-wider">
-                    {editingUser ? "Nueva Clave (Opcional)" : "Clave Temporal"}
+                    {editingUser ? "Nueva Clave (Opcional)" : "Contraseña"}
                   </label>
                   <input required={!editingUser} type="password" placeholder={editingUser ? "••••••••" : "Ingrese clave"} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
                 </div>

@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 :root {
-  /* Tema Farmacéutico Principal */
   --background: #ffffff;      /* Blanco puro (Asepsia) */
   --foreground: #1e293b;      /* Slate 800 (Texto suave pero legible) */
   --card: #f1f5f9;            /* Slate 100 (Para diferenciar secciones) */
@@ -11,7 +10,6 @@
   --accent: #06b6d4;          /* Cyan (Para indicadores de sensores/aire) */
 }
 
-/* Solo si el usuario prefiere oscuro, usamos un azul "Noche Médica" muy profesional */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0f172a;

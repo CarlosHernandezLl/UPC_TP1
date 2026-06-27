@@ -38,3 +38,15 @@ class AuditService:
             })
             
         return formatted_logs
+    
+    def record_action(self, user_id: int, action: str, resource: str, detail: str):
+        """Método polimórfico global para auditoría inmutable (21 CFR Part 11)"""
+        new_log = AuditTrail(
+            user_id=user_id,
+            action=action,
+            resource=resource,  # 🚀 Ahora el recurso es dinámico (ej: CONFIG_MODULE)
+            detail=detail
+            # Si tu tabla física en Supabase no guarda la IP, SQLAlchemy simplemente
+            # ignorará este parámetro extra sin lanzar ningún error.
+        )
+        return self.repository.create_log(new_log)

@@ -11,8 +11,10 @@ import {
 } from '@heroicons/react/24/outline';
 
 import { dataService, IngestionLog } from '@/services/dataService'; // Importas tu servicio
+import { useToast } from '@/components/ui/toast';
 
 export default function DataIngestion() {
+  const { showToast } = useToast();
   const acceptedFileTypes = ".csv,.txt,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
   const [isProcessing, setIsProcessing] = useState(false);
   const [history, setHistory] = useState<IngestionLog[]>([]);
@@ -39,7 +41,8 @@ export default function DataIngestion() {
 
   const handleProcessAndInject = async () => {
     if (!filePlc || !fileLog || !fileExt) {
-      alert("Por favor, selecciona los 3 archivos requeridos (PLC, Datalogger y Clima) antes de continuar.");
+      // alert("Por favor, selecciona los 3 archivos requeridos (PLC, Datalogger y Clima) antes de continuar.");
+      showToast('error', 'Por favor, selecciona los 3 archivos requeridos (PLC, Datalogger y Clima) antes de continuar.')
       return;
     }
 
@@ -99,7 +102,7 @@ export default function DataIngestion() {
                       onChange={(e) => setFilePlc(e.target.files?.[0] || null)}
                       className="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
-                    {filePlc && <p className="text-[10px] text-green-600 mt-1 font-medium truncate max-w-[140px]">{filePlc.name}</p>}
+                    {filePlc && <p className="text-[10px] text-green-600 mt-1 font-medium truncate max-w-35">{filePlc.name}</p>}
                   </div>
                 </div>
 
@@ -114,7 +117,7 @@ export default function DataIngestion() {
                       onChange={(e) => setFileLog(e.target.files?.[0] || null)}
                       className="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
-                    {fileLog && <p className="text-[10px] text-green-600 mt-1 font-medium truncate max-w-[140px]">{fileLog.name}</p>}
+                    {fileLog && <p className="text-[10px] text-green-600 mt-1 font-medium truncate max-w-35">{fileLog.name}</p>}
                   </div>
                 </div>
 
@@ -129,7 +132,7 @@ export default function DataIngestion() {
                       onChange={(e) => setFileExt(e.target.files?.[0] || null)}
                       className="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
-                    {fileExt && <p className="text-[10px] text-green-600 mt-1 font-medium truncate max-w-[140px]">{fileExt.name}</p>}
+                    {fileExt && <p className="text-[10px] text-green-600 mt-1 font-medium truncate max-w-35">{fileExt.name}</p>}
                   </div>
                 </div>
               </div>
