@@ -15,7 +15,9 @@ import { useToast } from "@/components/ui/toast";
 
 export default function AuditAndUsers() {
   const { showToast } = useToast();
-  const [activeTab, setActiveTab] = useState<"audit" | "users">("users");
+  const [activeTab, setActiveTab] = useState<"audit" | "users">("audit");
+
+  const [userRole, setUserRole] = useState<string>("");
 
   // Estados para Usuarios
   const [users, setUsers] = useState<User[]>([]);
@@ -37,11 +39,27 @@ export default function AuditAndUsers() {
     is_active: true
   });
 
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const role = localStorage.getItem("scada_userRole") || "SUPERVISOR";
+      const cleanedRole = role.toUpperCase();
+      setUserRole(cleanedRole);
+
+      // Si es Auditor, se queda obligatoriamente en la pestaña de logs inmutables
+      if (cleanedRole === "AUDITOR") {
+        setActiveTab("audit");
+      } else {
+        // Si es ADMIN, SUPERVISOR o GERENTE, por defecto va a usuarios (o según prefieras)
+        setActiveTab("users");
+      }
+    }
+  }, []);
+
   const loadUsers = async () => {
     try {
       setLoadingUsers(true);
       const data = await userService.getUsers();
-
       const activeUsers = data.filter((u: User) => u.is_active);
       setUsers(activeUsers);
     } catch (error) {
@@ -66,9 +84,10 @@ export default function AuditAndUsers() {
   };
 
   useEffect(() => {
-    if (activeTab === "users") loadUsers();
+    if (!userRole) return;
+    if (activeTab === "users" && userRole !== "AUDITOR") loadUsers();
     if (activeTab === "audit") loadAuditLogs();
-  }, [activeTab]);
+  }, [activeTab, userRole]);
 
   const handleExportCSV = async () => {
     try {
@@ -169,12 +188,15 @@ export default function AuditAndUsers() {
             >
               Audit Trail
             </button>
-            <button
-              onClick={() => setActiveTab("users")}
-              className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === "users" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
-            >
-              Usuarios
-            </button>
+
+            {userRole !== "AUDITOR" && (
+              <button
+                onClick={() => setActiveTab("users")}
+                className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === "users" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+              >
+                Usuarios
+              </button>
+            )}
           </div>
         </div>
 

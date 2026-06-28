@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, status
 
 # Esquemas y Dependencias de Seguridad
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, check_role
 from app.core.database import get_db
 from app.schemas.ml_schema import SimRequest
 from app.schemas.optimization_schema import OptimizationLogCreate
@@ -59,7 +59,7 @@ except Exception:
     pass
 
 
-@router.post("/log-action", status_code=status.HTTP_201_CREATED)
+@router.post("/log-action", status_code=status.HTTP_201_CREATED, dependencies=[Depends(check_role(["SUPERVISOR"]))])
 def log_operator_decision(
     payload: OptimizationLogCreate, 
     db: Session = Depends(get_db),
@@ -103,7 +103,7 @@ def log_operator_decision(
         )
 
 
-@router.get("/metrics")
+@router.get("/metrics", dependencies=[Depends(check_role([]))])
 def get_model_performance_metadata(current_user: any = Depends(get_current_user)):
     """Lee la metadata persistente y real del regresor para las tarjetas informativas de la UI"""
     try:
@@ -113,7 +113,7 @@ def get_model_performance_metadata(current_user: any = Depends(get_current_user)
         raise HTTPException(status_code=500, detail="No se pudo recuperar la metadata analítica.")
 
 
-@router.post("/train")
+@router.post("/train", dependencies=[Depends(check_role([]))])
 async def trigger_model_retraining(db: Session = Depends(get_db), current_user: any = Depends(get_current_user)):
     """
     Pipeline MLOps Real: Extrae la serie de tiempo continua, ejecuta el filtro SSD 
@@ -147,7 +147,7 @@ async def trigger_model_retraining(db: Session = Depends(get_db), current_user: 
         raise HTTPException(status_code=500, detail=f"Fallo crítico en el pipeline MLOps incremental: {str(e)}")
 
 
-@router.post("/predict")
+@router.post("/predict", dependencies=[Depends(check_role(["SUPERVISOR"]))])
 async def get_prediction(req: SimRequest, db: Session = Depends(get_db)):
     """Genera la recomendación óptima evaluando los límites paramétricos GxP vigentes"""
     try:
@@ -185,7 +185,7 @@ async def get_prediction(req: SimRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Error de inferencia en el Gemelo Digital: {str(e)}")
 
 
-@router.get("/dashboard-metrics")
+@router.get("/dashboard-metrics", dependencies=[Depends(check_role(["GERENTE"]))])
 def get_dashboard_metrics(db: Session = Depends(get_db), current_user: any = Depends(get_current_user)):
     """Calcula las métricas de eficiencia energética y analíticas para alimentar la pantalla Dashboard"""
     try:

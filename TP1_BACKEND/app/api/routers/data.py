@@ -10,25 +10,23 @@ from app.api.deps import check_role
 
 router = APIRouter(prefix="/data", tags=["Carga de Datos"])
 
-@router.post("/upload")
+@router.post("/upload", dependencies=[Depends(check_role(["SUPERVISOR"]))])
 async def upload_hvac_data(
     file_plc: UploadFile = File(...),
     file_log: UploadFile = File(...),
     file_ext: UploadFile = File(...),
     start_date: str = Form(None),
     end_date: str = Form(None),
-    db: Session = Depends(get_db),
-    current_user = Depends(check_role(["ADMIN"]))
+    db: Session = Depends(get_db)
 ):
     service = DataService(db)
     total = await service.upload_and_sync(file_plc, file_log, file_ext, start_date, end_date)
     return total
 
 
-@router.get("/ingestion/history")
+@router.get("/ingestion/history", dependencies=[Depends(check_role(["SUPERVISOR"]))])
 def get_ingestion_history(
     db: Session = Depends(get_db),
-    current_user = Depends(check_role(["ADMIN", "USER"])) # Permite que usuarios comunes también lo vean
 ):
     """
     Retorna el historial completo de las cargas y sincronizaciones climáticas.

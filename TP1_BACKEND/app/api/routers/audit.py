@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, check_role
 from app.core.database import get_db
 
 from app.schemas.audit_schema import AuditCreate, AuditResponse
@@ -38,7 +38,8 @@ def log_operator_decision(
     )
     return {"status": "success", "message": "Acción registrada en la pista de auditoría GxP."}
 
-@router.get("/export-applied-csv")
+# @router.get("/export-applied-csv")
+@router.get("/export-applied-csv", dependencies=[Depends(check_role(["AUDITOR"]))])
 def export_applied_recommendations(
     db: Session = Depends(get_db),
     current_user: any = Depends(get_current_user)
