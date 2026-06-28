@@ -42,12 +42,13 @@ export default function IAControl() {
   const fetchCurrentMetrics = async () => {
     try {
       setIsLoading(true);
-      const data = await aiService.getModelPerformanceMetadata();
-      setModelStats(data);
+      const metricsData = await aiService.getModelPerformanceMetadata();
+      setModelStats(metricsData);
 
-      if (data.gmp_limits) {
-        setMinHum(data.gmp_limits.min_humedad);
-        setMaxHum(data.gmp_limits.max_humedad);
+      const gmpData = await aiService.getGmpParameters();
+      if (gmpData) {
+        setMinHum(gmpData.min_hum_limit);
+        setMaxHum(gmpData.max_hum_limit);
       }
 
     } catch (err) {
@@ -64,6 +65,7 @@ export default function IAControl() {
       const nuevasMetricas = await aiService.triggerTraining();
       setModelStats(nuevasMetricas);
       showToast('success', '!Ciclo MLOps completado! El modelo ha sido actualizado')
+      // await fetchCurrentMetrics();
     } catch (error) {
       showToast('error', 'Fallo crítico durante la ejecución del entrenamiento.');
     } finally {
@@ -81,8 +83,8 @@ export default function IAControl() {
     setIsSavingConfig(true);
     try {
       await aiService.updateGmpLimits({
-        min_humedad: minHum,
-        max_humedad: maxHum
+        min_hum_limit: minHum,
+        max_hum_limit: maxHum
       });
       showToast('success', 'Umbrales regulatorios actualizados. Cambio firmado en la pista de auditoría.');
     } catch (error) {
@@ -159,66 +161,56 @@ export default function IAControl() {
                 </div>
               </div>
 
-              {/* Métricas de Calidad Reales */}
+              {/* Tarjetas de Métricas Analíticas */}
+              {/* Tarjetas de Métricas Analíticas Blindadas */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 border border-slate-200 rounded-lg bg-white shadow-sm">
                   <span className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Precisión Real (R²)</span>
                   <div className="text-2xl font-black text-slate-800">
-                    {modelStats ? `${modelStats.r2_score}%` : '87.5%'}
+                    {/* 🎯 CORRECCIÓN: Uso de ?. y validación explícita de nulos */}
+                    {modelStats?.r2_score !== undefined && modelStats?.r2_score !== null ? `${modelStats.r2_score}%` : '87.00%'}
                   </div>
                 </div>
+
                 <div className="p-4 border border-slate-200 rounded-lg bg-white shadow-sm">
                   <span className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Error Cuadrático (MSE)</span>
                   <div className="text-2xl font-black text-slate-800">
-                    {modelStats ? modelStats.mse.toFixed(5) : '0.0856'}
+                    {/* 🎯 CORRECCIÓN: Encadenamiento opcional seguro para evitar el crash del .toFixed() */}
+                    {modelStats?.mse !== undefined && modelStats?.mse !== null ? modelStats.mse.toFixed(5) : '0.00'}
                   </div>
                 </div>
+
                 <div className="p-4 border border-slate-200 rounded-lg bg-white shadow-sm">
                   <span className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Versión del Modelo</span>
                   <div className="text-sm font-black text-indigo-600 mt-2">
-                    {modelStats ? `v${modelStats.version}` : 'v1.0.0-stable'}
+                    {/* 🎯 CORRECCIÓN: Encadenamiento opcional para la versión */}
+                    {modelStats?.version ? `v${modelStats.version}` : 'v0.0.0'}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Log de Auditoría Operacional Dinámico */}
+            {/* MLOps Log */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
               <div className="p-4 border-b border-slate-100 flex items-center justify-between">
                 <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Historial de Pipelines (MLOps Log)</h3>
                 <span className="text-[10px] text-slate-400">Estado de Sincronización</span>
               </div>
               <div className="divide-y divide-slate-100 max-h-64 overflow-y-auto">
-                {modelStats?.training_history && modelStats.training_history.length > 0 ? (
-                  modelStats.training_history.map((log, index) => (
-                    <div key={index} className="p-4 flex gap-3 hover:bg-slate-50/40 transition-colors">
-                      <CheckBadgeIcon className="w-5 h-5 text-emerald-500 shrink-0" />
-                      <div className="flex-1 md:flex md:justify-between md:items-center">
-                        <div>
-                          <p className="text-xs font-bold text-slate-700">Modelo re-entrenado exitosamente (v{log.version})</p>
-                          <p className="text-[11px] text-slate-400">Ejecutado por: <span className="font-semibold text-slate-600">@{log.triggered_by}</span></p>
-                        </div>
-                        <div className="text-left md:text-right mt-1 md:mt-0">
-                          <span className="inline-block text-[9px] font-black bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded mr-2">R²: {log.r2_score}%</span>
-                          <p className="text-[10px] text-slate-400 font-medium">{log.date}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-4 flex gap-3">
-                    <CheckBadgeIcon className="w-5 h-5 text-green-500 shrink-0" />
+                <div className="p-4 flex gap-3 hover:bg-slate-50/40 transition-colors">
+                  <CheckBadgeIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                  <div className="flex-1 md:flex md:justify-between md:items-center">
                     <div>
-                      <p className="text-xs font-bold text-slate-700">Pipeline de Inferencia Operacional Base</p>
-                      <p className="text-[11px] text-slate-500">Última actualización registrada el: {modelStats ? modelStats.last_trained : 'Sincronizado'}</p>
+                      <p className="text-xs font-bold text-slate-700">Pipeline de Inferencia Operacional Activo</p>
+                      <p className="text-[11px] text-slate-400">Último entrenamiento registrado en el servidor: <span className="font-semibold text-slate-600">{modelStats ? modelStats.last_trained : 'Sincronizado'}</span></p>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Columna Derecha: Parámetros GMP Dinámicos y Configurables */}
+          {/* Columna Derecha: Parámetros GMP Dinámicos */}
           <div className="space-y-6">
             <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
               <h2 className="text-lg font-bold text-emerald-800 mb-6 flex items-center gap-2">
@@ -230,12 +222,12 @@ export default function IAControl() {
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Humedad Relativa Mínima (%)</label>
                   <input
                     type="number"
-                    readOnly={!isAdmin}
+                    disabled={!isAdmin}
                     value={minHum}
                     onChange={(e) => setMinHum(parseInt(e.target.value) || 0)}
                     className={`w-full p-2.5 border rounded-lg text-sm font-bold outline-none transition-all ${isAdmin
-                        ? "bg-white border-slate-200 text-slate-700 focus:ring-2 focus:ring-emerald-500"
-                        : "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
+                      ? "bg-white border-slate-200 text-slate-700 focus:ring-2 focus:ring-emerald-500"
+                      : "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
                       }`}
                   />
                 </div>
@@ -243,17 +235,17 @@ export default function IAControl() {
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Humedad Relativa Máxima (%)</label>
                   <input
                     type="number"
-                    readOnly={!isAdmin}
+                    disabled={!isAdmin}
                     value={maxHum}
                     onChange={(e) => setMaxHum(parseInt(e.target.value) || 0)}
                     className={`w-full p-2.5 border rounded-lg text-sm font-bold outline-none transition-all ${isAdmin
-                        ? "bg-white border-slate-200 text-slate-700 focus:ring-2 focus:ring-emerald-500"
-                        : "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
+                      ? "bg-white border-slate-200 text-slate-700 focus:ring-2 focus:ring-emerald-500"
+                      : "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
                       }`}
                   />
                 </div>
 
-                {/* 🎯 CONTROL DE ROL: El botón solo renderiza físicamente si eres ADMIN */}
+                {/* Control de visualización por Rol */}
                 {isAdmin && (
                   <button
                     onClick={handleSaveGmpConfig}
@@ -273,13 +265,14 @@ export default function IAControl() {
               </div>
             </div>
 
+            {/* Tarjeta de Validación Inferior */}
             <div className="bg-indigo-600 p-6 rounded-xl shadow-lg shadow-indigo-100 text-white">
               <h3 className="font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-wider">
                 Validación del Modelo
               </h3>
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-indigo-100">R² Hold-out (Test)</span>
+                  <span className="text-indigo-100">R² Hold-out (Test Set)</span>
                   <span className="font-bold">{modelStats ? `${modelStats.r2_score}%` : '87.59%'}</span>
                 </div>
                 <div className="w-full bg-indigo-500 rounded-full h-1.5">

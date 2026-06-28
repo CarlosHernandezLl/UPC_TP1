@@ -68,12 +68,13 @@ export interface DashboardMetrics {
   kpi_ahorro: number;
   kpi_diferencial: number;
   r2_score: number | string;
-  auditData: { time: string; real: number; ideal: number }[];
+  auditData: { sample_id: string; real: number; ideal: number }[];
   modelCorrelation: { hum: number; pwr: number }[];
 }
 
 export const aiService = {
-  // 1. Para Simulator.tsx: Pide recomendación al XGBoost
+
+  // 1. Módulo Simulador: Consulta inferencia vectorizada al XGBoost en RAM
   async predictPower(data: SimulationRequest): Promise<SimulationResponse> {
     const token = getAuthToken();
     const res = await fetch(`${API_URL}/ai/predict`, {
@@ -89,7 +90,7 @@ export const aiService = {
     return await res.json();
   },
 
-  // 2. Para Simulator.tsx: Guarda en auditoría la decisión exacta del operador
+  // 2. Módulo Simulador: Registra bitácora de desvíos u optimizaciones aplicadas
   async logOperatorAction(payload: OptimizationLogPayload): Promise<void> {
     const token = getAuthToken();
     const res = await fetch(`${API_URL}/ai/log-action`, {
@@ -104,7 +105,7 @@ export const aiService = {
     if (!res.ok) throw new Error("Fallo al registrar la telemetría en el servidor");
   },
 
-  // 3. Para IAControl.tsx: Dispara el reentrenamiento
+  // 3. Módulo IA Control: Dispara el pipeline MLOps masivo sobre Supabase
   async triggerTraining(): Promise<ModelMetrics> {
     const token = getAuthToken();
     const res = await fetch(`${API_URL}/ai/train`, {
@@ -116,7 +117,7 @@ export const aiService = {
     return await res.json();
   },
 
-  // 4. Para Dashboard.tsx: Trae los datos reales para las gráficas
+  // 4. Módulo Dashboard: Recupera la analítica de eficiencia acumulada de la planta
   async getDashboardMetrics(): Promise<DashboardMetrics> {
     const token = getAuthToken();
     const res = await fetch(`${API_URL}/ai/dashboard-metrics`, {
@@ -128,37 +129,32 @@ export const aiService = {
     return await res.json();
   },
 
+  // 5. Módulo IA Control: Recupera la metadata del archivo de pesos físicos (.json)
   async getModelPerformanceMetadata(): Promise<ModelMetrics> {
     const token = getAuthToken();
+    const res = await fetch(`${API_URL}/ai/metrics`, {
+      method: "GET",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
 
-    const [metaRes, gmpRes] = await Promise.all([
-      fetch(`${API_URL}/ai/metrics`, { headers: { "Authorization": `Bearer ${token}` } }),
-      fetch(`${API_URL}/config/gmp/`, { headers: { "Authorization": `Bearer ${token}` } })
-    ]);
-
-    if (!metaRes.ok) {
-      const errorData = await metaRes.json().catch(() => ({}));
-      throw new Error(errorData.detail || `Error ${metaRes.status} en el servicio de métricas analíticas de IA.`);
-    }
-
-    if (!gmpRes.ok) {
-      const errorData = await gmpRes.json().catch(() => ({}));
-      throw new Error(errorData.detail || `Error ${gmpRes.status} al consultar la configuración de umbrales GMP.`);
-    }
-
-    const metaData = await metaRes.json();
-    const gmpData = await gmpRes.json();
-
-    return {
-      ...metaData,
-      gmp_limits: {
-        min_humedad: gmpData.min_hum_limit,
-        max_humedad: gmpData.max_hum_limit
-      }
-    };
+    if (!res.ok) throw new Error("Error al recuperar la metadata del regresor.");
+    return await res.json();
   },
 
-  async updateGmpLimits(limits: { min_humedad: number; max_humedad: number }): Promise<any> {
+  // 🎯 NUEVO MÉTODO: Requerido por la refactorización limpia de tu IAControl.tsx
+  async getGmpParameters(): Promise<any> {
+    const token = getAuthToken();
+    const res = await fetch(`${API_URL}/config/gmp/`, {
+      method: "GET",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    if (!res.ok) throw new Error("Error al consultar la configuración de umbrales GMP.");
+    return await res.json();
+  },
+
+  // 6. Módulo IA Control: Actualiza y firma bajo bitácora inmutable las reglas GxP
+  async updateGmpLimits(limits: { min_hum_limit: number; max_hum_limit: number }): Promise<any> {
     const token = getAuthToken();
 
     const res = await fetch(`${API_URL}/config/gmp/`, {
@@ -168,8 +164,8 @@ export const aiService = {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        min_hum_limit: limits.min_humedad,
-        max_hum_limit: limits.max_humedad
+        min_hum_limit: limits.min_hum_limit,
+        max_hum_limit: limits.max_hum_limit
       })
     });
 

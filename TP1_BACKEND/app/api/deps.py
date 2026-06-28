@@ -31,20 +31,29 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 
 def check_role(required_roles: list[str]):
     def role_checker(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-        if current_user.role.value not in required_roles:
-            # US019: Auditoría de acceso denegado (Crucial para Pharma)
+        # Extraemos el valor del rol de forma segura tanto si es un Enum como un String
+        user_role = current_user.role.value if hasattr(current_user.role, 'value') else str(current_user.role)
+        
+        # 🎯 CORRECCIÓN: Damos bypass total al ADMIN y evaluamos los roles permitidos
+        if user_role not in required_roles and user_role != "ADMIN":
+            
+            # US019: Pista de auditoría de acceso denegado (Obligatorio para cumplimiento GxP / FDA)
+            # 🎯 CORRECCIÓN: Usamos los nombres exactos de columna mapeados en tu base de datos
             new_audit = AuditTrail(
                 user_id=current_user.id,
-                action_type="ACCESO_DENEGADO",
-                description=f"Intento de entrar a módulos {required_roles} con rol {current_user.role.value}",
-                ip_address="0.0.0.0" # Puedes capturarla del request si quieres
+                action="ACCESO_DENEGADO",
+                resource="CONTROL_ACCESO",
+                detail=f"Intento de entrar a módulos {required_roles} con rol {user_role}.",
+                ip_address="0.0.0.0"  # Puedes capturarla dinámicamente si inyectas 'request: Request'
             )
+            
             db.add(new_audit)
             db.commit()
             
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="No tienes permisos suficientes para esta acción"
+                detail="No tienes permisos suficientes para realizar esta acción"
             )
+            
         return current_user
     return role_checker

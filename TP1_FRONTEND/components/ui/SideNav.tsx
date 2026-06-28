@@ -42,9 +42,30 @@ export default function SideNav() {
   // Si estás en el Login, no renderizamos la barra de navegación lateral
   if (pathname === '/login') return null;
 
-  // Filtrado dinámico de pestañas para cumplimiento normativo GxP
+  // 🎯 CORRECCIÓN: Filtrado dinámico estricto de pestañas según rol regulatorio
   const visibleLinks = links.filter((link) => {
-    return true;
+    const role = userRole.toUpperCase();
+
+    // El Administrador tiene bypass absoluto sobre todo el ecosistema SCADA
+    if (role === 'ADMIN') return true;
+
+    // El Supervisor solo accede a operar y alimentar datos
+    if (role === 'SUPERVISOR') {
+      return link.href === '/simulador' || link.href === '/ingesta';
+    }
+
+    // El Gerente de Operaciones se concentra de forma exclusiva en KPIs de ahorro
+    if (role === 'GERENTE') {
+      return link.href === '/dashboard';
+    }
+
+    // El Auditor de Calidad valida únicamente la inmutabilidad de la pista GxP
+    if (role === 'AUDITOR') {
+      return link.href === '/auditoria';
+    }
+
+    // Fallback de seguridad si el rol es inválido o está cargando ("a")
+    return false;
   });
 
   return (
@@ -91,11 +112,16 @@ export default function SideNav() {
             <div className="hidden md:block overflow-hidden">
               <p className="text-xs font-black text-slate-700 truncate">{userName}</p>
               <div className="mt-0.5">
+                {/* 🎯 CORRECCIÓN VISUAL: Añadidos colores profesionales de control para GERENTE y AUDITOR */}
                 <span className={`inline-block text-[8px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider border ${userRole === 'ADMIN'
                     ? 'bg-indigo-50 text-indigo-600 border-indigo-100'
                     : userRole === 'SUPERVISOR'
                       ? 'bg-blue-50 text-blue-600 border-blue-100'
-                      : 'bg-slate-100 text-slate-500 border-slate-200'
+                      : userRole === 'GERENTE'
+                        ? 'bg-amber-50 text-amber-600 border-amber-100'
+                        : userRole === 'AUDITOR'
+                          ? 'bg-purple-50 text-purple-600 border-purple-100'
+                          : 'bg-slate-100 text-slate-500 border-slate-200'
                   }`}>
                   {userRole}
                 </span>

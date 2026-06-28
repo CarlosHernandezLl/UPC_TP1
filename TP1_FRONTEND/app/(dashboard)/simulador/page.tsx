@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AdjustmentsHorizontalIcon, CloudIcon, BoltIcon, BeakerIcon,
   ExclamationTriangleIcon, CheckCircleIcon, ArrowPathIcon,
@@ -28,6 +28,22 @@ export default function Simulator() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [result, setResult] = useState<SimulationResponse | null>(null);
   const [actionLogged, setActionLogged] = useState(false);
+  const [minHumLimit, setMinHumLimit] = useState(40);
+  const [maxHumLimit, setMaxHumLimit] = useState(55);
+
+  useEffect(() => {
+    const fetchActiveGmpLimits = async () => {
+      try {
+        const gmpData = await aiService.getGmpParameters();
+        if (gmpData.min_hum_limit) setMinHumLimit(gmpData.min_hum_limit);
+        if (gmpData.max_hum_limit) setMaxHumLimit(gmpData.max_hum_limit);
+
+      } catch (err) {
+        console.error("⚠️ Advertencia: No se pudo conectar con los umbrales dinámicos. Usando fallback de seguridad.", err);
+      }
+    };
+    fetchActiveGmpLimits();
+  }, []);
 
   const handleNumberChange = (
     value: string,
@@ -259,12 +275,31 @@ export default function Simulator() {
             </div>
 
             {/* Alerta de Riesgo (Dinámica) */}
+            {/* {result?.alerta_gmp && (
+              <div className="bg-rose-50 border border-rose-200 p-4 rounded-xl flex gap-4 animate-pulse">
+                <ExclamationTriangleIcon className="w-8 h-8 text-rose-500 shrink-0" />
+                <div>
+                  <h4 className="text-rose-800 font-bold text-sm uppercase">Alerta de Riesgo GxP / GMP</h4>
+                  <p className="text-rose-700 text-xs mt-1">
+                    El setpoint solicitado, o las condiciones termodinámicas actuales,
+                    apuntan a un posible incumplimiento del límite
+                    del <span className="font-bold">{maxHumLimit}%</span> de humedad relativa
+                    establecido por la regulación de la planta.
+                  </p>
+                </div>
+              </div>
+            )} */}
             {result?.alerta_gmp && (
               <div className="bg-rose-50 border border-rose-200 p-4 rounded-xl flex gap-4 animate-pulse">
                 <ExclamationTriangleIcon className="w-8 h-8 text-rose-500 shrink-0" />
                 <div>
                   <h4 className="text-rose-800 font-bold text-sm uppercase">Alerta de Riesgo GMP</h4>
-                  <p className="text-rose-700 text-xs mt-1">El setpoint solicitado, o las condiciones termodinámicas actuales, apuntan a un posible incumplimiento del límite del 55% de humedad relativa.</p>
+                  <p className="text-rose-700 text-xs mt-1">
+                    El setpoint solicitado, o las condiciones de humedad logradas por el modelo,
+                    apuntan a una violación del marco regulatorio estricto
+                    de la sala (<span className="font-black text-rose-900">
+                      Rango permitido: {minHumLimit}% a {maxHumLimit}% HR</span>).
+                  </p>
                 </div>
               </div>
             )}

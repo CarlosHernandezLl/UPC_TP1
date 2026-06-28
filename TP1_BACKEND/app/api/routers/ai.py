@@ -1,40 +1,44 @@
-# from google.cloud import aiplatform
-# from google.cloud import vertexai, GenerativeModel
 import json
 import os
 import math
 from datetime import datetime
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, status
+
+# Esquemas y Dependencias de Seguridad
 from app.api.deps import get_current_user
 from app.core.database import get_db
-from app.ml_engine.simulator_engine import SimulatorEngine
 from app.schemas.ml_schema import SimRequest
 from app.schemas.optimization_schema import OptimizationLogCreate
-from app.schemas.audit_schema import AuditCreate, AuditResponse
-from app.services.audit_service import AuditService
+
+# Repositorios y Servicios del Núcleo SCADA
+from app.ml_engine.simulator_engine import SimulatorEngine
+from app.services.ml_training_service import MLTrainingService
+from app.repositories.gmp_repository import GmpRepository
 from app.repositories.audit_repository import AuditRepository
+from app.services.audit_service import AuditService
 from app.repositories.optimization_repository import OptimizationRepository
+
+# Modelos Físicos de Base de Datos
 from app.models.hvac_model import HvacHistoricalData
 from app.models.optimization_model import OptimizationLog
 
-
-
 router = APIRouter(prefix="/ai", tags=["Inteligencia Artificial"])
+
+# Instanciamos el motor de inferencia como un Singleton en memoria RAM
 sim_engine = SimulatorEngine()
 
-METADATA_PATH = os.path.join(os.path.dirname(__file__), "../../ml_engine/model_metadata.json")
-
-# aiplatform.init(project=os.getenv("GCP_PROJECT_ID"), location="us-central1")
+# Ruta exacta de persistencia de la metadata analítica del modelo
+METADATA_PATH = os.path.join(os.path.dirname(__file__), "../../ml_engine/saved_models/model_metadata.json")
 
 
 def load_model_metadata():
     """Lee el archivo de persistencia del modelo. Si no existe, crea la v1.0.0 inicial."""
     if not os.path.exists(METADATA_PATH):
         initial_meta = {
-            "r2_score": 87.59,
-            "mse": 0.0856,
-            "version": "1.0.0",
+            "r2_score": 0000,
+            "mse": 0.0000,
+            "version": "0.0.0",
             "last_trained": "Sincronizado con manuscrito original"
         }
         os.makedirs(os.path.dirname(METADATA_PATH), exist_ok=True)
@@ -45,11 +49,8 @@ def load_model_metadata():
     with open(METADATA_PATH, "r") as f:
         return json.load(f)
 
-def save_model_metadata(meta: dict):
-    """Guarda la nueva versión calculada en el JSON"""
-    with open(METADATA_PATH, "w") as f:
-        json.dump(meta, f, indent=4)
-        
+
+# Sincronizamos los punteros del motor RAM al levantar la API por primera vez
 try:
     current_meta = load_model_metadata()
     sim_engine.r2_score = current_meta["r2_score"]
@@ -64,7 +65,7 @@ def log_operator_decision(
     db: Session = Depends(get_db),
     current_user: any = Depends(get_current_user)
 ):
-    """Guarda los números para el Dashboard REUTILIZANDO el Audit Trail de texto"""
+    """Guarda las acciones de la pantalla del simulador para alimentar el Dashboard e histórico"""
     try:
         repo_opt = OptimizationRepository(db)
         repo_opt.save_log(user_id=current_user.id, log_in=payload)
@@ -96,131 +97,83 @@ def log_operator_decision(
         
     except Exception as e:
         db.rollback()
-
-        print("================ BACKEND ERROR LAYER ================")
-        import traceback
-        print(traceback.format_exc())
-        print("=====================================================")
-        
         raise HTTPException(
             status_code=500, 
-            detail=f"Error en el guardado unificado: {str(e)}"
+            detail=f"Error en el guardado unificado de optimización: {str(e)}"
         )
-    
 
 
 @router.get("/metrics")
 def get_model_performance_metadata(current_user: any = Depends(get_current_user)):
-    """Lee la metadata persistente y real del regresor para IAControl.tsx"""
+    """Lee la metadata persistente y real del regresor para las tarjetas informativas de la UI"""
     try:
         meta = load_model_metadata()
         return meta
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="No se pudo recuperar la metadata analítica.")
-    
+
+
 @router.post("/train")
 async def trigger_model_retraining(db: Session = Depends(get_db), current_user: any = Depends(get_current_user)):
     """
-    Pipeline MLOps Dinámico: Lee Supabase, calcula métricas matemáticas reales
-    según el comportamiento de la data y evoluciona la versión de forma semántica.
+    Pipeline MLOps Real: Extrae la serie de tiempo continua, ejecuta el filtro SSD 
+    en la RAM, calcula la validación GroupShuffleSplit y actualiza los pesos en caliente.
     """
     try:
-        # 1. Extraemos el universo de datos que el usuario ha ido subiendo mediante archivos
-        dataset_oro = db.query(HvacHistoricalData).all()
-        total_filas = len(dataset_oro)
-        
-        if total_filas < 5:
-            raise HTTPException(
-                status_code=400, 
-                detail=f"Muestras insuficientes ({total_filas}). Sube más archivos de PLC para poder entrenar."
-            )
-        
-        # 2. Cargar la versión anterior para poder mutarla
-        old_meta = load_model_metadata()
-        old_version = old_meta["version"]
-        
-        # 3. LÓGICA MATEMÁTICA REAL: Simulación del ajuste del modelo basada en variabilidad
-        # Calculamos la desviación estándar real de la potencia térmica en el dataset para estimar el nuevo MSE
-        potencias = [float(r.potencia_secador) for r in dataset_oro]
-        media_pwr = sum(potencias) / total_filas
-        varianza = sum((x - media_pwr) ** 2 for x in potencias) / total_filas
-        std_dev = math.sqrt(varianza) if varianza > 0 else 0.1
+        # Instanciamos el servicio de auditoría inmutable
+        repo_audit = AuditRepository(db)
+        service_audit = AuditService(repo_audit)
 
-        # El nuevo R² fluctuará matemáticamente según la consistencia de los datos recolectados
-        # A más datos balanceados, el modelo se estabiliza más cerca de su óptimo teórico (ej. 89%)
-        nuevo_r2 = round(min(85.0 + (math.log(total_filas) * 0.5), 92.4), 2)
-        nuevo_mse = round(max(0.1 / (1 + math.log(total_filas)), 0.001), 5)
+        # Invocamos al motor de entrenamiento científico
+        training_service = MLTrainingService(db, sim_engine)
+        resultado = training_service.ejecutar_reentrenamiento_masivo()
+
+        if resultado["status"] == "error":
+            raise HTTPException(status_code=400, detail=resultado["message"])
+
+        service_audit.record_action(
+            user_id=current_user.id,
+            action="MODEL_TRAINING",
+            resource="ML_MICROSERVICE",
+            detail=f"Pipeline MLOps ejecutado exitosamente por el Administrador. {resultado['message']}"
+        )
         
-        # 4. EVOLUCIÓN SEMÁNTICA DE LA VERSIÓN (Nada de hardcode)
-        # Separamos "1.0.4" -> [1, 0, 4]
-        version_parts = list(map(int, old_version.split(".")))
-        version_parts[2] += 1  # Incrementamos el Patch de la versión menor automáticamente
-        
-        # Si la precisión sube un hito importante, incrementamos la versión Minor
-        if nuevo_r2 > old_meta["r2_score"] + 1.0:
-            version_parts[1] += 1
-            version_parts[2] = 0
-            
-        nueva_version = f"{version_parts[0]}.{version_parts[1]}.{version_parts[2]}"
-        ahora_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        
-        # 5. Construimos el nuevo objeto de estado
-        new_meta = {
-            "r2_score": nuevo_r2,
-            "mse": nuevo_mse,
-            "version": nueva_version,
-            "last_trained": ahora_str,
-            "rows_used": total_filas
-        }
-        
-        # 6. Persistimos en disco (JSON) y actualizamos la memoria del motor en caliente
-        save_model_metadata(new_meta)
-        sim_engine.r2_score = nuevo_r2
-        sim_engine.mse = nuevo_mse
-        
-        return new_meta
+        nueva_metadata = load_model_metadata()
+        return nueva_metadata
 
     except HTTPException as he:
         raise he
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Fallo en pipeline MLOps incremental: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Fallo crítico en el pipeline MLOps incremental: {str(e)}")
 
 
 @router.post("/predict")
-async def get_prediction(req: SimRequest):
-    """Genera la predicción para la pantalla Simulator.tsx"""
+async def get_prediction(req: SimRequest, db: Session = Depends(get_db)):
+    """Genera la recomendación óptima evaluando los límites paramétricos GxP vigentes"""
     try:
+        # 🎯 PARAMETRIZACIÓN DINÁMICA: Extraemos las reglas de control configuradas por el administrador
+        gmp_repo = GmpRepository(db)
+        config_activa = gmp_repo.get_current_parameters()
+        min_hum_limit = 40.0
+        max_hum_limit = 55.0
+        if config_activa:
+            min_hum_limit = config_activa.min_hum_limit
+            max_hum_limit = config_activa.max_hum_limit
+
+        # Inferencia vectorizada sobre la RAM pasando el límite dinámico
         potencia_ideal, alerta_gmp = sim_engine.recomendar_potencia(
             temp_ext=req.temp_ext,
             hum_ext=req.hum_ext,
             temp_uma=req.temp_uma,
             hum_uma=req.hum_uma,
-            setpoint_hr_sala=req.setpoint_humedad
+            setpoint_hr_sala=req.setpoint_humedad,
+            min_hum_limit=min_hum_limit,
+            max_hum_limit=max_hum_limit
         )
         
         ahorro = 0.0
         if req.potencia_actual > potencia_ideal:
             ahorro = round(((req.potencia_actual - potencia_ideal) / req.potencia_actual) * 100, 1)
-
-        explicacion_ia = "Evaluación térmica completada por el motor XGBoost."
-        
-        try:
-            #vertexai.init(project=os.getenv("GCP_PROJECT_ID"), location="us-central1")
-            
-            #model = GenerativeModel("gemini-1.5-flash")
-            
-            prompt = f"""
-            Actúa como un ingeniero experto en sistemas HVAC farmacéuticos bajo normativas GxP.
-            El gemelo digital sugiere ajustar la potencia del {req.potencia_actual}% al {potencia_ideal}% para lograr un setpoint de humedad de {req.setpoint_humedad}%.
-            Condiciones de entrada: Temp Ext: {req.temp_ext}°C, Hum Ext: {req.hum_ext}%, Temp UMA: {req.temp_uma}°C, Hum UMA: {req.hum_uma}%.
-            Redacta una justificación técnica breve (máximo 2 líneas) dirigida al operador de planta, explicando por qué esta reducción de potencia garantiza la deshumidificación correcta y mantiene la seguridad operativa.
-            """
-            
-            #response = model.generate_content(prompt)
-            #explicacion_ia = response.text.strip()
-            
-        except Exception as ai_error:
-            print(f"Advertencia: Falló la conexión con Vertex AI - {str(ai_error)}")
 
         return {
             "potencia_recomendada": potencia_ideal,
@@ -229,14 +182,12 @@ async def get_prediction(req: SimRequest):
             "explicacion_gemini": "Vertex AI: Batería de frío compensando carga latente eficientemente."
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error en Gemelo Digital: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error de inferencia en el Gemelo Digital: {str(e)}")
 
 
 @router.get("/dashboard-metrics")
-def get_dashboard_metrics(
-    db: Session = Depends(get_db),
-    current_user: any = Depends(get_current_user)
-    ):
+def get_dashboard_metrics(db: Session = Depends(get_db), current_user: any = Depends(get_current_user)):
+    """Calcula las métricas de eficiencia energética y analíticas para alimentar la pantalla Dashboard"""
     try:
         records = db.query(OptimizationLog).order_by(OptimizationLog.timestamp.desc()).limit(24).all()
         correlation_records = db.query(OptimizationLog).order_by(OptimizationLog.timestamp.desc()).limit(100).all()
@@ -245,7 +196,7 @@ def get_dashboard_metrics(
             return {
                 "kpi_ahorro": 0.0,
                 "kpi_diferencial": 0.0,
-                "r2_score": getattr(sim_engine, 'r2_score', 94.5),
+                "r2_score": getattr(sim_engine, 'r2_score', 87.59),
                 "auditData": [],
                 "modelCorrelation": []
             }
@@ -256,36 +207,26 @@ def get_dashboard_metrics(
         ahorro_acumulado_kwh = 0.0
         total_energia_real_kwh = 0.0
         
-        # 📐 CONSTANTES DE INGENIERÍA REALISTAS
-        # Asumimos una UMA farmacéutica estándar con un motor de acoplamiento de 15 kW
-        # Y que cada registro representa un promedio de 1 hora de operación estable
         UMA_NOMINAL_KW = 15.0 
-        HORAS_POR_VENTANA = 1.0
+        HORAS_POR_VENTANA = 4.0
 
-        # 3. Procesamiento analítico basado en el historial de Supabase
         for r in records:
-            real_pwr = float(r.potencia_aplicada)     # Lo que digitó el usuario
-            ideal_pwr = float(r.potencia_recomendada)  # Lo que sugirió el XGBoost
+            real_pwr = float(r.potencia_actual)     
+            ideal_pwr = float(r.potencia_recomendada)  
             
-            # Formateamos el JSON con la propiedad 'sample_id' exacta que busca tu React
             audit_data.append({
                 "sample_id": r.timestamp.strftime('%d/%m %H:%M'), 
                 "real": round(real_pwr, 1), 
                 "ideal": round(ideal_pwr, 1)
             })  
             
-            # Ecuación de conversión de Potencia Eléctrica a Consumo Energético (kWh)
-            # Energía (kWh) = (Potencia % / 100) * Potencia Nominal (kW) * Tiempo (h)
             kwh_real = (real_pwr / 100.0) * UMA_NOMINAL_KW * HORAS_POR_VENTANA
             kwh_ideal = (ideal_pwr / 100.0) * UMA_NOMINAL_KW * HORAS_POR_VENTANA
             
             total_energia_real_kwh += kwh_real
-            
-            # Si el humano consumió más que la IA, acumulamos la brecha de sobreconsumo
             if kwh_real > kwh_ideal:
                 ahorro_acumulado_kwh += (kwh_real - kwh_ideal)
 
-        # 4. Construcción dinámica de la Firma Térmica (ScatterChart)
         model_correlation = [
             {
                 "hum": round(c.hum_sala_actual, 1), 
@@ -293,129 +234,17 @@ def get_dashboard_metrics(
             } for c in correlation_records
         ]
 
-        # 5. 🧮 CÁLCULO DE EFICIENCIA REALISTA (Cero Hardcode)
-        # El % de ahorro potencial representa cuánto porcentaje de energía se habría economizado 
-        # en el periodo si el operador hubiera acatado el 100% de las recomendaciones de la IA.
         kpi_ahorro_pct = 0.0
         if total_energia_real_kwh > 0:
             kpi_ahorro_pct = round((ahorro_acumulado_kwh / total_energia_real_kwh) * 100, 1)
 
         return {
-            "kpi_ahorro": kpi_ahorro_pct, # Muestra el % de optimización global del periodo
-            "kpi_diferencial": round(ahorro_acumulado_kwh, 1), # kWh totales desperdiciados por desviarse de la IA
-            "r2_score": getattr(sim_engine, 'r2_score', 94.5),                      
+            "kpi_ahorro": kpi_ahorro_pct, 
+            "kpi_diferencial": round(ahorro_acumulado_kwh, 1), 
+            "r2_score": getattr(sim_engine, 'r2_score', 87.59),                      
             "auditData": audit_data,
             "modelCorrelation": model_correlation
         }
         
     except Exception as e:
-        import traceback
-        print(traceback.format_exc())
-        raise HTTPException(status_code=500, detail=f"Error en analítica de planta: {str(e)}")
-    
-    
-    
-    # try:
-    #     # 1. Traemos los últimos 24 registros de la 'Data de Oro' purificada por el filtro SSD
-    #     # cambiar Optimization Logs
-    #     records = db.query(HvacHistoricalData).order_by(HvacHistoricalData.timestamp.desc()).limit(24).all()
-    #     #history = db.query(OptimizationLog).order_by(OptimizationLog.timestamp.desc()).limit(24).all()
-    #     records.reverse()  # Orden cronológico inverso para la gráfica
-
-    #     if not records:
-    #         return {
-    #             "kpi_ahorro": 0.0,
-    #             "kpi_diferencial": 0.0,
-    #             "r2_score": sim_engine.r2_score,
-    #             "auditData": [],
-    #             "modelCorrelation": []
-    #         }
-
-    #     audit_data = []
-    #     model_correlation = []
-    #     ahorro_acumulado_kwh = 0.0
-        
-    #     # 2. Procesamiento matemático real registro por registro
-    #     for r in records:
-    #         # Sincronizado con los nombres de columnas guardados por tu DataService
-    #         potencia_ideal_ia, _ = sim_engine.recomendar_potencia(
-    #             temp_ext=r.temp_ext,
-    #             hum_ext=r.w_ext,      
-    #             temp_uma=r.temp_uma,  # ⬅️ Asegurar correspondencia con el modelo (o r.f20911t)
-    #             hum_uma=r.w_uma,
-    #             setpoint_hr_sala=r.hum_sala 
-    #         )
-            
-    #         real_pwr = float(r.potencia_secador)
-    #         ideal_pwr = float(potencia_ideal_ia)
-            
-    #         # Puntos para la gráfica AreaChart
-    #         audit_data.append({
-    #             "sample_id": r.timestamp.strftime('%d/%m %H:%M'), 
-    #             "real": round(real_pwr, 1), 
-    #             "ideal": round(ideal_pwr, 1)
-    #         })  
-            
-    #         # Puntos de dispersión para la Firma Térmica (ScatterChart)
-    #         model_correlation.append({
-    #             "hum": round(r.hum_sala, 1), 
-    #             "pwr": round(real_pwr, 1)
-    #         })
-            
-    #         if real_pwr > ideal_pwr:
-    #             ahorro_acumulado_kwh += (real_pwr - ideal_pwr)
-
-    #     return {
-    #         "kpi_ahorro": round(ahorro_acumulado_kwh * 0.8, 2), 
-    #         "kpi_diferencial": round(ahorro_acumulado_kwh, 1),    
-    #         "r2_score": sim_engine.r2_score,                      
-    #         "auditData": audit_data,
-    #         "modelCorrelation": model_correlation
-    #     }
-        
-    # except Exception as e:
-    #     # CORREGIDO: Evitar lanzar excepciones con argumentos sintácticos fuera de lugar
-    #     raise HTTPException(status_code=500, detail=f"Error al procesar las métricas: {str(e)}")
-    
-@router.get("/metrics")
-def get_model_performance_metadata(current_user: any = Depends(get_current_user)):
-    """Lee el archivo xgboost_metadata.json real de Colab para pintarlo en las tarjetas del Front"""
-    try:
-        return {
-            "r2_score": sim_engine.r2_score,
-            "mse": sim_engine.mse,
-            "version": "1.0.0-stable",
-            "last_trained": "Alineado con el manuscrito"
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="No se pudo recuperar la metadata analítica del regresor.")
-    
-@router.post("/train")
-async def trigger_model_retraining(db: Session = Depends(get_db), current_user: any = Depends(get_current_user)):
-    """
-    Simula el proceso de reentrenamiento GxP leyendo la 'Data de Oro' de Supabase
-    y refrescando las métricas del simulador en caliente.
-    """
-    try:
-        # Extraemos todo el universo estacionario disponible para el entrenamiento científico
-        dataset_oro = db.query(HvacHistoricalData).all()
-        
-        if len(dataset_oro) < 10:
-            raise HTTPException(status_code=400, detail="Volumen de muestras insuficiente en Supabase para ejecutar un reentrenamiento.")
-        
-        # 🔄 AQUÍ EJECUTAS TU LÓGICA DE XGBOOST: 
-        # En una fase avanzada, aquí se llamaría a model.fit() con el nuevo dataset_oro.
-        # Por ahora refrescamos los punteros de sim_engine emulando la actualización del pipeline.
-        
-        # Actualizamos el estado de la instancia en memoria RAM de forma inmediata (Hot-swapping)
-        sim_engine.r2_score = 87.59  # Sincronizado con el Test Set de tu Notebook de Colab
-        sim_engine.mse = 0.0856
-        
-        return {
-            "r2_score": sim_engine.r2_score,
-            "mse": sim_engine.mse,
-            "version": "1.0.1-incremental",
-            "last_trained": "Hoy"
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Fallo en el pipeline de reentrenamiento MLOps: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error en analítica de indicadores de planta: {str(e)}")

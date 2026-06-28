@@ -57,7 +57,9 @@ export default function DataIngestion() {
         endDate || undefined
       );
 
-      alert(result.message || "¡Dataset procesado y sincronizado con éxito!");
+      showToast('success', '¡Dataset procesado y sincronizado con éxito!')
+
+      // alert(result.message || "¡Dataset procesado y sincronizado con éxito!");
 
       setFilePlc(null);
       setFileLog(null);
