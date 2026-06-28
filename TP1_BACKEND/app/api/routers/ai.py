@@ -1,9 +1,16 @@
 import json
 import os
 import math
+import logging
+from app.core.config import settings
 from datetime import datetime
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, status
+
+import vertexai
+from vertexai.generative_models import GenerativeModel, GenerationConfig
+import google.generativeai as genai
+
 
 # Esquemas y Dependencias de Seguridad
 from app.api.deps import get_current_user, check_role
@@ -23,14 +30,42 @@ from app.repositories.optimization_repository import OptimizationRepository
 from app.models.hvac_model import HvacHistoricalData
 from app.models.optimization_model import OptimizationLog
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/ai", tags=["Inteligencia Artificial"])
 
 # Instanciamos el motor de inferencia como un Singleton en memoria RAM
 sim_engine = SimulatorEngine()
+ai_model = None
+GEMINI_KEY = settings.GEMINI_API_KEY
 
 # Ruta exacta de persistencia de la metadata analítica del modelo
 METADATA_PATH = os.path.join(os.path.dirname(__file__), "../../ml_engine/saved_models/model_metadata.json")
 
+# =========================================================================
+# ⚙️ INICIALIZACIÓN DIRECTA DE GEMINI (GOOGLE AI STUDIO)
+# =========================================================================
+GEMINI_KEY = os.getenv("GEMINI_API_KEY")
+
+try:
+    if GEMINI_KEY:
+        genai.configure(api_key=GEMINI_KEY)
+        ai_model = genai.GenerativeModel(
+            model_name="gemini-1.5-flash",
+            system_instruction=(
+                "Eres un ingeniero experto en psicrometría y automatización de sistemas HVAC en plantas farmacéuticas GxP. "
+                "El sistema utiliza un modelo XGBoost entrenado mediante respuesta al escalón en estado estacionario. "
+                "Las variables exteriores tienen un peso despreciable debido al pre-acondicionamiento térmico de la UMA principal. "
+                "Tu tarea es justificar técnicamente la modulación del secador basándote en la de la carga latente local y el setpoint. "
+                "Da una explicación concisa de máximo 2 líneas en español, usando términos como: régimen permanente, ganancia estática o estabilidad del lote."
+            )
+        )
+        logger.info("✨ [Google AI] Conexión directa con Gemini configurada con éxito.")
+    else:
+        logger.warning("⚠️ Alerta: El campo gemini_api_key en settings está vacío.")
+except Exception as e:
+    logger.error(f"⚠️ Alerta: No se pudo conectar con Vertex AI. Se usará el motor de contingencia textual. Motivo: {e}")
+    
+    
 
 def load_model_metadata():
     """Lee el archivo de persistencia del modelo. Si no existe, crea la v1.0.0 inicial."""
@@ -149,18 +184,28 @@ async def trigger_model_retraining(db: Session = Depends(get_db), current_user: 
 
 @router.post("/predict", dependencies=[Depends(check_role(["SUPERVISOR"]))])
 async def get_prediction(req: SimRequest, db: Session = Depends(get_db)):
-    """Genera la recomendación óptima evaluando los límites paramétricos GxP vigentes"""
+    """
+    Genera la recomendación óptima bajo un esquema de tolerancia a fallos (Failsafe).
+    Garantiza una respuesta HTTP 200 OK aunque caigan las APIs externas o la DB.
+    """
+    potencia_ideal = req.potencia_actual
+    ahorro = 0.0
+    alerta_gmp = False
+    explicacion_dinamica = "Ajuste basado en equilibrio psicrométrico estándar (Modo de Contingencia Local)."
+
+    min_hum_limit = 40.0
+    max_hum_limit = 55.0
     try:
-        # 🎯 PARAMETRIZACIÓN DINÁMICA: Extraemos las reglas de control configuradas por el administrador
         gmp_repo = GmpRepository(db)
         config_activa = gmp_repo.get_current_parameters()
-        min_hum_limit = 40.0
-        max_hum_limit = 55.0
         if config_activa:
-            min_hum_limit = config_activa.min_hum_limit
-            max_hum_limit = config_activa.max_hum_limit
+            # Usamos getattr por seguridad si la tabla sufriera cambios estructurales
+            min_hum_limit = getattr(config_activa, "min_hum_limit", 40.0)
+            max_hum_limit = getattr(config_activa, "max_hum_limit", 55.0)
+    except Exception as db_err:
+        logger.error(f"⚠️ Alerta GxP: Fallo al conectar con Supabase. Usando umbrales de seguridad por defecto: {db_err}")
 
-        # Inferencia vectorizada sobre la RAM pasando el límite dinámico
+    try:
         potencia_ideal, alerta_gmp = sim_engine.recomendar_potencia(
             temp_ext=req.temp_ext,
             hum_ext=req.hum_ext,
@@ -170,19 +215,45 @@ async def get_prediction(req: SimRequest, db: Session = Depends(get_db)):
             min_hum_limit=min_hum_limit,
             max_hum_limit=max_hum_limit
         )
-        
-        ahorro = 0.0
         if req.potencia_actual > potencia_ideal:
             ahorro = round(((req.potencia_actual - potencia_ideal) / req.potencia_actual) * 100, 1)
+    except Exception as ml_err:
+        logger.error(f"⚠️ Fallo crítico en el motor matemático XGBoost: {ml_err}")
+        # Al fallar la matemática, se congela el estado actual: potencia recomendada = potencia actual
 
-        return {
-            "potencia_recomendada": potencia_ideal,
-            "ahorro_estimado_pct": ahorro,
-            "alerta_gmp": alerta_gmp,
-            "explicacion_gemini": "Vertex AI: Batería de frío compensando carga latente eficientemente."
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error de inferencia en el Gemelo Digital: {str(e)}")
+    if ai_model:
+        try:
+            hum_referencia = getattr(req, "hum_uma", 50.0)
+            
+            prompt_ingenieria = (
+                f"Contexto Operacional Estacionario:\n"
+                f"- Humedad de Control: {hum_referencia}% HR.\n"
+                f"- Setpoint de Seguridad: {req.setpoint_humedad}% HR.\n"
+                f"- Ajuste Predictivo: Cambiar potencia del {req.potencia_actual}% al {potencia_ideal}%.\n"
+                f"- Alerta Higrométrica GxP: {'CRÍTICA' if alerta_gmp else 'NORMAL'}.\n\n"
+                f"Explica resumidamente al operador cómo este ajuste estabiliza el lazo cerrado respecto al setpoint objetivo."
+            )
+
+            response = ai_model.generate_content(
+                prompt_ingenieria,
+                generation_config={"max_output_tokens": 120, "temperature": 0.15}
+            )
+            if response.text:
+                explicacion_dinamica = response.text.strip().replace('"', '')
+                
+        except Exception as ai_err:
+            logger.error(f"⚠️ API de Gemini no disponible o Timeout de red: {ai_err}")
+            if alerta_gmp:
+                explicacion_dinamica = "Ajuste preventivo forzado para contener de manera inmediata una potencial excursión fuera de los umbrales regulatorios."
+            elif ahorro > 0:
+                explicacion_dinamica = "Optimización del trabajo mecánico del deshumidificador conservando la estabilidad de la carga latente."
+
+    return {
+        "potencia_recomendada": potencia_ideal,
+        "ahorro_estimado_pct": ahorro,
+        "alerta_gmp": alerta_gmp,
+        "explicacion_gemini": explicacion_dinamica
+    }
 
 
 @router.get("/dashboard-metrics", dependencies=[Depends(check_role(["GERENTE"]))])
