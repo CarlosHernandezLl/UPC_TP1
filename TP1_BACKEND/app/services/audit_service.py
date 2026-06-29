@@ -1,6 +1,8 @@
 from app.repositories.audit_repository import AuditRepository
 from app.models.audit_model import AuditTrail
 from typing import List
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 class AuditService:
     def __init__(self, repository: AuditRepository):
@@ -12,8 +14,8 @@ class AuditService:
             user_id=user_id,
             action=action,
             resource="HVAC_SIMULATOR",
-            detail=detail
-            # created_at se genera automáticamente en la BD por defecto
+            detail=detail,
+            created_at=datetime.now(ZoneInfo("America/Lima"))
         )
         # Llamamos a tu método exacto del repositorio
         return self.repository.create_log(new_log)
@@ -29,11 +31,16 @@ class AuditService:
             # Si no hay relación, la propiedad se accede mediante la unión automática de SQLAlchemy.
             user_name = log.user.full_name if hasattr(log, 'user') and log.user else "Usuario Desconocido"
             
+            if log.created_at:
+                timestamp_str = log.created_at.strftime("%d/%m/%Y %H:%M:%S")
+            else:
+                timestamp_str = "N/A"
+            
             formatted_logs.append({
                 "id": log.id,
                 "action": log.action,
                 "user": user_name,
-                "timestamp": log.created_at.strftime("%Y-%m-%d %H:%M:%S") if log.created_at else "N/A",
+                "timestamp": timestamp_str,
                 "details": log.detail
             })
             
@@ -45,8 +52,7 @@ class AuditService:
             user_id=user_id,
             action=action,
             resource=resource,  # 🚀 Ahora el recurso es dinámico (ej: CONFIG_MODULE)
-            detail=detail
-            # Si tu tabla física en Supabase no guarda la IP, SQLAlchemy simplemente
-            # ignorará este parámetro extra sin lanzar ningún error.
+            detail=detail,
+            created_at=datetime.now(ZoneInfo("America/Lima"))
         )
         return self.repository.create_log(new_log)

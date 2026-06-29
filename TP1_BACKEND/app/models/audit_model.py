@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 class AuditTrail(Base):
     __tablename__ = "audit_trail"
@@ -12,6 +14,10 @@ class AuditTrail(Base):
     resource = Column(String(50)) # Ej: "HVAC_PARAMETERS"
     detail = Column(Text)        # JSON o texto con los valores ingresados
     ip_address = Column(String(45))
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True), 
+        default=lambda: datetime.now(ZoneInfo("America/Lima")), 
+        server_default=func.now()
+    )
 
     user = relationship("User", back_populates="audit_actions")

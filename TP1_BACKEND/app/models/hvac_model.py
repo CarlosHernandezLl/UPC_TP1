@@ -1,5 +1,7 @@
 import datetime
 from sqlalchemy import Column, Integer, String, Boolean, BigInteger, Float, DateTime
+from datetime import datetime
+from sqlalchemy.sql import func
 from app.core.database import Base
 from sqlalchemy.orm import relationship
 
@@ -32,7 +34,7 @@ class DataIngestionLog(Base):
     __tablename__ = "data_ingestion_logs"
 
     id = Column(Integer, primary_key=True, index=True)
-    fecha_carga = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+    fecha_carga = Column(DateTime(timezone=True), server_default=func.now())
     rango_datos = Column(String(50), nullable=False)  # Guarda ej: "23/04 - 25/04"
     registros = Column(Integer, nullable=False)       # Filas totales procesadas en el merge_asof
     estado = Column(String(30), nullable=False)       # "SINCRONIZADO" o "ERROR"

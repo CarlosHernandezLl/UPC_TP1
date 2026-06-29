@@ -7,6 +7,8 @@ class OptimizationLogCreate(BaseModel):
     temp_ext: float
     hum_ext: float
     
+    time: Optional[datetime] = None
+    
     # 2. Entrada de Aire (UMA)
     temp_uma: float
     hum_uma: float

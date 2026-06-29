@@ -9,6 +9,7 @@ class OptimizationRepository:
     def save_log(self, user_id: int, log_in: OptimizationLogCreate) -> OptimizationLog:
         db_log = OptimizationLog(
             user_id=user_id,
+            timestamp = log_in.time,
             temp_ext=log_in.temp_ext,
             hum_ext=log_in.hum_ext,
             temp_uma=log_in.temp_uma,

@@ -4,6 +4,7 @@ import math
 import logging
 from app.core.config import settings
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -31,6 +32,17 @@ from app.models.hvac_model import HvacHistoricalData
 from app.models.optimization_model import OptimizationLog
 
 logger = logging.getLogger(__name__)
+
+def obtener_fecha_peru_str() -> str:
+    zona_peru = ZoneInfo("America/Lima")
+    ahora_peru = datetime.now(zona_peru)
+    # Formato limpio industrial de 24 horas: "29/06/2026 10:25:06"
+    return ahora_peru.strftime("%d/%m/%Y %H:%M:%S")
+
+def obtener_fecha_peru_obj() -> datetime:
+    zona_peru = ZoneInfo("America/Lima")
+    return datetime.now(zona_peru)
+
 router = APIRouter(prefix="/ai", tags=["Inteligencia Artificial"])
 
 # Instanciamos el motor de inferencia como un Singleton en memoria RAM
@@ -41,16 +53,12 @@ GEMINI_KEY = settings.GEMINI_API_KEY
 # Ruta exacta de persistencia de la metadata analítica del modelo
 METADATA_PATH = os.path.join(os.path.dirname(__file__), "../../ml_engine/saved_models/model_metadata.json")
 
-# =========================================================================
-# ⚙️ INICIALIZACIÓN DIRECTA DE GEMINI (GOOGLE AI STUDIO)
-# =========================================================================
-GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 
 try:
     if GEMINI_KEY:
         genai.configure(api_key=GEMINI_KEY)
         ai_model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
+            model_name="gemini-2.5-flash-lite",
             system_instruction=(
                 "Eres un ingeniero experto en psicrometría y automatización de sistemas HVAC en plantas farmacéuticas GxP. "
                 "El sistema utiliza un modelo XGBoost entrenado mediante respuesta al escalón en estado estacionario. "
@@ -102,7 +110,16 @@ def log_operator_decision(
 ):
     """Guarda las acciones de la pantalla del simulador para alimentar el Dashboard e histórico"""
     try:
+        
+        fecha_peru_obj = obtener_fecha_peru_obj()
+        fecha_peru_str = obtener_fecha_peru_str()
+        
         repo_opt = OptimizationRepository(db)
+        try:
+            payload.time = fecha_peru_obj  
+        except Exception as e:
+            logger.warning(f"No se pudo mutar el payload directamente: {e}")
+            
         repo_opt.save_log(user_id=current_user.id, log_in=payload)
         
         repo_audit = AuditRepository(db)

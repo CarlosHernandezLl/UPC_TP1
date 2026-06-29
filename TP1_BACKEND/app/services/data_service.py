@@ -1,4 +1,5 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from sqlalchemy.orm import Session
 import pandas as pd
 import numpy as np
@@ -168,7 +169,8 @@ class DataService:
         log_ingesta = DataIngestionLog(
             rango_datos=rango_str,
             registros=len(records),
-            estado="SINCRONIZADO"
+            estado="SINCRONIZADO",
+            fecha_carga=datetime.now(ZoneInfo("America/Lima")) # 🚀 Evita el NotNullViolation de emergencia
         )
         
         self.db.add(log_ingesta)
