@@ -1,12 +1,20 @@
 from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey
 from datetime import datetime
+from zoneinfo import ZoneInfo
+from sqlalchemy.sql import func
+
+
 from app.core.database import Base
 
 class OptimizationLog(Base):
     __tablename__ = "optimization_logs"
 
     id = Column(Integer, primary_key=True, index=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(
+        DateTime(timezone=True), 
+        default=lambda: datetime.now(ZoneInfo("America/Lima")), 
+        server_default=func.now()
+    )
     user_id = Column(Integer, ForeignKey("users.id")) # Trazabilidad de quién operó
     
     # Variables del entorno del Simulador
