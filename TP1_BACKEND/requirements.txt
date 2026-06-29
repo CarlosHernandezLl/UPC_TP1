@@ -28,3 +28,4 @@ xgboost
 google-cloud-aiplatform[all]==1.71.1
 vertexai==1.71.1
 google-generativeai
+tzdata
