@@ -32,7 +32,8 @@ class AuditService:
             user_name = log.user.full_name if hasattr(log, 'user') and log.user else "Usuario Desconocido"
             
             if log.created_at:
-                timestamp_str = log.created_at.strftime("%d/%m/%Y %H:%M:%S")
+                hora_lima = log.created_at.astimezone(ZoneInfo("America/Lima"))
+                timestamp_str = hora_lima.strftime("%d/%m/%Y %H:%M:%S")
             else:
                 timestamp_str = "N/A"
             
