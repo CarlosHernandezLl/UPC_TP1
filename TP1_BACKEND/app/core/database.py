@@ -9,7 +9,8 @@ engine = create_engine(
     settings.DATABASE_URL,
     pool_pre_ping=True,  # Verifica si la conexión sigue viva antes de usarla
     pool_size=10,        # Número de conexiones constantes
-    max_overflow=20      # Conexiones extra si hay mucha carga
+    max_overflow=20,     # Conexiones extra si hay mucha carga
+    connect_args={"options": "-c timezone=America/Lima"}
 )
 
 # 2. Crear la sesión
