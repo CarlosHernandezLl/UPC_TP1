@@ -4,104 +4,86 @@ from typing import List
 from app.core.database import get_db
 from app.schemas.user_schema import UserCreate, UserResponse, UserUpdate
 from app.services.user_service import UserService
+from app.api.deps import get_current_user, check_role
 from app.repositories.user_repository import UserRepository
-from app.repositories.audit_repository import AuditRepository
-from app.services.audit_service import AuditService
-from app.models.audit_model import AuditTrail
-from app.api.deps import get_current_user
 
 router = APIRouter(prefix="/users", tags=["users"])
 
-@router.get("/", response_model=List[UserResponse])
-def read_users(db: Session = Depends(get_db), current_user: any = Depends(get_current_user)):
-    repo = UserRepository(db)
-    service = UserService(repo)
+
+def get_user_repository(db: Session = Depends(get_db)) -> UserRepository:
+    return UserRepository(db)
+
+
+def get_user_service(
+    user_repo: UserRepository = Depends(get_user_repository),
+) -> UserService:
+    return UserService(user_repo)
+
+
+@router.get(
+    "/",
+    response_model=List[UserResponse],
+    dependencies=[Depends(check_role(["ADMIN"]))],
+)
+def read_users(
+    service: UserService = Depends(get_user_service),
+    current_user: any = Depends(get_current_user),
+):
     return service.get_all_users()
 
-@router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def create_user(
-    user: UserCreate, 
-    db: Session = Depends(get_db),
-    current_user: any = Depends(get_current_user)  # ⬅️ Quién está ejecutando la acción
-):
-    repo = UserRepository(db)
-    service = UserService(repo)
-    
-    audit_repo = AuditRepository(db)  # ⬅️ Instanciamos el repositorio de auditoría
-    audit_service = AuditService(audit_repo)
-    
-    db_user = service.create_user(user)
-    if not db_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
-            detail="El nombre de usuario ya está registrado"
-        )
-    
-    audit_service.record_action(
-        user_id=current_user.id,
-        action="USER_CREATION",
-        resource="SECURITY_MANAGEMENT",
-        detail=f"Creación del usuario '{db_user.username}' con rol {db_user.role.value}. Nombre completo: {db_user.full_name}."
-    )
-    
-    return db_user
 
-@router.put("/{user_id}", response_model=UserResponse)
-def update_user(
-    user_id: int, 
-    user_update: UserUpdate, 
-    db: Session = Depends(get_db),
-    current_user: any = Depends(get_current_user)
+@router.post(
+    "/",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(check_role(["ADMIN"]))],
+)
+def create_user(
+    user: UserCreate,
+    service: UserService = Depends(get_user_service),
+    current_user: any = Depends(get_current_user),
 ):
-    repo = UserRepository(db)
-    service = UserService(repo)
-    
-    audit_repo = AuditRepository(db)
-    audit_service = AuditService(audit_repo)
-    
-    updated_user = service.update_user(user_id, user_update)
+    user = service.create_user(user_data=user)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El nombre de usuario ya está registrado.",
+        )
+    return user
+
+
+@router.put(
+    "/{user_id}",
+    response_model=UserResponse,
+    dependencies=[Depends(check_role(["ADMIN"]))],
+)
+def update_user(
+    user_id: int,
+    user_update: UserUpdate,
+    service: UserService = Depends(get_user_service),
+    current_user: any = Depends(get_current_user),
+):
+    updated_user = service.update_user(user_id=user_id, user_data=user_update)
     if not updated_user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, 
-            detail="Usuario no encontrado"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado."
         )
-        
-    clean_changes = user_update.model_dump(mode='json', exclude_unset=True)
-    
-    audit_service.record_action(
-        user_id=current_user.id,
-        action="USER_MODIFICATION",
-        resource="SECURITY_MANAGEMENT",
-        detail=f"Actualización del usuario '{updated_user.username}' con rol {updated_user.role.value}. Nombre completo: {updated_user.full_name}."
-    )
-        
     return updated_user
 
-@router.delete("/{user_id}")
+
+@router.delete("/{user_id}", dependencies=[Depends(check_role(["ADMIN"]))])
 def delete_user(
-    user_id: int, 
-    db: Session = Depends(get_db),
-    current_user: any = Depends(get_current_user)
+    user_id: int,
+    service: UserService = Depends(get_user_service),
+    current_user: any = Depends(get_current_user),
 ):
-    repo = UserRepository(db)
-    audit_repo = AuditRepository(db)
-    service = UserService(repo)
-    
-    target_user = repo.get_by_id(user_id)
-    if not target_user:
+    removed_user = service.remove_user(user_id=user_id)
+    if not removed_user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, 
-            detail="Usuario no encontrado"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado para inhabilitación.",
         )
-    
-    target_user.is_active = False
-    db.commit()
-    
-    audit_log = AuditTrail(
-        user_id=current_user.id,
-        action="USER_REVOCATION",
-        resource="SECURITY_MANAGEMENT",
-        detail=f"Inhabilitación de accesos (Soft Delete) para el usuario: '{target_user.username}' con rol {target_user.role.value}."    )
-    audit_repo.create_log(audit_log)
-    
-    return {"mensaje": f"Usuario con ID {user_id} eliminado exitosamente"}
+    return {
+        "status": "success",
+        "message": f"Usuario con ID {user_id} inhabilitado exitosamente.",
+    }

@@ -14,19 +14,16 @@ import {
   ArrowPathRoundedSquareIcon
 } from '@heroicons/react/24/outline';
 
-// 1. Importamos el servicio que conecta con tu FastAPI
-import { aiService, DashboardMetrics } from '@/services/aiService';
+import { dashboardService, DashboardMetrics } from '@/services/dashboardService';
 
 export default function Dashboard() {
   const [kwhCost, setKwhCost] = useState(0.15);
   const [isClient, setIsClient] = useState(false);
 
-  // 2. Nuevos estados para manejar la data real del Backend
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 3. Efecto para cargar los datos al montar el componente
   useEffect(() => {
     setIsClient(true);
     cargarMetricas();
@@ -36,8 +33,7 @@ export default function Dashboard() {
     setIsLoading(true);
     setError(null);
     try {
-      // Llamada real al endpoint GET /ai/dashboard-metrics
-      const data = await aiService.getDashboardMetrics();
+      const data = await dashboardService.getDashboardMetrics();
       setMetrics(data);
     } catch (err) {
       console.error(err);
@@ -49,7 +45,7 @@ export default function Dashboard() {
 
   if (!isClient) return null;
 
-  // Pantalla de Carga (Mientras el backend procesa o consulta Supabase)
+  // Pantalla de Carga 
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-slate-500 bg-gray-50">
@@ -95,7 +91,6 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <MetricCard
             title="Ahorro Potencial (Periodo)"
-            // Multiplicamos el diferencial dinámico devuelto por la BD por el costo ingresado por el usuario
             value={`$${(metrics.kpi_diferencial * kwhCost).toFixed(2)}`}
             trend="Activo"
             icon={CurrencyDollarIcon}
@@ -142,14 +137,10 @@ export default function Dashboard() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-
-                  {/* ⬅️ CAMBIO CRÍTICO: Usamos sample_id como el identificador discreto del eje X */}
                   <XAxis dataKey="sample_id" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 9 }} angle={-15} textAnchor="end" height={50} />
-
                   <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} unit="%" />
                   <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 16px rgba(0,0,0,0.05)' }} />
                   <Area type="monotone" dataKey="ideal" name="Potencia Ideal (%)" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorIdeal)" />
-                  {/* Usamos type="linear" o dot={true} si prefieres remarcar que son puntos discretos de auditoría */}
                   <Line type="linear" dataKey="real" name="Potencia Real (%)" stroke="#fb7185" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 2 }} />
                 </AreaChart>
               </ResponsiveContainer>
@@ -190,7 +181,6 @@ export default function Dashboard() {
           <h2 className="text-lg font-bold text-slate-800 mb-6">Firma Térmica: Relación Histórica Humedad vs Potencia</h2>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              {/* Inyectamos la data dinámica metrics.modelCorrelation */}
               <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis type="number" dataKey="hum" name="Humedad Sala" unit="%" axisLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} domain={['auto', 'auto']} />
@@ -207,7 +197,7 @@ export default function Dashboard() {
   );
 }
 
-// ... (MetricCard y LegendItem se mantienen exactamente igual que en tu código)
+// Subcomponentes visuales
 function MetricCard({ title, value, trend, subtitle, icon: Icon, color }: any) {
   return (
     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">

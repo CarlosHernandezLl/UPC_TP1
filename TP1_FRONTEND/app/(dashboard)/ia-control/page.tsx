@@ -14,7 +14,9 @@ import {
   ArrowUpTrayIcon
 } from '@heroicons/react/24/outline';
 
-import { aiService, ModelMetrics } from '@/services/aiService';
+// 🚀 CORRECCIÓN 1: Importamos los 2 servicios especializados en lugar del monolito
+import { mlopsService, ModelMetrics } from '@/services/mlopsService';
+import { gmpService } from '@/services/gmpService';
 import { useToast } from '@/components/ui/toast';
 
 export default function IAControl() {
@@ -42,10 +44,12 @@ export default function IAControl() {
   const fetchCurrentMetrics = async () => {
     try {
       setIsLoading(true);
-      const metricsData = await aiService.getModelPerformanceMetadata();
+
+      // 🚀 CORRECCIÓN 2: Separación de llamadas a los servicios respectivos
+      const metricsData = await mlopsService.getActiveModelMetrics();
       setModelStats(metricsData);
 
-      const gmpData = await aiService.getGmpParameters();
+      const gmpData = await gmpService.getGmpParameters();
       if (gmpData) {
         setMinHum(gmpData.min_hum_limit);
         setMaxHum(gmpData.max_hum_limit);
@@ -62,17 +66,18 @@ export default function IAControl() {
   const handleTriggerTraining = async () => {
     setIsTraining(true);
     try {
-      const nuevasMetricas = await aiService.triggerTraining();
-      setModelStats(nuevasMetricas);
-      showToast('success', '!Ciclo MLOps completado! El modelo ha sido actualizado')
-      // await fetchCurrentMetrics();
-    } catch (error) {
-      showToast('error', 'Fallo crítico durante la ejecución del entrenamiento.');
+      // 🚀 CORRECCIÓN 3: Llamamos a mlopsService y refrescamos la UI
+      await mlopsService.triggerRetraining();
+      showToast('success', '¡Ciclo MLOps completado! El modelo ha sido actualizado.');
+
+      // Volvemos a consultar para que las tarjetas se actualicen con el nuevo Champion
+      await fetchCurrentMetrics();
+    } catch (error: any) {
+      showToast('error', error.message || 'Fallo crítico durante la ejecución del entrenamiento.');
     } finally {
       setIsTraining(false);
     }
   };
-
 
   const handleSaveGmpConfig = async () => {
     if (minHum >= maxHum) {
@@ -82,7 +87,8 @@ export default function IAControl() {
 
     setIsSavingConfig(true);
     try {
-      await aiService.updateGmpLimits({
+      // 🚀 CORRECCIÓN 4: Llamamos al servicio exclusivo de normativas
+      await gmpService.updateGmpLimits({
         min_hum_limit: minHum,
         max_hum_limit: maxHum
       });
@@ -161,30 +167,29 @@ export default function IAControl() {
                 </div>
               </div>
 
-              {/* Tarjetas de Métricas Analíticas */}
               {/* Tarjetas de Métricas Analíticas Blindadas */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 border border-slate-200 rounded-lg bg-white shadow-sm">
                   <span className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Precisión Real (R²)</span>
                   <div className="text-2xl font-black text-slate-800">
-                    {/* 🎯 CORRECCIÓN: Uso de ?. y validación explícita de nulos */}
                     {modelStats?.r2_score !== undefined && modelStats?.r2_score !== null ? `${modelStats.r2_score}%` : '87.00%'}
                   </div>
                 </div>
 
                 <div className="p-4 border border-slate-200 rounded-lg bg-white shadow-sm">
-                  <span className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Error Cuadrático (MSE)</span>
+                  {/* 🚀 CORRECCIÓN 5: Actualizamos el título a RMSE porque ahora pasamos la raíz del error */}
+                  <span className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Error Promedio (RMSE)</span>
                   <div className="text-2xl font-black text-slate-800">
-                    {/* 🎯 CORRECCIÓN: Encadenamiento opcional seguro para evitar el crash del .toFixed() */}
-                    {modelStats?.mse !== undefined && modelStats?.mse !== null ? modelStats.mse.toFixed(5) : '0.00'}
+                    {/* 🚀 CORRECCIÓN 6: Usamos rmse según el nuevo esquema del ModelMetrics */}
+                    {modelStats?.rmse !== undefined && modelStats?.rmse !== null ? modelStats.rmse.toFixed(5) : '0.00'}
                   </div>
                 </div>
 
                 <div className="p-4 border border-slate-200 rounded-lg bg-white shadow-sm">
                   <span className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Versión del Modelo</span>
                   <div className="text-sm font-black text-indigo-600 mt-2">
-                    {/* 🎯 CORRECCIÓN: Encadenamiento opcional para la versión */}
-                    {modelStats?.version ? `v${modelStats.version}` : 'v0.0.0'}
+                    {/* 🚀 CORRECCIÓN 7: Usamos version_tag según el registro de la BD */}
+                    {modelStats?.version_tag ? modelStats.version_tag : 'v0.0.0'}
                   </div>
                 </div>
               </div>
@@ -202,7 +207,8 @@ export default function IAControl() {
                   <div className="flex-1 md:flex md:justify-between md:items-center">
                     <div>
                       <p className="text-xs font-bold text-slate-700">Pipeline de Inferencia Operacional Activo</p>
-                      <p className="text-[11px] text-slate-400">Último entrenamiento registrado en el servidor: <span className="font-semibold text-slate-600">{modelStats ? modelStats.last_trained : 'Sincronizado'}</span></p>
+                      {/* 🚀 CORRECCIÓN 8: Leemos trained_at del nuevo ModelMetrics */}
+                      <p className="text-[11px] text-slate-400">Último entrenamiento registrado en el servidor: <span className="font-semibold text-slate-600">{modelStats ? modelStats.trained_at : 'Sincronizado'}</span></p>
                     </div>
                   </div>
                 </div>

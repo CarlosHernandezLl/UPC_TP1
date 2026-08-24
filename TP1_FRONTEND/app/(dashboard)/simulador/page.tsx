@@ -7,7 +7,9 @@ import {
   VariableIcon, HandThumbUpIcon, HandThumbDownIcon
 } from '@heroicons/react/24/outline';
 
-import { aiService, SimulationResponse } from '@/services/aiService';
+// 🚀 CORRECCIÓN 1: Importamos el servicio exclusivo de simulación y su interfaz
+import { simulationService, SimulationPredictResponse } from '@/services/simulationService';
+import { gmpService } from '@/services/gmpService';
 import { useToast } from '@/components/ui/toast';
 import { JustificationModal } from '@/components/ui/justification-modal';
 
@@ -26,7 +28,7 @@ export default function Simulator() {
   const [setpoint, setSetpoint] = useState("");
 
   const [isCalculating, setIsCalculating] = useState(false);
-  const [result, setResult] = useState<SimulationResponse | null>(null);
+  const [result, setResult] = useState<SimulationPredictResponse | null>(null);
   const [actionLogged, setActionLogged] = useState(false);
   const [minHumLimit, setMinHumLimit] = useState(40);
   const [maxHumLimit, setMaxHumLimit] = useState(55);
@@ -34,10 +36,10 @@ export default function Simulator() {
   useEffect(() => {
     const fetchActiveGmpLimits = async () => {
       try {
-        const gmpData = await aiService.getGmpParameters();
+        // 🚀 CORRECCIÓN 2: Usamos simulationService para obtener límites GMP
+        const gmpData = await gmpService.getGmpParameters();
         if (gmpData.min_hum_limit) setMinHumLimit(gmpData.min_hum_limit);
         if (gmpData.max_hum_limit) setMaxHumLimit(gmpData.max_hum_limit);
-
       } catch (err) {
         console.error("⚠️ Advertencia: No se pudo conectar con los umbrales dinámicos. Usando fallback de seguridad.", err);
       }
@@ -75,20 +77,20 @@ export default function Simulator() {
     setActionLogged(false);
 
     try {
-      const data = await aiService.predictPower({
-        temp_ext: parseFloat(tempExt),
-        hum_ext: parseFloat(humExt),
-        temp_uma: parseFloat(tempUma),
-        hum_uma: parseFloat(humUma),
-        potencia_actual: parseFloat(pwrActual),
-        hum_sala_actual: parseFloat(humSala),
-        setpoint_humedad: parseFloat(setpoint)
+      // 🚀 CORRECCIÓN 3: Mapeo exacto al esquema inglés Pydantic (SimulationPredictRequest)
+      const data = await simulationService.predictPower({
+        outdoor_temp: parseFloat(tempExt),
+        outdoor_rh: parseFloat(humExt),
+        ahu_temp: parseFloat(tempUma),
+        ahu_rh: parseFloat(humUma),
+        current_power: parseFloat(pwrActual),
+        current_room_rh: parseFloat(humSala),
+        target_setpoint: parseFloat(setpoint)
       });
 
       setResult(data);
     } catch (error) {
       showToast('error', 'Error de conexión con el motor del Gemelo Digital.');
-      // alert("Error de conexión con el motor del Gemelo Digital.");
       console.error(error);
     } finally {
       setIsCalculating(false);
@@ -98,18 +100,19 @@ export default function Simulator() {
   const handleApplyRecommendation = async () => {
     if (!result) return;
     try {
-      await aiService.logOperatorAction({
-        temp_ext: parseFloat(tempExt),
-        hum_ext: parseFloat(humExt),
-        temp_uma: parseFloat(tempUma),
-        hum_uma: parseFloat(humUma),
-        hum_sala_actual: parseFloat(humSala),
-        setpoint_humedad: parseFloat(setpoint),
-        potencia_actual: parseFloat(pwrActual),
-        potencia_recomendada: result.potencia_recomendada,
-        potencia_aplicada: result.potencia_recomendada,
-        accion: "RECOMENDACION_APLICADA",
-        justificacion: null
+      // 🚀 CORRECCIÓN 4: Payload de auditoría en inglés técnico estandarizado
+      await simulationService.logOperatorAction({
+        outdoor_temp: parseFloat(tempExt),
+        outdoor_rh: parseFloat(humExt),
+        ahu_temp: parseFloat(tempUma),
+        ahu_rh: parseFloat(humUma),
+        current_room_rh: parseFloat(humSala),
+        target_setpoint: parseFloat(setpoint),
+        current_power: parseFloat(pwrActual),
+        recommended_power: result.potencia_recomendada,
+        applied_power: result.potencia_recomendada,
+        action: "RECOMMENDATION_APPLIED",
+        justification: "N/A"
       });
       setActionLogged(true);
       showToast('success', `Ajuste del ${result.potencia_recomendada}%. Transacción cifrada en Audit Trail.`);
@@ -127,18 +130,19 @@ export default function Simulator() {
     if (!result) return;
     try {
       setIsLoggingAction(true);
-      await aiService.logOperatorAction({
-        temp_ext: parseFloat(tempExt),
-        hum_ext: parseFloat(humExt),
-        temp_uma: parseFloat(tempUma),
-        hum_uma: parseFloat(humUma),
-        hum_sala_actual: parseFloat(humSala),
-        setpoint_humedad: parseFloat(setpoint),
-        potencia_actual: parseFloat(pwrActual),
-        potencia_recomendada: result.potencia_recomendada,
-        potencia_aplicada: parseFloat(pwrActual),
-        accion: "RECOMENDACION_IGNORADA",
-        justificacion: motivo
+      // 🚀 CORRECCIÓN 5: Payload de rechazo con etiqueta OVERRIDDEN obligatoria
+      await simulationService.logOperatorAction({
+        outdoor_temp: parseFloat(tempExt),
+        outdoor_rh: parseFloat(humExt),
+        ahu_temp: parseFloat(tempUma),
+        ahu_rh: parseFloat(humUma),
+        current_room_rh: parseFloat(humSala),
+        target_setpoint: parseFloat(setpoint),
+        current_power: parseFloat(pwrActual),
+        recommended_power: result.potencia_recomendada,
+        applied_power: parseFloat(pwrActual),
+        action: "RECOMMENDATION_OVERRIDDEN",
+        justification: motivo
       });
 
       setActionLogged(true);
@@ -156,7 +160,7 @@ export default function Simulator() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col mb-8">
           <h1 className="text-2xl font-bold text-slate-800">Simulador de Optimización Energética</h1>
-          <p className="text-slate-500 text-sm">Ingrese las conditions actuales para obtener la recomendación predictiva.</p>
+          <p className="text-slate-500 text-sm">Ingrese las condiciones actuales para obtener la recomendación predictiva.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -275,20 +279,6 @@ export default function Simulator() {
             </div>
 
             {/* Alerta de Riesgo (Dinámica) */}
-            {/* {result?.alerta_gmp && (
-              <div className="bg-rose-50 border border-rose-200 p-4 rounded-xl flex gap-4 animate-pulse">
-                <ExclamationTriangleIcon className="w-8 h-8 text-rose-500 shrink-0" />
-                <div>
-                  <h4 className="text-rose-800 font-bold text-sm uppercase">Alerta de Riesgo GxP / GMP</h4>
-                  <p className="text-rose-700 text-xs mt-1">
-                    El setpoint solicitado, o las condiciones termodinámicas actuales,
-                    apuntan a un posible incumplimiento del límite
-                    del <span className="font-bold">{maxHumLimit}%</span> de humedad relativa
-                    establecido por la regulación de la planta.
-                  </p>
-                </div>
-              </div>
-            )} */}
             {result?.alerta_gmp && (
               <div className="bg-rose-50 border border-rose-200 p-4 rounded-xl flex gap-4 animate-pulse">
                 <ExclamationTriangleIcon className="w-8 h-8 text-rose-500 shrink-0" />

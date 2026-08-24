@@ -1,30 +1,23 @@
-# app/schemas/user.py
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from typing import Optional
-from app.models.users_model import UserRole
+from app.models.user import UserRole
 
-# Base común (campos compartidos)
 class UserBase(BaseModel):
-    username: str
-    full_name: str
+    username: str = Field(..., min_length=2, max_length=50)
+    full_name: str = Field(..., min_length=3, max_length=100)
     role: UserRole
 
-# DTO para crear (Input) - similar a UserCreationDTO
 class UserCreate(UserBase):
-    password: str
-    
+    password: str = Field(..., min_length=8, description="Contraseña segura de mínimo 8 caracteres")
+
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     role: Optional[UserRole] = None
     password: Optional[str] = None
     is_active: Optional[bool] = None
-    
 
 class UserResponse(UserBase):
     id: int
     is_active: bool
     
     model_config = ConfigDict(from_attributes=True)
-
-
-UserCreate.model_rebuild()

@@ -2,75 +2,51 @@ import httpx
 import logging
 from typing import Dict, Optional
 from app.core.config import settings
-from sqlalchemy.orm import Session
-from app.core.config import settings
-from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
-lat, lon = -12.046374, -77.042793 
-API_KEY = '7366c6055fe1a7ba1b0768982f8ec41a'
-
-async def fetch_and_save_weather(db: Session):
-    
-    url = "https://api.openweathermap.org/data/2.5/weather"
-    
-    
-    params = {
-        "lat": lat, "lon": lon, # Ajustar a tu ubicación
-        "appid": API_KEY,
-        "units": "metric",
-        "exclude": "minutely,hourly,daily,alerts"
-    }
-    
-
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(url, params = params)
-            response.raise_for_status()
-            data = response.json()
-            print("Clima Actual", data)
-            
-            temp = data["main"]["temp"]
-            humidity = data["main"]["humidity"]
-            description = data["weather"][0]["description"]
-            wind_speed = data["wind"]["speed"]
-            city = data["name"]
-        
-            return True
-        except Exception as e:
-            print(f"Error en ingesta de clima: {e}")
-            return False
 
 
-async def get_external_weather() -> Optional[Dict[str, float]]:
-    # Coordenadas de ejemplo (Lima, Perú)    
-    # URL específica para One Call 2.5
-    url = "https://api.openweathermap.org/data/2.5/weather" 
-       
-    params = {
-        "lat": lat,
-        "lon": lon,
-        "appid": API_KEY,
-        "units": "metric",
-    }
+class WeatherService:
+    def __init__(self):
+        self.lat = settings.WEATHER_LAT
+        self.lon = settings.WEATHER_LON
+        self.api_key = settings.OPENWEATHER_API_KEY
+        self.url = "https://api.openweathermap.org/data/2.5/weather"
 
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(url, params=params, timeout=10.0)
-            response.raise_for_status()
-            
-            data = response.json()
-            
-            # Mapeo directo a tus variables del dataset
-            # current = data["current"]
-            weather_data = {
-                "temperatura_exterior": float(data["main"]["temp"]),
-                "humedad_exterior": float(data["main"]["humidity"])
-            }
-            
-            logger.info(f"Éxito INF01 - Clima actual: {weather_data}")
-            return weather_data
-
-        except Exception as e:
-            logger.error(f"Error en One Call API 3.0: {str(e)}")
+    async def get_external_weather(self) -> Optional[Dict[str, float]]:
+        if not self.api_key:
+            logger.warning(
+                "OPENWEATHER_API_KEY no configurada en .env. Se omitirá lectura en vivo."
+            )
             return None
+
+        params = {
+            "lat": self.lat,
+            "lon": self.lon,
+            "appid": self.api_key,
+            "units": "metric",
+        }
+
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.get(self.url, params=params, timeout=8.0)
+                response.raise_for_status()
+                data = response.json()
+
+                weather_data = {
+                    "outdoor_temp": float(data["main"]["temp"]),
+                    "outdoor_rh": float(data["main"]["humidity"]),
+                    "city": data.get("name", "Lima"),
+                }
+
+                logger.info(
+                    f"Éxito API Clima: {weather_data['city']} | Temp: {weather_data['outdoor_temp']}°C | RH: {weather_data['outdoor_rh']}%"
+                )
+                return weather_data
+
+            except httpx.HTTPError as e:
+                logger.error(f"Error HTTP al contactar OpenWeather API: {str(e)}")
+                return None
+            except Exception as e:
+                logger.error(f"Error procesando JSON meteorológico: {str(e)}")
+                return None

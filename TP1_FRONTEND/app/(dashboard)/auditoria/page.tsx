@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { userService, AuditLog } from "@/services/userService";
-import { User } from "@/types/user";
+// 🚀 CORRECCIÓN 1: Importamos los servicios separados
+import { userService, User } from "@/services/userService";
+import { auditService, AuditLog } from "@/services/auditService";
 import {
   UserPlusIcon,
   PencilSquareIcon,
@@ -39,18 +40,15 @@ export default function AuditAndUsers() {
     is_active: true
   });
 
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       const role = localStorage.getItem("scada_userRole") || "SUPERVISOR";
       const cleanedRole = role.toUpperCase();
       setUserRole(cleanedRole);
 
-      // Si es Auditor, se queda obligatoriamente en la pestaña de logs inmutables
       if (cleanedRole === "AUDITOR") {
         setActiveTab("audit");
       } else {
-        // Si es ADMIN, SUPERVISOR o GERENTE, por defecto va a usuarios (o según prefieras)
         setActiveTab("users");
       }
     }
@@ -63,7 +61,6 @@ export default function AuditAndUsers() {
       const activeUsers = data.filter((u: User) => u.is_active);
       setUsers(activeUsers);
     } catch (error) {
-      // console.error("Error cargando usuarios:", error);
       showToast('error', 'No se pudo sincronizar el directorio de personal.');
     } finally {
       setLoadingUsers(false);
@@ -73,10 +70,10 @@ export default function AuditAndUsers() {
   const loadAuditLogs = async () => {
     try {
       setLoadingAudit(true);
-      const data = await userService.getAuditLogs();
+      // 🚀 CORRECCIÓN 2: Usamos el servicio especialista en auditoría
+      const data = await auditService.getAuditLogs();
       setAuditLogs(data);
     } catch (error) {
-      // console.error("Error cargando Audit Trail:", error);
       showToast('error', 'Fallo al recuperar los registros inmutables del Audit Trail.');
     } finally {
       setLoadingAudit(false);
@@ -92,7 +89,8 @@ export default function AuditAndUsers() {
   const handleExportCSV = async () => {
     try {
       setIsExporting(true);
-      const blob = await userService.exportAppliedRecommendationsCSV();
+      // 🚀 CORRECCIÓN 3: Llamamos al método correcto del auditService
+      const blob = await auditService.exportCsv();
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -105,7 +103,6 @@ export default function AuditAndUsers() {
       document.body.removeChild(a);
       showToast('success', 'Reporte GxP exportado y descargado correctamente en formato CSV.');
     } catch (error) {
-      // alert("Error técnico al intentar exportar la pista de auditoría.");
       showToast('error', 'Error técnico al intentar compilar la pista de auditoría en la nube.');
     } finally {
       setIsExporting(false);
@@ -122,11 +119,11 @@ export default function AuditAndUsers() {
   const openEditModal = (user: User) => {
     setEditingUser(user);
     setFormData({
-      username: user.username,
+      username: (user as any).username || user.email, // Ajuste dinámico por si usas email o username
       full_name: user.full_name,
       role: user.role,
       password: "",
-      is_active: user.is_active
+      is_active: user.is_active ?? true
     });
     setIsModalOpen(true);
   };
@@ -143,30 +140,32 @@ export default function AuditAndUsers() {
 
         if (!updatePayload.password) delete (updatePayload as any).password;
 
-        await userService.updateUser(editingUser.id, updatePayload);
-        showToast('success', `Identidad GxP de [${formData.full_name}] actualizada con éxito.`);
+        // Garantizamos que el ID exista para actualizar
+        if (editingUser.id) {
+          await userService.updateUser(editingUser.id, updatePayload as any);
+          showToast('success', `Identidad GxP de [${formData.full_name}] actualizada con éxito.`);
+        }
       } else {
-        await userService.createUser(formData);
+        await userService.createUser(formData as any);
         showToast('success', `Nueva identidad GxP [${formData.username}] dada de alta en el sistema.`);
       }
       setIsModalOpen(false);
       loadUsers();
     } catch (error) {
       showToast('error', 'Transacción rechazada: Conflicto de unicidad en los datos de la cuenta.');
-      // alert("Error en la operación técnica.");
     } finally {
       setLoadingUsers(false);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number | undefined) => {
+    if (!id) return;
     if (!confirm("¿Revocar acceso permanentemente?")) return;
     try {
       await userService.deleteUser(id);
       setUsers((prev) => prev.filter((u) => u.id !== id));
       showToast('success', 'Acceso revocado de manera inmutable en la base de datos de planta.');
     } catch (err) {
-      // alert("Error al eliminar.");
       showToast('error', 'No se pudo procesar la baja de la credencial.');
     }
   };
@@ -241,10 +240,10 @@ export default function AuditAndUsers() {
                   </div>
                   <p className="text-sm font-bold text-blue-600 mb-1 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                    {entry.user}
+                    {entry.user_full_name || (entry as any).user}
                   </p>
                   <p className="text-xs text-slate-500 font-mono bg-slate-50 p-3 rounded-lg border border-slate-100">
-                    {entry.details}
+                    {entry.detail || (entry as any).details}
                   </p>
                 </div>
               ))
@@ -283,7 +282,7 @@ export default function AuditAndUsers() {
                       </span>
                     </div>
                     <h3 className="font-bold text-slate-900">{user.full_name}</h3>
-                    <p className="text-[11px] text-slate-400 mb-6 font-mono">@{user.username}</p>
+                    <p className="text-[11px] text-slate-400 mb-6 font-mono">@{(user as any).username || user.email}</p>
                     <div className="flex gap-4 pt-4 border-t border-slate-100">
                       <button onClick={() => openEditModal(user)} className="flex-1 text-[10px] font-black text-slate-400 hover:text-blue-600 uppercase flex items-center justify-center gap-1 transition-colors">
                         <PencilSquareIcon className="w-4 h-4" /> Editar

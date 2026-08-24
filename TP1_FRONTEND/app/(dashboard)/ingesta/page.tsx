@@ -10,7 +10,8 @@ import {
   ExclamationCircleIcon
 } from '@heroicons/react/24/outline';
 
-import { dataService, IngestionLog } from '@/services/dataService'; // Importas tu servicio
+// Importamos el servicio especialista en carga de datos
+import { dataService, IngestionLog } from '@/services/dataService';
 import { useToast } from '@/components/ui/toast';
 
 export default function DataIngestion() {
@@ -41,7 +42,6 @@ export default function DataIngestion() {
 
   const handleProcessAndInject = async () => {
     if (!filePlc || !fileLog || !fileExt) {
-      // alert("Por favor, selecciona los 3 archivos requeridos (PLC, Datalogger y Clima) antes de continuar.");
       showToast('error', 'Por favor, selecciona los 3 archivos requeridos (PLC, Datalogger y Clima) antes de continuar.')
       return;
     }
@@ -49,7 +49,7 @@ export default function DataIngestion() {
     setIsProcessing(true);
 
     try {
-      const result = await dataService.uploadHvacData(
+      await dataService.uploadHvacData(
         filePlc,
         fileLog,
         fileExt,
@@ -59,8 +59,6 @@ export default function DataIngestion() {
 
       showToast('success', '¡Dataset procesado y sincronizado con éxito!')
 
-      // alert(result.message || "¡Dataset procesado y sincronizado con éxito!");
-
       setFilePlc(null);
       setFileLog(null);
       setFileExt(null);
@@ -68,7 +66,7 @@ export default function DataIngestion() {
       await fetchHistory();
     } catch (error) {
       console.error("Error inyectando el dataset:", error);
-      alert("Ocurrió un error crítico al procesar el pipeline termodinámico. Revisa los logs del servidor.");
+      showToast('error', "Ocurrió un error crítico al procesar el pipeline termodinámico. Revisa los logs del servidor.");
     } finally {
       setIsProcessing(false);
     }
@@ -149,6 +147,8 @@ export default function DataIngestion() {
                 <thead className="bg-slate-50 text-slate-500 border-b border-slate-100">
                   <tr>
                     <th className="px-4 py-3 font-semibold text-[11px] uppercase">Fecha Carga</th>
+                    {/* 🚀 CORRECCIÓN: Agregamos la columna para el linaje MLOps */}
+                    <th className="px-4 py-3 font-semibold text-[11px] uppercase">ID Lote (UUID)</th>
                     <th className="px-4 py-3 font-semibold text-[11px] uppercase">Rango de Datos</th>
                     <th className="px-4 py-3 font-semibold text-[11px] uppercase">Registros</th>
                     <th className="px-4 py-3 font-semibold text-[11px] uppercase">Estado</th>
@@ -157,7 +157,7 @@ export default function DataIngestion() {
                 <tbody className="divide-y divide-slate-100">
                   {history.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="text-center py-6 text-slate-400 text-xs">
+                      <td colSpan={5} className="text-center py-6 text-slate-400 text-xs">
                         No se han encontrado registros en el historial de logs de ingesta.
                       </td>
                     </tr>
@@ -165,12 +165,19 @@ export default function DataIngestion() {
                     history.map((log) => (
                       <tr key={log.id}>
                         <td className="px-4 py-3 font-medium text-slate-700">
-                          {new Date(log.fecha_carga).toLocaleString('es-PE')}
+                          {/* 🚀 CORRECCIÓN: Usamos ingested_at */}
+                          {new Date(log.ingested_at).toLocaleString('es-PE')}
                         </td>
-                        <td className="px-4 py-3 text-slate-500 text-xs">{log.rango_datos}</td>
-                        <td className="px-4 py-3 text-slate-600">{log.registros.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-slate-500 text-xs font-mono">
+                          {/* 🚀 CORRECCIÓN: Mostramos un fragmento del UUID para la auditoría */}
+                          {log.batch_id ? log.batch_id.split('-')[0] + '...' : 'N/A'}
+                        </td>
+                        {/* 🚀 CORRECCIÓN: Usamos data_range y record_count */}
+                        <td className="px-4 py-3 text-slate-500 text-xs">{log.data_range}</td>
+                        <td className="px-4 py-3 text-slate-600">{log.record_count.toLocaleString()}</td>
                         <td className="px-4 py-3">
-                          {log.estado === "SINCRONIZADO" ? (
+                          {/* 🚀 CORRECCIÓN: Usamos status */}
+                          {log.status === "SINCRONIZADO" ? (
                             <span className="inline-flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded text-[10px] font-bold uppercase">
                               <CheckCircleIcon className="w-3 h-3" /> Sincronizado
                             </span>

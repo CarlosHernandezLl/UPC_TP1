@@ -1,0 +1,13 @@
+# Manifiesto de Arquitectura y Limpieza de Código
+
+## 🏗️ Stack y Estructura
+- **Backend:** FastAPI (Python). Estricta separación de responsabilidades.
+- **Frontend:** Next.js (React / TypeScript) en carpeta independiente.
+- **Motor ML / MLOps:** Desacoplado en `/app/ml_engine` y `/app/mlops`. Los archivos de pesos `.json` y metadatos viven exclusivamente en `/saved_models`.
+
+## 🧹 Reglas de Limpieza y Refactorización
+1. **Cero Código Zombie:** Eliminar estrictamente bloques de código comentados, funciones deprecadas (ej. antiguas funciones de 6 variables si ya se reemplazaron) e importaciones sin utilizar (`unused imports`).
+2. **Modularidad:** Ningún archivo debe superar las 250 líneas de código. Si un archivo de motor o de rutas crece demasiado, debe dividirse en submódulos lógicos.
+3. **Tipado Estricto:** Todo endpoint en FastAPI debe validar su payload de entrada y salida utilizando modelos de **Pydantic**. Cero uso dee diccionarios arbitrarios o `Any`.
+4. **Manejo de Errores:** Reemplazar los `print()` por el módulo `logging` de Python. Todo error en inferencia o base de datos debe devolver un HTTP Status xplícito (ej. 400 o 500) con un JSON de error estructurado.
+5. **No Alucinación de Librerías:** Solo reutilizar paquetes ya presentes en `requirements.txt` o `package.json`. No instalar nuevas dependencias sin confirmación explícita.
