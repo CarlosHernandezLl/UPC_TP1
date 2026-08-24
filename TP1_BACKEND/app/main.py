@@ -28,8 +28,11 @@ from app.api.routers import (
     dashboard,
 )
 
+log_path = os.path.join(os.path.dirname(__file__), "..", "logs", "app.log")
+os.makedirs(os.path.dirname(log_path), exist_ok=True)
+
 logging.basicConfig(
-    filename="logs/app.log",
+    filename=log_path,
     level=logging.ERROR,
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
