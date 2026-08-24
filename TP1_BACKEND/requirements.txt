@@ -35,3 +35,4 @@ google-crc32c>=1.7.1,<2.0.0
 google-generativeai
 tzdata
 reportlab
+PyPDF2>=3.0.0
