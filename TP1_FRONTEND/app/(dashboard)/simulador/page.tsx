@@ -226,7 +226,7 @@ export default function Simulator() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Hum. UMA (%)</label>
+                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Hum. UMA (HR %)</label>
                       <input
                         type="number" step="0.5" min="0" max="100" placeholder=""
                         value={humUma}
