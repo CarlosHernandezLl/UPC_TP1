@@ -27,6 +27,8 @@ class HvacHistoricalData(Base):
     # AHU (Air Handling Unit)
     ahu_temp = Column(Float)
     ahu_w = Column(Float)
+    injection_pressure = Column(Float)
+    
 
     # Control and Process
     dryer_power = Column(Float)

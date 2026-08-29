@@ -13,6 +13,11 @@ class SSDFilter:
         e = (rh / 100.0) * es
         return round(1000.0 * (0.62197 * e / (p - e)), 6)
 
+    @staticmethod
+    def calculate_dynamic_ahu_pressure(injection_pressure: float) -> float:
+        """Única fuente de verdad para la presión absoluta del AHU (Pinj en Pa)."""
+        return 1013.25 + (injection_pressure / 100.0)
+
     @classmethod
     def extract_stationary_minutes(
         cls, df_raw: pd.DataFrame, patience: int = 10, percentile: float = 0.95

@@ -24,7 +24,11 @@ export default function Simulator() {
   const [tempUma, setTempUma] = useState("");
   const [humUma, setHumUma] = useState("");
   const [pwrActual, setPwrActual] = useState("");
+  const [tempSala, setTempSala] = useState("");
   const [humSala, setHumSala] = useState("");
+
+  const [presionInyeccion, setPresionInyeccion] = useState("");
+
   const [setpoint, setSetpoint] = useState("");
 
   const [isCalculating, setIsCalculating] = useState(false);
@@ -36,7 +40,6 @@ export default function Simulator() {
   useEffect(() => {
     const fetchActiveGmpLimits = async () => {
       try {
-        // 🚀 CORRECCIÓN 2: Usamos simulationService para obtener límites GMP
         const gmpData = await gmpService.getGmpParameters();
         if (gmpData.min_hum_limit) setMinHumLimit(gmpData.min_hum_limit);
         if (gmpData.max_hum_limit) setMaxHumLimit(gmpData.max_hum_limit);
@@ -67,7 +70,7 @@ export default function Simulator() {
   };
 
   const handleSimulate = async () => {
-    if (!tempExt || !humExt || !tempUma || !humUma || !pwrActual || !humSala || !setpoint) {
+    if (!tempExt || !humExt || !tempUma || !humUma || !pwrActual || !humSala || !setpoint || !tempSala || !presionInyeccion) {
       showToast('error', 'Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital.');
       return;
     }
@@ -77,7 +80,6 @@ export default function Simulator() {
     setActionLogged(false);
 
     try {
-      // 🚀 CORRECCIÓN 3: Mapeo exacto al esquema inglés Pydantic (SimulationPredictRequest)
       const data = await simulationService.predictPower({
         outdoor_temp: parseFloat(tempExt),
         outdoor_rh: parseFloat(humExt),
@@ -85,6 +87,8 @@ export default function Simulator() {
         ahu_rh: parseFloat(humUma),
         current_power: parseFloat(pwrActual),
         current_room_rh: parseFloat(humSala),
+        room_temp: parseFloat(tempSala),              // 🚀 NUEVO
+        injection_pressure: parseFloat(presionInyeccion), // 🚀 NUEVO
         target_setpoint: parseFloat(setpoint)
       });
 
@@ -107,6 +111,8 @@ export default function Simulator() {
         ahu_temp: parseFloat(tempUma),
         ahu_rh: parseFloat(humUma),
         current_room_rh: parseFloat(humSala),
+        room_temp: parseFloat(tempSala),
+        injection_pressure: parseFloat(presionInyeccion),
         target_setpoint: parseFloat(setpoint),
         current_power: parseFloat(pwrActual),
         recommended_power: result.potencia_recomendada,
@@ -130,13 +136,15 @@ export default function Simulator() {
     if (!result) return;
     try {
       setIsLoggingAction(true);
-      // 🚀 CORRECCIÓN 5: Payload de rechazo con etiqueta OVERRIDDEN obligatoria
+
       await simulationService.logOperatorAction({
         outdoor_temp: parseFloat(tempExt),
         outdoor_rh: parseFloat(humExt),
         ahu_temp: parseFloat(tempUma),
         ahu_rh: parseFloat(humUma),
         current_room_rh: parseFloat(humSala),
+        room_temp: parseFloat(tempSala),
+        injection_pressure: parseFloat(presionInyeccion),
         target_setpoint: parseFloat(setpoint),
         current_power: parseFloat(pwrActual),
         recommended_power: result.potencia_recomendada,
@@ -163,10 +171,10 @@ export default function Simulator() {
           <p className="text-slate-500 text-sm">Ingrese las condiciones actuales para obtener la recomendación predictiva.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3">
 
           {/* Columna Izquierda: Entradas Manuales */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-3">
             <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
               <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2 border-b pb-4">
                 <AdjustmentsHorizontalIcon className="w-5 h-5 text-blue-600" />
@@ -191,7 +199,7 @@ export default function Simulator() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Humedad Ext. (%)</label>
+                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Humedad Ext. (HR %)</label>
                       <input
                         type="number" step="0.5" min="0" max="100" placeholder=""
                         value={humExt}
@@ -207,7 +215,7 @@ export default function Simulator() {
                   <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                     <VariableIcon className="w-4 h-4" /> Entrada Aire (UMA)
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Temp. UMA (°C)</label>
                       <input
@@ -226,6 +234,16 @@ export default function Simulator() {
                         className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
                       />
                     </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Presión Inyección (Pa)</label>
+                      <input
+                        type="number" step="0.5" min="0" max="100" placeholder=""
+                        value={presionInyeccion}
+                        onChange={(e) => handleNumberChange(e.target.value, setPresionInyeccion, 0, 100)}
+                        className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                      />
+                    </div>
+
                   </div>
                 </div>
 
@@ -234,7 +252,7 @@ export default function Simulator() {
                   <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                     <BeakerIcon className="w-4 h-4" /> Estado de la Sala
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Potencia Estimada (%)</label>
                       <input
@@ -245,7 +263,7 @@ export default function Simulator() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Humedad Sala Actual (%)</label>
+                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Humedad Sala Actual (HR %)</label>
                       <input
                         type="number" step="0.5" min="0" max="100" placeholder=""
                         value={humSala}
@@ -254,12 +272,21 @@ export default function Simulator() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Setpoint Objetivo (%)</label>
+                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Humedad Sala Objetivo (HR %)</label>
                       <input
                         type="number" step="0.5" min="0" max="100" placeholder=""
                         value={setpoint}
                         onChange={(e) => handleNumberChange(e.target.value, setSetpoint, 0, 100)}
                         className="w-full p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 border-2 border-blue-200 bg-blue-50/50 font-bold text-blue-800"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-500 mb-1">Temp. Sala (°C)</label>
+                      <input
+                        type="number" step="0.5" min="0" max="50" placeholder=""
+                        value={tempSala}
+                        onChange={(e) => handleNumberChange(e.target.value, setTempSala, 0, 50)}
+                        className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
                       />
                     </div>
                   </div>
@@ -296,7 +323,7 @@ export default function Simulator() {
           </div>
 
           {/* Columna Derecha: Resultado de Recomendación */}
-          <div className="space-y-6">
+          <div className="space-y-6 mt-6 lg:mt-0">
             <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 text-center relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
               <h2 className="text-slate-400 font-bold text-xs uppercase tracking-widest mb-4">Potencia Recomendada IA</h2>

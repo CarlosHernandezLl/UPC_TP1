@@ -1,8 +1,20 @@
 import os
 import logging
 from fastapi import FastAPI
+from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-from app.core.database import Base, engine
+from app.ml_engine import simulator_engine
+from app.repositories.ml_model_version_repository import (
+    MlModelVersionRepository,
+)
+from app.services.ml_model_service import MlModelService
+from app.repositories.ml_model_version_repository import (
+    MlModelVersionRepository,
+)
+from app.core.database import Base, SessionLocal, engine
+from app.ml_engine.simulator_engine import (
+    simulator_engine_instance,
+)  # 🚀 la instancia real, no el módulo
 
 # 1. IMPORTACIÓN DE MODELOS (Obligatorio para que SQLAlchemy registre todas las tablas)
 # Al importarlos sin el prefijo "TP1_BACKEND.", evitamos caídas en Docker/Render y aseguramos
@@ -49,10 +61,46 @@ except Exception as e:
         f"❌ [SQLAlchemy] Error al inicializar tablas en la base de datos: {e}"
     )
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # --- Startup ---
+    db = SessionLocal()
+    try:
+        repo = MlModelVersionRepository(db)
+        model_service = MlModelService(repo)
+        champion = model_service.get_active_model_version()
+
+        if champion is not None and os.path.exists(champion.model_path):
+            simulator_engine_instance.reload_model_in_memory(
+                model_path=champion.model_path
+            )
+            logger.info(
+                f"✨ [Startup] Champion cargado desde BD: {champion.version_tag}"
+            )
+        else:
+            logger.warning(
+                "⚠️ [Startup] No hay Champion válido en BD; usando modelo base de fallback."
+            )
+    except Exception as e:
+        logger.error(
+            f"❌ [Startup] Error al cargar Champion desde BD: {e}. Continuando con fallback estático."
+        )
+    finally:
+        db.close()
+
+    app.state.simulator_engine = (
+        simulator_engine_instance  # 🎯 fuente única para toda la app
+    )
+    yield
+    # --- Shutdown: nada que limpiar por ahora ---
+
+
 app = FastAPI(
     title="HVAC AI Engine",
     description="Backend industrial GxP con Gemelo Digital y optimización energética mediante XGBoost",
-    version="2.0.0",  # Subimos a v2.0 para reflejar la refactorización arquitectónica (DDD)
+    version="2.0.0",
+    lifespan=lifespan,
 )
 
 # --- 3. Configuración Dinámica de CORS para Producción y Desarrollo ---

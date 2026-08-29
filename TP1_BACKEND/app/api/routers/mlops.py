@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.api.deps import get_current_user, check_role
@@ -19,9 +19,6 @@ from app.ml_engine.simulator_engine import SimulatorEngine
 
 router = APIRouter(prefix="/mlops", tags=["MLOps & Model Registry"])
 
-# Instancia única en RAM compartida del motor XGBoost (12 Variables)
-sim_engine = SimulatorEngine()
-
 
 # 🎯 PROVEEDOR 1: El especialista en Base de Datos e Historial (Para la UI)
 def get_ml_model_service(db: Session = Depends(get_db)) -> MlModelService:
@@ -30,7 +27,9 @@ def get_ml_model_service(db: Session = Depends(get_db)) -> MlModelService:
 
 
 # 🎯 PROVEEDOR 2: El especialista Científico / Matemático (Para reentrenar)
-def get_ml_training_service(db: Session = Depends(get_db)) -> MLTrainingService:
+def get_ml_training_service(
+    request: Request, db: Session = Depends(get_db)
+) -> MLTrainingService:
     # 1. Instanciamos los repositorios base
     hvac_repo = HvacRepository(db)
     ingestion_repo = DataIngestionRepository(db)
@@ -47,7 +46,7 @@ def get_ml_training_service(db: Session = Depends(get_db)) -> MLTrainingService:
         data_service=data_service,
         model_service=model_service,
         audit_service=audit_service,
-        sim_engine=sim_engine,
+        sim_engine=request.app.state.simulator_engine,
     )
 
 

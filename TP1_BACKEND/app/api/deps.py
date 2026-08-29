@@ -3,6 +3,7 @@ from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
+from app.ml_engine.simulator_engine import SimulatorEngine
 from app.core.config import settings
 from app.core.database import get_db
 
@@ -100,3 +101,7 @@ def check_role(required_roles: list[str]):
         return current_user
 
     return role_checker
+
+
+def get_simulator_engine(request: Request) -> SimulatorEngine:
+    return request.app.state.simulator_engine

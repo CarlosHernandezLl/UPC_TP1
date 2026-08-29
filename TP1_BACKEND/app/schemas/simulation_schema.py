@@ -20,6 +20,8 @@ class SimulationBase(BaseModel):
     current_power: float = Field(
         ..., ge=0, le=100, description="Potencia actual del PLC (%)"
     )
+    room_temp: float = Field(..., description="Temperatura actual en sala limpia (°C)")
+    injection_pressure: float = Field(..., description="Presión de inyección (Pa)")
 
 
 # 🎯 2. PAYLOAD PASO A: Lo que el frontend envía a POST /simulation/predict

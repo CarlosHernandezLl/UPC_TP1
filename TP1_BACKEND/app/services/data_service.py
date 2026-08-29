@@ -8,6 +8,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from app.ml_engine.ssd_filter import SSDFilter
 from app.models.data_ingestion_log import DataIngestionLog
 from app.models.hvac_historical_data import HvacHistoricalData
 from app.repositories.data_ingestion_repository import DataIngestionRepository
@@ -22,19 +23,6 @@ class DataService:
     ):
         self.hvac_repo = hvac_repo
         self.ingestion_repo = ingestion_repo
-
-    def _calculate_psychrometrics(self, temp, hr, p_absolute):
-        try:
-            if pd.isna(temp) or pd.isna(hr) or pd.isna(p_absolute):
-                return 0.0
-            t, rh, p = float(temp), float(hr), float(p_absolute)
-            es = 6.1121 * np.exp((18.678 - t / 234.5) * (t / (257.14 + t)))
-            e = (rh / 100.0) * es
-            w = 1000.0 * (0.62197 * e / (p - e))
-            return round(w, 6)
-        except Exception as err:
-            logger.error(f"❌ Error psicrométrico en Buck (1981): {err}")
-            return 0.0
 
     def _clean_sensor_noise(self, df: pd.DataFrame) -> pd.DataFrame:
         if "Humedad" in df.columns:
@@ -179,33 +167,32 @@ class DataService:
             merged.set_index("ts", inplace=True)
             merged = merged.resample("1min").interpolate(method="linear").reset_index()
 
-            p_mean = merged["f20910p"].mean()
-            p_supply_dynamic = (
-                1013.25 + (merged["f20910p"] / 100.0)
-                if p_mean < 800
-                else merged["f20910p"]
+            # p_mean = merged["f20910p"].mean()
+            p_supply_dynamic = SSDFilter.calculate_dynamic_ahu_pressure(
+                merged["f20910p"]
             )
 
             merged["w_ext"] = merged.apply(
-                lambda x: self._calculate_psychrometrics(
+                lambda x: SSDFilter.calculate_absolute_humidity(
                     x["temp_ext"], x["hum_ext"], 1013.25
                 ),
                 axis=1,
             )
             merged["w_sala"] = merged.apply(
-                lambda x: self._calculate_psychrometrics(
+                lambda x: SSDFilter.calculate_absolute_humidity(
                     x["Temperatura"], x["Humedad"], 1013.50
                 ),
                 axis=1,
             )
             merged["w_uma"] = merged.apply(
-                lambda x: self._calculate_psychrometrics(
+                lambda x: SSDFilter.calculate_absolute_humidity(
                     x["f20911t"], x["f20911h"], p_supply_dynamic.loc[x.name]
                 ),
                 axis=1,
             )
 
-            merged = merged.fillna(0.0)
+            # merged = merged.fillna(0.0)
+            merged = merged.dropna()
 
             # 🚀 GENERACIÓN DE ID ÚNICO DE LOTE PARA MLOpS
             # batch_id = f"BATCH-{datetime.now().strftime('%Y%m%d-%H%M')}-{uuid.uuid4().hex[:6].upper()}"
@@ -242,6 +229,7 @@ class DataService:
                 outdoor_w=row["w_ext"],
                 ahu_temp=row["f20911t"],
                 ahu_w=row["w_uma"],
+                injection_pressure=row["f20910p"],
                 dryer_power=row["f209potsecador"],
                 room_temp=row["Temperatura"],
                 room_rh=row["Humedad"],

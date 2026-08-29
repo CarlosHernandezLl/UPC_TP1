@@ -15,18 +15,22 @@ class SimulatorEngine:
         self.model = xgb.XGBRegressor()
         self.r2_score = None
         self.mse = None
+        self.rmse = None
         self.model_loaded = False
         self.feature_cols = [
-            "potencia_secador",
-            "temp_ext",
-            "w_ext",
-            "temp_uma",
-            "w_uma",
-            "presion_inyeccion",
+            "dryer_power", 
+            "outdoor_temp",
+            "outdoor_w",
+            "ahu_temp",
+            "ahu_w",
+            "injection_pressure",
         ]
         self._load_initial_model()
 
     def _load_initial_model(self):
+        """Fallback de emergencia SOLO si aún no hay ningún Champion en BD.
+        La fuente de verdad real se carga en el startup de FastAPI — ver bootstrap_champion_model().
+        """
         base_path = os.path.dirname(__file__)
         model_path = os.path.join(base_path, "saved_models", "xgboost_hvac_v1.json")
         self.reload_model_in_memory(model_path)
@@ -63,7 +67,7 @@ class SimulatorEngine:
     def recomendar_potencia(
         self,
         current_power: float,
-        temp_sala: float,
+        room_temp: float,
         target_setpoint: float,
         outdoor_temp: float,
         outdoor_rh: float,
@@ -80,16 +84,12 @@ class SimulatorEngine:
             return current_power, False
 
         w_ext = SSDFilter.calculate_absolute_humidity(outdoor_temp, outdoor_rh, 1013.25)
-        p_dynamic = (
-            1013.25 + (injection_pressure / 100.0)
-            if injection_pressure < 800
-            else injection_pressure
-        )
+        p_dynamic = SSDFilter.calculate_dynamic_ahu_pressure(injection_pressure)
         w_uma = SSDFilter.calculate_absolute_humidity(ahu_temp, ahu_rh, p_dynamic)
 
         # Cálculo del límite higrométrico objetivo en g/kg
         w_objetivo_estricto = SSDFilter.calculate_absolute_humidity(
-            temp_sala, target_setpoint, 1013.50
+            room_temp, target_setpoint, 1013.50
         )
         w_limite_busqueda = w_objetivo_estricto - safety_margin_gkg
 
@@ -116,7 +116,7 @@ class SimulatorEngine:
         )
         w_final = float(self.model.predict(df_final_check)[0])
         es_sala = 6.1121 * np.exp(
-            (18.678 - temp_sala / 234.5) * (temp_sala / (257.14 + temp_sala))
+            (18.678 - room_temp / 234.5) * (room_temp / (257.14 + room_temp))
         )
         k_final = w_final / 622.0
         e_final = (1013.50 * k_final) / (1.0 + k_final)
@@ -126,3 +126,5 @@ class SimulatorEngine:
             hr_final_sim < min_gmp_rh_limit or hr_final_sim > max_gmp_rh_limit
         )
         return best_power, is_gmp_alert
+
+simulator_engine_instance = SimulatorEngine()

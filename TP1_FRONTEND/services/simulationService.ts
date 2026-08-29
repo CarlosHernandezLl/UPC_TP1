@@ -8,6 +8,8 @@ export interface SimulationPredictRequest {
     ahu_temp: number;
     ahu_rh: number;
     current_room_rh?: number;
+    room_temp: number;
+    injection_pressure: number;
     target_setpoint: number;
     current_power: number;
 }

@@ -97,7 +97,7 @@ class MLTrainingService:
                 "outdoor_w": float(r.outdoor_w),
                 "ahu_temp": float(r.ahu_temp),
                 "ahu_w": float(r.ahu_w),
-                "injection_pressure": float(getattr(r, "injection_pressure", 1013.25)),
+                "injection_pressure": float(r.injection_pressure),
                 "room_w": float(r.room_w),
             }
             for r in db_records
@@ -198,7 +198,7 @@ class MLTrainingService:
 
         # 7. Actualización en caliente en memoria RAM
         self.sim_engine.r2_score = round(r2_real, 2)
-        self.sim_engine.mse = round(rmse_real, 6)
+        self.sim_engine.rmse = round(rmse_real, 6)
         if hasattr(self.sim_engine, "reload_model_in_memory"):
             self.sim_engine.reload_model_in_memory(model_path=model_file_path)
 

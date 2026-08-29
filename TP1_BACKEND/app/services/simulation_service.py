@@ -29,6 +29,14 @@ class SimulationService:
         ideal_pwr = current_pwr
         savings_pct = 0.0
         is_gmp_alert = False
+        
+        room_temp = sim_input.get("room_temp")
+        injection_pressure = sim_input.get("injection_pressure")
+        if room_temp is None or injection_pressure is None:
+            raise ValueError(
+                "Faltan campos obligatorios para la inferencia: 'room_temp' y/o 'injection_pressure'. "
+                "El modelo no puede calcular el objetivo higrométrico sin ellos."
+            )
 
         # 1. Consultar umbrales vigentes al SERVICIO de GMP con blindaje contra None
         min_limit, max_limit = 40.0, 55.0
@@ -43,13 +51,16 @@ class SimulationService:
         # 2. Inferencia en XGBoost
         try:
             ideal_pwr, is_gmp_alert = self.simulator_engine.recomendar_potencia(
-                temp_ext=sim_input.get("outdoor_temp", 20.0),
-                hum_ext=sim_input.get("outdoor_rh", 50.0),
-                temp_uma=sim_input.get("ahu_temp", 20.0),
-                hum_uma=sim_input.get("ahu_rh", 50.0),
-                setpoint_hr_sala=sim_input.get("target_setpoint", 50.0),
-                min_hum_limit=min_limit,
-                max_hum_limit=max_limit,
+                current_power=current_pwr,
+                room_temp=room_temp,  # ya no "temp_sala=temp_sala"
+                target_setpoint=sim_input.get("target_setpoint", 50.0),
+                outdoor_temp=sim_input.get("outdoor_temp", 20.0),
+                outdoor_rh=sim_input.get("outdoor_rh", 50.0),
+                ahu_temp=sim_input.get("ahu_temp", 20.0),
+                ahu_rh=sim_input.get("ahu_rh", 50.0),
+                injection_pressure=injection_pressure,
+                min_gmp_rh_limit=min_limit,
+                max_gmp_rh_limit=max_limit,
             )
             if current_pwr > ideal_pwr:
                 savings_pct = round(((current_pwr - ideal_pwr) / current_pwr) * 100, 1)

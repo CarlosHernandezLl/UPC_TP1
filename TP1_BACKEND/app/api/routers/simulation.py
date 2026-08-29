@@ -1,22 +1,25 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status,
+    Request,
+)
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.api.deps import get_current_user, check_role
 
-# 🚀 IMPORTACIÓN AGRUPADA: Esquemas
 from app.schemas.simulation_schema import (
     SimulationPredictRequest,
     SimulationLogRequest,
     SimulationPredictResponse,
 )
 
-# 🚀 IMPORTACIÓN AGRUPADA: Servicios del dominio
 from app.services.simulation_service import SimulationService
 from app.services.gmp_service import GmpService
 from app.services.llm_service import LlmService
 from app.services.audit_service import AuditService
 
-# 🚀 IMPORTACIÓN AGRUPADA: Repositorios necesarios para ensamblar los servicios
 from app.repositories.simulation_repository import SimulationRepository
 from app.repositories.gmp_repository import GmpRepository
 from app.repositories.audit_repository import AuditRepository
@@ -25,12 +28,11 @@ from app.ml_engine.simulator_engine import SimulatorEngine
 
 router = APIRouter(prefix="/simulation", tags=["Gemelo Digital HVAC"])
 
-# Instancia en RAM compartida del motor XGBoost
-sim_engine = SimulatorEngine()
 
-
-# 🎯 PROVEEDOR CORREGIDO: Ensamblamos todo el árbol de dependencias que exige SimulationService
-def get_simulation_service(db: Session = Depends(get_db)) -> SimulationService:
+def get_simulation_service(
+    request: Request,
+    db: Session = Depends(get_db),
+) -> SimulationService:
     # 1. Instanciamos repositorios
     sim_repo = SimulationRepository(db)
     gmp_repo = GmpRepository(db)
@@ -47,7 +49,7 @@ def get_simulation_service(db: Session = Depends(get_db)) -> SimulationService:
         gmp_service=gmp_service,
         llm_service=llm_service,
         audit_service=audit_service,
-        simulator_engine=sim_engine,
+        simulator_engine=request.app.state.simulator_engine,  # 🚀 corregido: request.app, no app
     )
 
 
@@ -57,7 +59,7 @@ def get_simulation_service(db: Session = Depends(get_db)) -> SimulationService:
     dependencies=[Depends(check_role(["SUPERVISOR", "ADMIN"]))],
 )
 def predict_hvac_power(
-    payload: SimulationPredictRequest,  # 🎯 SOLO EXIGE VARIABLES CLIMÁTICAS
+    payload: SimulationPredictRequest,
     service: SimulationService = Depends(get_simulation_service),
 ):
     """Devuelve la recomendación del Gemelo Digital y la justificación técnica de Gemini."""
@@ -70,7 +72,7 @@ def predict_hvac_power(
     dependencies=[Depends(check_role(["SUPERVISOR", "ADMIN"]))],
 )
 def log_simulation_action(
-    payload: SimulationLogRequest,  # 🎯 EXIGE TELEMETRÍA + DECISIÓN DEL OPERADOR
+    payload: SimulationLogRequest,
     service: SimulationService = Depends(get_simulation_service),
     current_user: any = Depends(get_current_user),
 ):
