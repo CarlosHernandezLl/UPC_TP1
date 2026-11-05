@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from datetime import date
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from typing import List
@@ -18,13 +19,28 @@ def get_audit_service(db: Session = Depends(get_db)) -> AuditService:
     return audit_service
 
 
+def date_range(
+    desde: date | None = Query(None, description="Fecha inicial (inclusiva) AAAA-MM-DD"),
+    hasta: date | None = Query(None, description="Fecha final (inclusiva) AAAA-MM-DD"),
+) -> tuple[date | None, date | None]:
+    if desde and hasta and hasta < desde:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La fecha final no puede ser anterior a la fecha inicial.",
+        )
+    return desde, hasta
+
+
 @router.get(
     "/",
     response_model=List[AuditResponse],
     dependencies=[Depends(check_role(["AUDITOR", "ADMIN"]))],
 )
-def get_audit_trail(service: AuditService = Depends(get_audit_service)):
-    return service.get_report_data()
+def get_audit_trail(
+    service: AuditService = Depends(get_audit_service),
+    rango: tuple[date | None, date | None] = Depends(date_range),
+):
+    return service.get_report_data(*rango)
 
 
 @router.post("/log")
@@ -51,10 +67,11 @@ def log_operator_decision(
 )
 def export_applied_recommendations_csv(
     service: AuditService = Depends(get_audit_service),
+    rango: tuple[date | None, date | None] = Depends(date_range),
 ):
     """Genera y transmite un reporte CSV con la telemetría de recomendaciones acatadas."""
     try:
-        csv_buffer = service.export_applied_recommendations_csv()
+        csv_buffer = service.export_applied_recommendations_csv(*rango)
         headers = {
             "Content-Disposition": 'attachment; filename="reporte_gxp_recomendaciones_aplicadas.csv"'
         }
@@ -72,10 +89,11 @@ def export_applied_recommendations_csv(
 )
 def export_applied_recommendations_pdf(
     service: AuditService = Depends(get_audit_service),
+    rango: tuple[date | None, date | None] = Depends(date_range),
 ):
     """Genera y transmite un reporte PDF con firma digital sobre las recomendaciones aplicadas."""
     try:
-        pdf_buffer = service.export_applied_recommendations_pdf()
+        pdf_buffer = service.export_applied_recommendations_pdf(*rango)
         headers = {
             "Content-Disposition": 'attachment; filename="reporte_gxp_recomendaciones_aplicadas.pdf"'
         }

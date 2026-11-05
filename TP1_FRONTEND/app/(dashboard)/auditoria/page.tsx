@@ -28,6 +28,8 @@ export default function AuditAndUsers() {
   // Estados para Audit Trail
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [loadingAudit, setLoadingAudit] = useState(false);
+  const [desde, setDesde] = useState("");
+  const [hasta, setHasta] = useState("");
 
   // Estados del Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,7 +62,7 @@ export default function AuditAndUsers() {
       const data = await userService.getUsers();
       const activeUsers = data.filter((u: User) => u.is_active);
       setUsers(activeUsers);
-    } catch (error) {
+    } catch {
       showToast('error', 'No se pudo sincronizar el directorio de personal.');
     } finally {
       setLoadingUsers(false);
@@ -71,9 +73,9 @@ export default function AuditAndUsers() {
     try {
       setLoadingAudit(true);
       // 🚀 CORRECCIÓN 2: Usamos el servicio especialista en auditoría
-      const data = await auditService.getAuditLogs();
+      const data = await auditService.getAuditLogs(desde || undefined, hasta || undefined);
       setAuditLogs(data);
-    } catch (error) {
+    } catch {
       showToast('error', 'Fallo al recuperar los registros inmutables del Audit Trail.');
     } finally {
       setLoadingAudit(false);
@@ -84,25 +86,33 @@ export default function AuditAndUsers() {
     if (!userRole) return;
     if (activeTab === "users" && userRole !== "AUDITOR") loadUsers();
     if (activeTab === "audit") loadAuditLogs();
-  }, [activeTab, userRole]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, userRole, desde, hasta]);
 
-  const handleExportCSV = async () => {
+  const rangeIsInvalid = !!desde && !!hasta && hasta < desde;
+
+  const downloadReport = async (format: "csv" | "pdf") => {
+    if (rangeIsInvalid) {
+      showToast('error', 'La fecha final no puede ser anterior a la fecha inicial.');
+      return;
+    }
     try {
       setIsExporting(true);
-      // 🚀 CORRECCIÓN 3: Llamamos al método correcto del auditService
-      const blob = await auditService.exportCsv();
+      const blob = format === "csv"
+        ? await auditService.exportCsv(desde || undefined, hasta || undefined)
+        : await auditService.exportPdf(desde || undefined, hasta || undefined);
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `REPORTE_GXP_RECOMENDACIONES_APLICADAS_${new Date().toISOString().split('T')[0]}.csv`;
+      a.download = `REPORTE_GXP_AUDITORIA_${desde || 'inicio'}_${hasta || 'hoy'}.${format}`;
       document.body.appendChild(a);
       a.click();
 
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      showToast('success', 'Reporte GxP exportado y descargado correctamente en formato CSV.');
-    } catch (error) {
+      showToast('success', `Reporte GxP exportado y descargado correctamente en formato ${format.toUpperCase()}.`);
+    } catch {
       showToast('error', 'Error técnico al intentar compilar la pista de auditoría en la nube.');
     } finally {
       setIsExporting(false);
@@ -119,7 +129,7 @@ export default function AuditAndUsers() {
   const openEditModal = (user: User) => {
     setEditingUser(user);
     setFormData({
-      username: (user as any).username || user.email, // Ajuste dinámico por si usas email o username
+      username: user.username,
       full_name: user.full_name,
       role: user.role,
       password: "",
@@ -133,25 +143,25 @@ export default function AuditAndUsers() {
     setLoadingUsers(true);
     try {
       if (editingUser) {
+        const { password, ...rest } = formData;
         const updatePayload = {
-          ...formData,
+          ...rest,
+          ...(password ? { password } : {}),
           is_active: editingUser.is_active ?? true
         };
 
-        if (!updatePayload.password) delete (updatePayload as any).password;
-
         // Garantizamos que el ID exista para actualizar
         if (editingUser.id) {
-          await userService.updateUser(editingUser.id, updatePayload as any);
-          showToast('success', `Identidad GxP de [${formData.full_name}] actualizada con éxito.`);
+          await userService.updateUser(editingUser.id, updatePayload);
+          showToast('success', 'Identidad GxP actualizada con éxito.');
         }
       } else {
-        await userService.createUser(formData as any);
-        showToast('success', `Nueva identidad GxP [${formData.username}] dada de alta en el sistema.`);
+        await userService.createUser(formData);
+        showToast('success', 'Nueva identidad GxP dada de alta en el sistema.');
       }
       setIsModalOpen(false);
       loadUsers();
-    } catch (error) {
+    } catch {
       showToast('error', 'Transacción rechazada: Conflicto de unicidad en los datos de la cuenta.');
     } finally {
       setLoadingUsers(false);
@@ -165,7 +175,7 @@ export default function AuditAndUsers() {
       await userService.deleteUser(id);
       setUsers((prev) => prev.filter((u) => u.id !== id));
       showToast('success', 'Acceso revocado de manera inmutable en la base de datos de planta.');
-    } catch (err) {
+    } catch {
       showToast('error', 'No se pudo procesar la baja de la credencial.');
     }
   };
@@ -208,18 +218,37 @@ export default function AuditAndUsers() {
                 <h2 className="text-xl font-bold">Registro Histórico Inmutable (21 CFR Part 11)</h2>
                 <p className="text-xs text-slate-400 font-medium">Historial completo de auditorías del sistema.</p>
               </div>
-              <button
-                onClick={handleExportCSV}
-                disabled={isExporting || loadingAudit}
-                className="bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 shadow-md flex items-center gap-2 transition-all disabled:bg-slate-300"
-              >
-                {isExporting ? (
-                  <ArrowPathRoundedSquareIcon className="w-4 h-4 animate-spin" />
-                ) : (
-                  <ArrowDownTrayIcon className="w-4 h-4" />
-                )}
-                {isExporting ? "Exportando..." : "Exportar Aplicadas"}
-              </button>
+              <div className="flex flex-wrap items-end gap-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase">
+                  Desde
+                  <input type="date" value={desde} max={hasta || undefined} onChange={(e) => setDesde(e.target.value)} aria-label="Fecha desde"
+                    className="block mt-1 px-3 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 normal-case" />
+                </label>
+                <label className="text-[10px] font-black text-slate-400 uppercase">
+                  Hasta
+                  <input type="date" value={hasta} min={desde || undefined} onChange={(e) => setHasta(e.target.value)} aria-label="Fecha hasta"
+                    className="block mt-1 px-3 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 normal-case" />
+                </label>
+                <button
+                  onClick={() => downloadReport("csv")}
+                  disabled={isExporting || loadingAudit}
+                  className="bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 shadow-md flex items-center gap-2 transition-all disabled:bg-slate-300"
+                >
+                  {isExporting ? (
+                    <ArrowPathRoundedSquareIcon className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <ArrowDownTrayIcon className="w-4 h-4" />
+                  )}
+                  {isExporting ? "Exportando..." : "Exportar"}
+                </button>
+                <button
+                  onClick={() => downloadReport("pdf")}
+                  disabled={isExporting || loadingAudit}
+                  className="bg-white text-emerald-700 border border-emerald-300 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-50 transition-all disabled:opacity-50"
+                >
+                  PDF
+                </button>
+              </div>
             </div>
 
             {loadingAudit ? (
@@ -240,10 +269,10 @@ export default function AuditAndUsers() {
                   </div>
                   <p className="text-sm font-bold text-blue-600 mb-1 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                    {entry.user_full_name || (entry as any).user}
+                    {entry.user}
                   </p>
                   <p className="text-xs text-slate-500 font-mono bg-slate-50 p-3 rounded-lg border border-slate-100">
-                    {entry.detail || (entry as any).details}
+                    {entry.details}
                   </p>
                 </div>
               ))
@@ -282,7 +311,7 @@ export default function AuditAndUsers() {
                       </span>
                     </div>
                     <h3 className="font-bold text-slate-900">{user.full_name}</h3>
-                    <p className="text-[11px] text-slate-400 mb-6 font-mono">@{(user as any).username || user.email}</p>
+                    <p className="text-[11px] text-slate-400 mb-6 font-mono">@{user.username}</p>
                     <div className="flex gap-4 pt-4 border-t border-slate-100">
                       <button onClick={() => openEditModal(user)} className="flex-1 text-[10px] font-black text-slate-400 hover:text-blue-600 uppercase flex items-center justify-center gap-1 transition-colors">
                         <PencilSquareIcon className="w-4 h-4" /> Editar

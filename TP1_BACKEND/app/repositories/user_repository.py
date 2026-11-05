@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.models.user import User
 
@@ -11,6 +12,21 @@ class UserRepository:
 
     def get_by_username(self, username: str) -> User | None:
         return self.db.query(User).filter(User.username == username).first()
+
+    def get_by_username_ci(self, username: str) -> User | None:
+        """Búsqueda sin distinguir mayúsculas/minúsculas ni espacios laterales."""
+        return (
+            self.db.query(User)
+            .filter(func.lower(User.username) == username.strip().lower())
+            .first()
+        )
+
+    def get_by_full_name_ci(self, full_name: str) -> User | None:
+        return (
+            self.db.query(User)
+            .filter(func.lower(func.trim(User.full_name)) == full_name.strip().lower())
+            .first()
+        )
 
     def get_all(self, skip: int = 0, limit: int = 100) -> list[User]:
         return self.db.query(User).offset(skip).limit(limit).all()

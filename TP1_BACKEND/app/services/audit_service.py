@@ -1,7 +1,7 @@
 import io
 import csv
 from typing import List
-from datetime import datetime
+from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
 from app.repositories.audit_repository import AuditRepository
@@ -31,8 +31,10 @@ class AuditService:
         }
         return self.repository.create_log(log_dict)
 
-    def get_report_data(self) -> List[dict]:
-        db_logs = self.repository.get_all(limit=500) or []
+    def get_report_data(
+        self, desde: date | None = None, hasta: date | None = None
+    ) -> List[dict]:
+        db_logs = self.repository.get_all(limit=500, desde=desde, hasta=hasta) or []
 
         formatted_logs = []
         for log in db_logs:
@@ -62,8 +64,36 @@ class AuditService:
 
         return formatted_logs
 
-    def export_applied_recommendations_csv(self):
-        logs = self.get_report_data()
+    def get_pipeline_history(self, limit: int = 50) -> List[dict]:
+        """Historial de entrenamientos MLOps (exitosos, rechazados y fallidos) con su motivo."""
+        status_map = {
+            "ML_MODEL_PROMOTED": "SUCCESS",
+            "ML_MODEL_REJECTED": "REJECTED",
+            "ML_RETRAIN_FAILED": "FAILED",
+        }
+        history = []
+        for log in self.repository.get_by_resource("MLOPS_PIPELINE", limit=limit):
+            if log.action not in status_map:
+                continue
+            history.append(
+                {
+                    "id": log.id,
+                    "status": status_map[log.action],
+                    "user": log.user.full_name if log.user else "System/Unknown",
+                    "timestamp": log.created_at.astimezone(ZoneInfo("America/Lima")).strftime(
+                        "%d/%m/%Y %H:%M:%S"
+                    )
+                    if log.created_at
+                    else "N/A",
+                    "detail": log.detail,
+                }
+            )
+        return history
+
+    def export_applied_recommendations_csv(
+        self, desde: date | None = None, hasta: date | None = None
+    ):
+        logs = self.get_report_data(desde, hasta)
         buffer = io.StringIO()
         writer = csv.DictWriter(
             buffer, fieldnames=["id", "action", "user", "timestamp", "details"]
@@ -72,10 +102,13 @@ class AuditService:
         for log in logs:
             writer.writerow(log)
         buffer.seek(0)
-        return io.BytesIO(buffer.getvalue().encode("utf-8"))
+        # utf-8-sig: Excel muestra bien los acentos
+        return io.BytesIO(buffer.getvalue().encode("utf-8-sig"))
 
-    def export_applied_recommendations_pdf(self):
-        logs = self.get_report_data()
+    def export_applied_recommendations_pdf(
+        self, desde: date | None = None, hasta: date | None = None
+    ):
+        logs = self.get_report_data(desde, hasta)
         buffer = io.BytesIO()
 
         # Crear documento PDF con ReportLab

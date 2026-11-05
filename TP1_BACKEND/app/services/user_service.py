@@ -8,14 +8,26 @@ class UserService:
         self.repository = repository
 
     def create_user(self, user_data: UserCreate):
-        if self.repository.get_by_username(user_data.username):
-            return None
+        data = user_data.model_dump()
+        data["username"] = data["username"].strip()
+        data["full_name"] = data["full_name"].strip()
+
+        if self.repository.get_by_username_ci(data["username"]):
+            raise ValueError("El nombre de usuario ya está registrado.")
+        if self.repository.get_by_full_name_ci(data["full_name"]):
+            raise ValueError("Ya existe un usuario con ese nombre completo.")
 
         hashed_pwd = get_password_hash(user_data.password)
-        return self.repository.create(user_data.model_dump(), hashed_pwd)
+        return self.repository.create(data, hashed_pwd)
 
     def update_user(self, user_id: int, user_data: UserUpdate):
         data = user_data.model_dump(exclude_unset=True)
+
+        if data.get("full_name"):
+            data["full_name"] = data["full_name"].strip()
+            other = self.repository.get_by_full_name_ci(data["full_name"])
+            if other and other.id != user_id:
+                raise ValueError("Ya existe un usuario con ese nombre completo.")
 
         if "password" in data:
             data["hashed_password"] = get_password_hash(data.pop("password"))

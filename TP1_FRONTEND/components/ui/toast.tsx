@@ -22,7 +22,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     
     setTimeout(() => {
       setToast(null);
-    }, 5000);
+    }, 8000);
   };
 
   return (

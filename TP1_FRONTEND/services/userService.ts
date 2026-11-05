@@ -4,7 +4,7 @@ const getAuthToken = () => typeof window !== "undefined" ? `; ${document.cookie}
 
 export interface User {
   id?: number;
-  email: string;
+  username: string;
   full_name: string;
   role: string;
   is_active?: boolean;
@@ -26,7 +26,10 @@ export const userService = {
       headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${getAuthToken()}` },
       body: JSON.stringify(user),
     });
-    if (!res.ok) throw new Error('Error al crear usuario');
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(typeof err.detail === 'string' ? err.detail : 'Error al crear usuario');
+    }
     return res.json();
   },
 
@@ -36,7 +39,10 @@ export const userService = {
       headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${getAuthToken()}` },
       body: JSON.stringify(user),
     });
-    if (!res.ok) throw new Error('Error al actualizar usuario');
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(typeof err.detail === 'string' ? err.detail : 'Error al actualizar usuario');
+    }
     return res.json();
   },
 

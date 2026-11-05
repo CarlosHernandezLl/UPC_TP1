@@ -5,43 +5,51 @@ const getAuthToken = () => typeof window !== "undefined" ? `; ${document.cookie}
 export interface AuditLog {
     id: number;
     action: string;
-    resource: string;
-    user_full_name: string;
+    user: string;
     timestamp: string;
-    detail: string;
+    details: string;
 }
 
+const rangeQuery = (desde?: string, hasta?: string) => {
+    const params = new URLSearchParams();
+    if (desde) params.set("desde", desde);
+    if (hasta) params.set("hasta", hasta);
+    const qs = params.toString();
+    return qs ? `?${qs}` : "";
+};
+
+const authHeaders = () => ({ "Authorization": `Bearer ${getAuthToken()}` });
+
+const failWithDetail = async (res: Response, fallback: string): Promise<never> => {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(typeof body.detail === "string" ? body.detail : fallback);
+};
+
 export const auditService = {
-    async getAuditLogs(): Promise<AuditLog[]> {
-        const res = await fetch(`${API_URL}/audit/`, {
-            headers: { "Authorization": `Bearer ${getAuthToken()}` }
-        });
-        if (!res.ok) throw new Error("Error cargando el Audit Trail");
+    async getAuditLogs(desde?: string, hasta?: string): Promise<AuditLog[]> {
+        const res = await fetch(`${API_URL}/audit/${rangeQuery(desde, hasta)}`, { headers: authHeaders() });
+        if (!res.ok) return failWithDetail(res, "Error cargando el Audit Trail");
         return res.json();
     },
 
     async logManualAction(action: string, detail: string): Promise<void> {
         const res = await fetch(`${API_URL}/audit/log`, {
             method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${getAuthToken()}` },
+            headers: { "Content-Type": "application/json", ...authHeaders() },
             body: JSON.stringify({ action, detail })
         });
         if (!res.ok) throw new Error("Error registrando log manual");
     },
 
-    async exportCsv(): Promise<Blob> {
-        const res = await fetch(`${API_URL}/audit/export-applied-csv`, {
-            headers: { "Authorization": `Bearer ${getAuthToken()}` }
-        });
-        if (!res.ok) throw new Error("Error descargando CSV");
+    async exportCsv(desde?: string, hasta?: string): Promise<Blob> {
+        const res = await fetch(`${API_URL}/audit/export-applied-csv${rangeQuery(desde, hasta)}`, { headers: authHeaders() });
+        if (!res.ok) return failWithDetail(res, "Error descargando CSV");
         return res.blob();
     },
 
-    async exportPdf(): Promise<Blob> {
-        const res = await fetch(`${API_URL}/audit/export-applied-pdf`, {
-            headers: { "Authorization": `Bearer ${getAuthToken()}` }
-        });
-        if (!res.ok) throw new Error("Error descargando PDF");
+    async exportPdf(desde?: string, hasta?: string): Promise<Blob> {
+        const res = await fetch(`${API_URL}/audit/export-applied-pdf${rangeQuery(desde, hasta)}`, { headers: authHeaders() });
+        if (!res.ok) return failWithDetail(res, "Error descargando PDF");
         return res.blob();
     }
 };
