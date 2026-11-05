@@ -1,25 +1,65 @@
 import logging
+
+import numpy as np
+import pandas as pd
+
+from app.ml_engine.ssd_filter import SSDFilter
 from app.repositories.simulation_repository import SimulationRepository
 from app.repositories.hvac_repository import HvacRepository
+from app.repositories.ml_model_version_repository import MlModelVersionRepository
 
 logger = logging.getLogger(__name__)
+
+MAX_POINTS_PER_POWER_LEVEL = 25
 
 
 class DashboardService:
     # 🎯 RECIBE REPOSITORIOS, NO LA SESIÓN SQL
-    def __init__(self, sim_repo: SimulationRepository, hvac_repo: HvacRepository):
+    def __init__(
+        self,
+        sim_repo: SimulationRepository,
+        hvac_repo: HvacRepository,
+        model_repo: MlModelVersionRepository | None = None,
+    ):
+        self.model_repo = model_repo
         self.sim_repo = sim_repo
         self.hvac_repo = hvac_repo
 
-    def get_plant_analytics(self, r2_score_current: float) -> dict:
+    def _thermal_signature(self) -> list[dict]:
+        """Puntos estacionarios históricos (humedad g/kg vs potencia %), submuestreados por nivel de potencia."""
+        rows = self.hvac_repo.get_power_humidity_series()
+        if not rows:
+            return []
+
+        df = pd.DataFrame(rows, columns=["ts", "dryer_power", "room_w"])
+        stable = SSDFilter.extract_stationary_minutes(df)
+        if stable.empty:
+            return []
+
+        points = []
+        for power, group in stable.groupby("dryer_power"):
+            if len(group) > MAX_POINTS_PER_POWER_LEVEL:
+                idx = np.linspace(0, len(group) - 1, MAX_POINTS_PER_POWER_LEVEL).astype(int)
+                group = group.iloc[idx]
+            points.extend(
+                {"hum": round(float(w), 3), "pwr": float(power)} for w in group["room_w"]
+            )
+        return points
+
+    def get_plant_analytics(self, r2_score_current: float | None = None) -> dict:
         """
         Calcula la analítica de BI a partir de las bitácoras operativas
         para alimentar el Dashboard gerencial en Next.js.
         """
         try:
             # 1. Obtenemos las últimas 24 simulaciones registradas
-            # Asumiendo que tienes un método get_recent_simulations(limit) en tu repositorio
-            simulations = self.sim_repo.get_recent_simulations(limit=24)
+            # Solo recomendaciones aplicadas: un descarte no actualiza gráfica ni indicadores (HU013-2)
+            simulations = self.sim_repo.get_recent_applied_simulations(limit=24)
+
+            # R² del modelo Champion vigente en BD (se actualiza tras cada reentrenamiento)
+            champion = self.model_repo.get_champion_model() if self.model_repo else None
+            if champion is not None and champion.r2_score is not None:
+                r2_score_current = champion.r2_score
 
             audit_data = []
             ahorro_acumulado = 0.0
@@ -29,7 +69,8 @@ class DashboardService:
                 for idx, sim in enumerate(reversed(simulations)):
                     # Mapeo para el gráfico AreaChart: Real vs Recomendado
                     ideal_pwr = float(sim.recommended_power)
-                    real_pwr = float(sim.applied_power)
+                    # "Real" = potencia que el PLC operaba antes de la decisión
+                    real_pwr = float(sim.current_power)
 
                     audit_data.append(
                         {
@@ -39,7 +80,7 @@ class DashboardService:
                         }
                     )
 
-                    # Si el humano aplicó más de lo ideal, calculamos el desperdicio
+                    # Si la planta operaba por encima de lo ideal, hay sobreconsumo evitable
                     if real_pwr > ideal_pwr:
                         ahorro_acumulado += real_pwr - ideal_pwr
 
@@ -47,14 +88,7 @@ class DashboardService:
                 diferencial_kwh = round(ahorro_acumulado * 1.5, 1)
 
             # 2. Obtenemos puntos estables para la gráfica de firma térmica (ScatterChart)
-            hvac_data = self.hvac_repo.get_latest(limit=100)
-            model_correlation = []
-
-            if hvac_data:
-                for record in hvac_data:
-                    model_correlation.append(
-                        {"hum": float(record.room_w), "pwr": float(record.dryer_power)}
-                    )
+            model_correlation = self._thermal_signature()
 
             # 3. Retornamos la estructura exacta que espera DashboardMetrics en el Frontend
             return {

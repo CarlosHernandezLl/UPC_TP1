@@ -2,13 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ScatterChart, Scatter
+  Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter
 } from 'recharts';
 import {
-  ArrowTrendingUpIcon,
   BoltIcon,
   CurrencyDollarIcon,
-  ArrowPathIcon,
   ExclamationTriangleIcon,
   ShieldCheckIcon,
   ArrowPathRoundedSquareIcon
@@ -16,7 +14,10 @@ import {
 
 import { dashboardService, DashboardMetrics } from '@/services/dashboardService';
 
+const MAX_KWH_COST = 5; // USD/kWh, tope razonable para evitar proyecciones irreales
+
 export default function Dashboard() {
+  const [tariffWarning, setTariffWarning] = useState<string | null>(null);
   const [kwhCost, setKwhCost] = useState(0.15);
   const [isClient, setIsClient] = useState(false);
 
@@ -119,31 +120,31 @@ export default function Dashboard() {
               <div>
                 <h2 className="text-lg font-bold text-slate-800">Auditoría Estacionaria: Consumo Real vs. Recomendación IA</h2>
                 <p className="text-xs text-slate-400 font-medium">
-                  Evaluación sobre las últimas 24 ventanas en estado estable (Filtro SSD - Data de Oro)
+                  Últimas 24 recomendaciones aplicadas: potencia estimada por el operador vs. potencia recomendada por la IA
                 </p>
               </div>
               <div className="flex gap-4">
-                <LegendItem color="bg-rose-400" label="Real (PLC)" />
-                <LegendItem color="bg-blue-500" label="Ideal (ML)" />
+                <LegendItem color="bg-rose-400" label="Estimada" />
+                <LegendItem color="bg-blue-500" label="Recomendada" />
               </div>
             </div>
             <div className="h-80 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={metrics.auditData}>
-                  <defs>
-                    <linearGradient id="colorIdeal" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="sample_id" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 9 }} angle={-15} textAnchor="end" height={50} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} unit="%" />
-                  <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 16px rgba(0,0,0,0.05)' }} />
-                  <Area type="monotone" dataKey="ideal" name="Potencia Ideal (%)" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorIdeal)" />
-                  <Line type="linear" dataKey="real" name="Potencia Real (%)" stroke="#fb7185" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 2 }} />
-                </AreaChart>
-              </ResponsiveContainer>
+              {metrics.auditData.length === 0 ? (
+                <div className="h-full flex items-center justify-center text-xs text-slate-400 italic font-medium bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                  Aún no hay recomendaciones aplicadas. La gráfica se actualizará con la primera.
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={metrics.auditData}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="sample_id" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 9 }} angle={-15} textAnchor="end" height={50} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} unit="%" domain={[0, 100]} />
+                    <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 8px 16px rgba(0,0,0,0.05)' }} />
+                    <Line type="monotone" dataKey="ideal" name="Potencia Recomendada (%)" stroke="#3b82f6" strokeWidth={3} dot={{ r: 2 }} />
+                    <Line type="monotone" dataKey="real" name="Potencia Estimada (%)" stroke="#fb7185" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 2 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </div>
 
@@ -156,12 +157,22 @@ export default function Dashboard() {
                 <div className="relative">
                   <span className="absolute inset-y-0 left-3 flex items-center text-slate-400 font-bold">$</span>
                   <input
-                    type="number" step="0.01" min="0"
+                    type="number" step="0.01" min="0" max={MAX_KWH_COST}
                     value={kwhCost}
-                    onChange={(e) => setKwhCost(parseFloat(e.target.value) || 0)}
+                    onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
+                    onChange={(e) => {
+                      const v = Math.max(0, parseFloat(e.target.value) || 0);
+                      if (v > MAX_KWH_COST) {
+                        setTariffWarning(`La tarifa máxima permitida es ${MAX_KWH_COST} USD/kWh. Verifique el valor ingresado.`);
+                        return;
+                      }
+                      setTariffWarning(v > 1 ? 'Valor atípico: la tarifa supera 1 USD/kWh. Verifique que sea correcta.' : null);
+                      setKwhCost(v);
+                    }}
                     className="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-700 transition-all"
                   />
                 </div>
+                {tariffWarning && <p className="text-[10px] text-amber-600 font-bold mt-2">{tariffWarning}</p>}
               </div>
 
               <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
@@ -183,8 +194,8 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis type="number" dataKey="hum" name="Humedad Sala" unit="%" axisLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} domain={['auto', 'auto']} />
-                <YAxis type="number" dataKey="pwr" name="Potencia Secador" unit="%" axisLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} domain={['auto', 'auto']} />
+                <XAxis type="number" dataKey="hum" name="Humedad Sala" unit=" g/kg" axisLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} domain={['auto', 'auto']} label={{ value: 'Humedad de sala (g/kg)', position: 'insideBottom', offset: -10, fill: '#64748b', fontSize: 11 }} />
+                <YAxis type="number" dataKey="pwr" name="Potencia Secador" unit="%" axisLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} domain={[0, 100]} label={{ value: 'Potencia (%)', angle: -90, position: 'insideLeft', fill: '#64748b', fontSize: 11 }} />
                 <Tooltip cursor={{ strokeDasharray: '3 3' }} />
                 <Scatter name="Registros Estacionarios" data={metrics.modelCorrelation} fill="#06b6d4" />
               </ScatterChart>
@@ -198,7 +209,16 @@ export default function Dashboard() {
 }
 
 // Subcomponentes visuales
-function MetricCard({ title, value, trend, subtitle, icon: Icon, color }: any) {
+interface MetricCardProps {
+  title: string;
+  value: string;
+  trend?: string;
+  subtitle?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+}
+
+function MetricCard({ title, value, trend, subtitle, icon: Icon, color }: MetricCardProps) {
   return (
     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
       <div className={`absolute top-0 left-0 w-1.5 h-full ${color}`}></div>

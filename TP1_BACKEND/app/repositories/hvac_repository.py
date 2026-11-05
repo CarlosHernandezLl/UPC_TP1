@@ -22,6 +22,22 @@ class HvacRepository:
             .all()
         )
 
+    def get_power_humidity_series(self) -> list[tuple]:
+        """Serie histórica completa (ts, potencia, humedad de sala), solo las columnas necesarias."""
+        return (
+            self.db.query(
+                HvacHistoricalData.timestamp,
+                HvacHistoricalData.dryer_power,
+                HvacHistoricalData.room_w,
+            )
+            .filter(
+                HvacHistoricalData.dryer_power.isnot(None),
+                HvacHistoricalData.room_w.isnot(None),
+            )
+            .order_by(HvacHistoricalData.timestamp)
+            .all()
+        )
+
     def get_by_batch_id(self, batch_id: str) -> list[HvacHistoricalData]:
         """Extrae exclusivamente los registros del lote especificado para el re-entrenamiento MLOps"""
         return (

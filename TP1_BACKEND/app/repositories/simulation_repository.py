@@ -45,13 +45,11 @@ class SimulationRepository:
             .all()
         )
 
-    def get_recent_simulations(self, limit: int = 24) -> list[SimulationLog]:
-        """
-        🚀 NUEVO: Obtiene las últimas simulaciones de TODA LA PLANTA sin filtrar por usuario.
-        Requerido por el DashboardService para graficar el área de consumo Real vs Ideal.
-        """
+    def get_recent_applied_simulations(self, limit: int = 24) -> list[SimulationLog]:
+        """Últimas recomendaciones APLICADAS de toda la planta (los descartes no cuentan para el Dashboard)."""
         return (
             self.db.query(SimulationLog)
+            .filter(SimulationLog.action == "RECOMMENDATION_APPLIED")
             .order_by(SimulationLog.timestamp.desc())
             .limit(limit)
             .all()
