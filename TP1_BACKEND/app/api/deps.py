@@ -3,7 +3,6 @@ from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
-from app.ml_engine.simulator_engine import SimulatorEngine
 from app.core.config import settings
 from app.core.database import get_db
 
@@ -15,6 +14,7 @@ from app.services.audit_service import AuditService
 # (Importación interna solo para el inyector de dependencias de FastAPI)
 from app.repositories.user_repository import UserRepository
 from app.repositories.audit_repository import AuditRepository
+from app.repositories.revoked_token_repository import RevokedTokenRepository
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -42,6 +42,7 @@ def get_current_user(
     user_service: UserService = Depends(
         get_user_service
     ),  # 🚀 2. INYECTAMOS EL SERVICIO
+    db: Session = Depends(get_db),
 ) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -56,6 +57,11 @@ def get_current_user(
         if username is None:
             raise credentials_exception
     except JWTError:
+        raise credentials_exception
+
+    # Token revocado al cerrar sesión: ya no es válido aunque no haya vencido
+    jti = payload.get("jti")
+    if jti and RevokedTokenRepository(db).is_revoked(jti):
         raise credentials_exception
 
     # 🚀 3. CONSUMO PURO DEL SERVICIO: El interceptor ignora cómo y dónde se busca en BD
@@ -101,7 +107,3 @@ def check_role(required_roles: list[str]):
         return current_user
 
     return role_checker
-
-
-def get_simulator_engine(request: Request) -> SimulatorEngine:
-    return request.app.state.simulator_engine

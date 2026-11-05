@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 import bcrypt
@@ -25,5 +26,6 @@ def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
         expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
 
-    to_encode.update({"exp": expire})
+    # jti único: permite revocar este token concreto al cerrar sesión
+    to_encode.update({"exp": expire, "jti": str(uuid.uuid4())})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)

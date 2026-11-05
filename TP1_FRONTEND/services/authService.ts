@@ -27,19 +27,24 @@ export const authService = {
     return data;
   },
 
-  async registerFirstUser() {
-    const res = await fetch(`${API_URL}/auth/register-first-user`, { method: "POST" });
-    if (!res.ok) throw new Error("Error al registrar administrador inicial");
-    return await res.json();
-  },
-
   logout() {
+    // Revoca el token en el servidor (best-effort: la sesión local se cierra igual si falla)
+    const token = `; ${document.cookie}`.split(`; scada_token=`).pop()?.split(';').shift() || "";
+    if (token) {
+      fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        keepalive: true,
+      }).catch(() => { /* sin acción */ });
+    }
     document.cookie = "scada_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "scada_email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     if (typeof window !== "undefined") {
       localStorage.removeItem("scada_userName");
       localStorage.removeItem("scada_userRole");
+      localStorage.removeItem("scada_userEmail");
     }
-    window.location.href = "/login";
+    // replace: la página protegida no queda en el historial
+    window.location.replace("/login");
   }
 };

@@ -19,24 +19,42 @@ const links = [
   { name: 'Ingesta de Datos', href: '/ingesta', icon: CircleStackIcon },
   { name: 'Entrenamiento IA', href: '/ia-control', icon: CpuChipIcon },
   { name: 'Simulador de Ahorro', href: '/simulador', icon: BeakerIcon },
-  { name: 'Auditoria', href: '/auditoria', icon: ShieldCheckIcon },
+  { name: 'Auditoría', href: '/auditoria', icon: ShieldCheckIcon },
 ];
 
 export default function SideNav() {
   const pathname = usePathname();
   const [userName, setUserName] = useState("Cargando...");
-  const [userEmail, setUserEmail] = useState("");
   const [userRole, setUserRole] = useState("a");
 
   useEffect(() => {
     // Recuperamos los datos del operador guardados en el Login
     const storedName = localStorage.getItem("scada_userName");
-    const storedEmail = localStorage.getItem("scada_userEmail");
     const storedRole = localStorage.getItem("scada_userRole");
 
+    // Lectura de localStorage tras montar (evita desajuste de hidratación)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setUserName(storedName || "Operador");
-    if (storedEmail) setUserEmail(storedEmail);
     if (storedRole) setUserRole(storedRole);
+  }, [pathname]);
+
+  // Guardia de sesión: si el token ya no existe (p. ej. Atrás tras cerrar sesión, página restaurada
+  // desde bfcache), expulsamos al login sin dejar la página protegida en el historial.
+  useEffect(() => {
+    if (pathname === '/login') return;
+    const hasSession = () => document.cookie.split('; ').some((c) => c.startsWith('scada_token=') && c.length > 'scada_token='.length);
+    const check = () => {
+      if (!hasSession()) window.location.replace('/login');
+    };
+    check();
+    window.addEventListener('pageshow', check);
+    window.addEventListener('popstate', check);
+    window.addEventListener('focus', check);
+    return () => {
+      window.removeEventListener('pageshow', check);
+      window.removeEventListener('popstate', check);
+      window.removeEventListener('focus', check);
+    };
   }, [pathname]);
 
   // Si estás en el Login, no renderizamos la barra de navegación lateral
@@ -49,9 +67,9 @@ export default function SideNav() {
     // El Administrador tiene bypass absoluto sobre todo el ecosistema SCADA
     if (role === 'ADMIN') return true;
 
-    // El Supervisor solo accede a operar y alimentar datos
+    // El Supervisor opera, alimenta datos y monitorea el Dashboard
     if (role === 'SUPERVISOR') {
-      return link.href === '/simulador' || link.href === '/ingesta';
+      return link.href === '/dashboard' || link.href === '/simulador' || link.href === '/ingesta';
     }
 
     // El Gerente de Operaciones se concentra de forma exclusiva en KPIs de ahorro

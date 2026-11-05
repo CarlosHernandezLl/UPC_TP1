@@ -19,10 +19,7 @@ export default function LoginPage() {
     try {
       const data = await authService.login(username, password);
 
-      // 🔒 Configuración de Cookies con atributo Secure para producción en Vercel (HTTPS)
-      const cookieConfig = "path=/; max-age=86400; SameSite=Lax; Secure";
-      document.cookie = `scada_token=${data.access_token}; ${cookieConfig}`;
-      document.cookie = `scada_email=${username}; ${cookieConfig}`;
+      // authService.login ya fija las cookies de sesión (path=/, 60 min, igual que el JWT)
 
       // Persistencia local para la UI del SideNav y saludos
       localStorage.setItem("scada_userName", data.user_info.full_name);
@@ -31,8 +28,8 @@ export default function LoginPage() {
       // 🎯 CORRECCIÓN FINAL: Apuntamos a la raíz protegida para ver el Home de bienvenida
       router.push("/");
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || "Error al iniciar sesión");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
