@@ -17,6 +17,8 @@ import { useToast } from '@/components/ui/toast';
 export default function DataIngestion() {
   const { showToast } = useToast();
   const acceptedFileTypes = ".csv,.txt,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  const PIPELINE_ERROR_MSG = "Ocurrió un error crítico al procesar el pipeline termodinámico. Revisa los logs del servidor.";
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [history, setHistory] = useState<IngestionLog[]>([]);
 
@@ -46,7 +48,13 @@ export default function DataIngestion() {
       return;
     }
 
+    if (startDate && endDate && new Date(endDate) <= new Date(startDate)) {
+      showToast('error', 'La fecha de fin debe ser mayor a la fecha de inicio.');
+      return;
+    }
+
     setIsProcessing(true);
+    setErrorDetail(null);
 
     try {
       await dataService.uploadHvacData(
@@ -57,7 +65,7 @@ export default function DataIngestion() {
         endDate || undefined
       );
 
-      showToast('success', '¡Dataset procesado y sincronizado con éxito!')
+      showToast('success', 'Sincronizado: dataset procesado e inyectado con éxito.')
 
       setFilePlc(null);
       setFileLog(null);
@@ -66,7 +74,11 @@ export default function DataIngestion() {
       await fetchHistory();
     } catch (error) {
       console.error("Error inyectando el dataset:", error);
-      showToast('error', "Ocurrió un error crítico al procesar el pipeline termodinámico. Revisa los logs del servidor.");
+      // Aviso estándar del pipeline; el detalle (archivo/columna a corregir) queda visible bajo el formulario
+      showToast('error', PIPELINE_ERROR_MSG);
+      setErrorDetail(error instanceof Error ? error.message : null);
+      // El backend registra la carga fallida: refrescamos la tabla para mostrarla
+      await fetchHistory();
     } finally {
       setIsProcessing(false);
     }
@@ -98,7 +110,7 @@ export default function DataIngestion() {
                     <span className="block text-xs font-bold text-slate-500 uppercase mb-2">Datos PLC</span>
                     <input
                       type="file"
-                      accept=".csv"
+                      accept={acceptedFileTypes}
                       onChange={(e) => setFilePlc(e.target.files?.[0] || null)}
                       className="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
@@ -128,7 +140,7 @@ export default function DataIngestion() {
                     <span className="block text-xs font-bold text-slate-500 uppercase mb-2">Clima Exterior</span>
                     <input
                       type="file"
-                      accept=".csv"
+                      accept={acceptedFileTypes}
                       onChange={(e) => setFileExt(e.target.files?.[0] || null)}
                       className="text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
@@ -237,6 +249,13 @@ export default function DataIngestion() {
                     {isProcessing ? 'Procesando Dataset...' : 'Procesar e Inyectar'}
                   </button>
                 </div>
+
+                {errorDetail && (
+                  <div role="alert" className="p-4 bg-rose-50 rounded-lg border border-rose-200 text-[11px] text-rose-700 font-medium break-words">
+                    <span className="block font-black uppercase text-[10px] mb-1">Detalle del error</span>
+                    {errorDetail}
+                  </div>
+                )}
 
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
                   <p className="text-[11px] text-blue-700 leading-relaxed">

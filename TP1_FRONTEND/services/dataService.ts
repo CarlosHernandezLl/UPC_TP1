@@ -33,7 +33,10 @@ export const dataService = {
       headers: { "Authorization": `Bearer ${getAuthToken()}` },
       body: formData,
     });
-    if (!res.ok) throw new Error("Error en el procesamiento del dataset");
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(typeof error.detail === "string" ? error.detail : "Error en el procesamiento del dataset");
+    }
     return res.json();
   }
 };
