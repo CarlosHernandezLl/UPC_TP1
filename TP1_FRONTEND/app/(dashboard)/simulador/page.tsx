@@ -127,16 +127,34 @@ export default function Simulator() {
 
   // Mensaje según qué grupo de variables falta (HU0006-2, HU0007-2, HU0008-2); en cualquier otro caso, el genérico
   const GENERIC_MISSING_MSG = 'Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital';
+  const MISSING_NAMES: Record<string, string> = {
+    tempExt: "Temperatura externa", humExt: "Humedad externa",
+    tempUma: "Temperatura de la UMA", humUma: "Humedad de la UMA", presionInyeccion: "Presión de la UMA",
+    pwrActual: "Potencia", humSala: "Humedad actual de la sala", setpoint: "Humedad objetivo de la sala",
+    tempSala: "Temperatura de la sala",
+  };
+  // Grupos de variables: si falta el grupo completo se nombra el grupo; si no, cada variable por separado
+  const MISSING_GROUPS: { keys: string[]; name: string; huMsg?: string }[] = [
+    { keys: ["tempExt", "humExt"], name: "Temperatura y Humedad externa",
+      huMsg: 'Por favor, llene las variables de Temperatura y Humeda externa antes de consultar al Gemelo Digital' },
+    { keys: ["tempUma", "humUma", "presionInyeccion"], name: "Temperatura, Humedad y Presión de la UMA",
+      huMsg: 'Por favor, llene las variables de Temperatura, Humedad y Presion de la UMA antes de consultar al Gemelo Digital' },
+    { keys: ["humSala", "tempSala"], name: "Temperatura y Humedad actual de la sala" },
+  ];
   const buildMissingMessage = (missing: string[], totalRequired: number): string => {
-    const within = (group: string[]) => missing.every((k) => group.includes(k));
     if (missing.length === totalRequired) return GENERIC_MISSING_MSG;
-    if (within(["tempExt", "humExt"]))
-      return 'Por favor, llene las variables de Temperatura y Humeda externa antes de consultar al Gemelo Digital';
-    if (within(["tempUma", "humUma", "presionInyeccion"]))
-      return 'Por favor, llene las variables de Temperatura, Humedad y Presion de la UMA antes de consultar al Gemelo Digital';
-    if (within(["pwrActual"]))
-      return 'Por favor, llene la variable de Potencia antes de consultar al Gemelo Digital';
-    return GENERIC_MISSING_MSG;
+    const parts: string[] = [];
+    const used = new Set<string>();
+    let single: (typeof MISSING_GROUPS)[number] | undefined;
+    for (const g of MISSING_GROUPS) {
+      if (g.keys.every((k) => missing.includes(k))) { parts.push(g.name); g.keys.forEach((k) => used.add(k)); single = g; }
+    }
+    missing.filter((k) => !used.has(k)).forEach((k) => parts.push(MISSING_NAMES[k]));
+    // Un único grupo completo conserva la redacción de las HU (HU0006-2, HU0007-2)
+    if (parts.length === 1 && single?.huMsg) return single.huMsg;
+    const list = parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(", ")} y ${parts[parts.length - 1]}`;
+    const isPlural = parts.length > 1 || (single !== undefined && parts.length === 1);
+    return `Por favor, llene ${isPlural ? "las variables de" : "la variable de"} ${list} antes de consultar al Gemelo Digital`;
   };
 
   const handleSimulate = async () => {

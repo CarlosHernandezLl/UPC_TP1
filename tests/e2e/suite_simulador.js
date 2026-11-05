@@ -6,6 +6,8 @@ const MSG = {
   ext: 'Por favor, llene las variables de Temperatura y Humeda externa antes de consultar al Gemelo Digital',
   uma: 'Por favor, llene las variables de Temperatura, Humedad y Presion de la UMA antes de consultar al Gemelo Digital',
   pwr: 'Por favor, llene la variable de Potencia antes de consultar al Gemelo Digital',
+  sala: 'Por favor, llene las variables de Temperatura y Humedad actual de la sala antes de consultar al Gemelo Digital',
+  setpoint: 'Por favor, llene la variable de Humedad objetivo de la sala antes de consultar al Gemelo Digital',
   all: 'Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital',
 };
 
@@ -97,10 +99,10 @@ module.exports = async function (browser, ctx) {
       await expectAccepted(page, 'humSala', ['55']);
     }));
 
-  await cp('CP031', 'Sala vacía: aviso general de variables de operación', () =>
+  await cp('CP031', 'Sala vacía: aviso con solo las variables faltantes de la sala', () =>
     L.withSession(browser, async (page) => {
       await open(page);
-      await missingMessage(page, { tempSala: '', humSala: '' }, MSG.all);
+      await missingMessage(page, { tempSala: '', humSala: '' }, MSG.sala);
     }));
 
   await cp('CP032', 'Objetivo de humedad: rechaza 110 y acepta 55', () =>
@@ -110,10 +112,10 @@ module.exports = async function (browser, ctx) {
       await expectAccepted(page, 'setpoint', ['55']);
     }));
 
-  await cp('CP033', 'Objetivo vacío: aviso general y no se ejecuta el modelo', () =>
+  await cp('CP033', 'Objetivo vacío: aviso con solo la variable faltante y no se ejecuta el modelo', () =>
     L.withSession(browser, async (page) => {
       await open(page);
-      await missingMessage(page, { setpoint: '' }, MSG.all);
+      await missingMessage(page, { setpoint: '' }, MSG.setpoint);
     }));
 
   await cp('CP035', 'Todo vacío: "Por favor, llene todas las variables de operación…" y borde rojo', () =>
