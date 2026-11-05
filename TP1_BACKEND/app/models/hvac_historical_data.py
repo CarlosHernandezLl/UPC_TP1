@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from sqlalchemy import Column, Integer, String, Boolean, BigInteger, Float, DateTime
+from sqlalchemy import Column, Boolean, BigInteger, Float, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from app.core.database import Base
 

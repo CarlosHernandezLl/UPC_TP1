@@ -15,3 +15,7 @@ env/
 
 # Ignorar variables de entorno
 .env
+# Modelos entrenados en runtime (viven en la BD/volumen); solo se versiona el modelo base
+app/ml_engine/saved_models/*.json
+!app/ml_engine/saved_models/xgboost_hvac_v1.json
+!app/ml_engine/saved_models/xgboost_metadata.json

@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -11,14 +12,24 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
-    # Inteligencia Artificial y Clima (Con valores por defecto seguros)
+    # Inteligencia Artificial (valor por defecto seguro)
     GEMINI_API_KEY: Optional[str] = ""
-    OPENWEATHER_API_KEY: Optional[str] = ""
-    WEATHER_LAT: float = -12.046374  # Latitud Lima, Perú
-    WEATHER_LON: float = -77.042793  # Longitud Lima, Perú
+
+    # Administrador inicial (solo se crea si no existen usuarios)
+    FIRST_ADMIN_USERNAME: str = "admin_hvac"
+    FIRST_ADMIN_FULL_NAME: str = "Administrador de Planta"
+    FIRST_ADMIN_PASSWORD: Optional[str] = ""
 
     # CORS para Producción
     FRONTEND_URL: str = "https://upc-tp-1-sigma.vercel.app"
+
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def _normalize_db_url(cls, v: str) -> str:
+        # Render entrega 'postgres://', que SQLAlchemy 2 no reconoce
+        if v.startswith("postgres://"):
+            return "postgresql://" + v[len("postgres://"):]
+        return v
 
     # Configuración estricta Pydantic V2
     model_config = SettingsConfigDict(

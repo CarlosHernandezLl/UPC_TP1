@@ -1,0 +1,12 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+logs/
+data/
+.env
+*.log
+# Modelos entrenados: viven en el volumen; solo se incluye el modelo base
+app/ml_engine/saved_models/*
+!app/ml_engine/saved_models/xgboost_hvac_v1.json
+!app/ml_engine/saved_models/xgboost_metadata.json

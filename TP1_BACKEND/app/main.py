@@ -1,32 +1,20 @@
 import os
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
-from app.ml_engine import simulator_engine
 from app.repositories.ml_model_version_repository import (
     MlModelVersionRepository,
 )
 from app.services.ml_model_service import MlModelService
-from app.repositories.ml_model_version_repository import (
-    MlModelVersionRepository,
-)
-from app.core.database import Base, SessionLocal, engine
+from app.core.config import settings
+from app.core.database import SessionLocal
+from app.repositories.gmp_repository import GmpRepository
+from app.repositories.user_repository import UserRepository
+from app.services.auth_service import AuthService
 from app.ml_engine.simulator_engine import (
     simulator_engine_instance,
-)  # 🚀 la instancia real, no el módulo
-
-# 1. IMPORTACIÓN DE MODELOS (Obligatorio para que SQLAlchemy registre todas las tablas)
-# Al importarlos sin el prefijo "TP1_BACKEND.", evitamos caídas en Docker/Render y aseguramos
-# que Base.metadata.create_all() construya las 8 tablas de nuestra arquitectura GxP.
-import app.models.user
-import app.models.hvac_historical_data
-import app.models.ml_model_version
-import app.models.simulation_log
-import app.models.audit_trail
-import app.models.data_ingestion_log
-import app.models.energy_pricing
-import app.models.gmp_parameter
+)  # la instancia real, no el módulo
 
 # 2. IMPORTACIÓN DE ENRUTADORES (Reemplazamos el antiguo 'ai' por los 3 nuevos dominios limpios)
 from app.api.routers import (
@@ -44,7 +32,8 @@ log_path = os.path.join(os.path.dirname(__file__), "..", "logs", "app.log")
 os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
 logging.basicConfig(
-    filename=log_path,
+    # stdout para que Render/Docker muestren los errores; además se guarda en archivo
+    handlers=[logging.StreamHandler(), logging.FileHandler(log_path, encoding="utf-8")],
     level=logging.ERROR,
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
@@ -52,14 +41,28 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Sincronización automática de esquema relacional en la base de datos
-try:
-    Base.metadata.create_all(bind=engine)
-    logger.info("✨ [SQLAlchemy] Tablas GxP verificadas y sincronizadas exitosamente.")
-except Exception as e:
-    logger.error(
-        f"❌ [SQLAlchemy] Error al inicializar tablas en la base de datos: {e}"
-    )
+# El esquema lo gestiona Alembic: `alembic upgrade head` (ver entrypoint de Docker).
+
+
+def _seed_initial_admin(db) -> None:
+    """En una BD vacía, crea el administrador inicial si hay FIRST_ADMIN_PASSWORD."""
+    if not settings.FIRST_ADMIN_PASSWORD:
+        return
+    try:
+        AuthService(UserRepository(db)).register_initial_admin(GmpRepository(db))
+        logger.info("[Startup] Administrador inicial creado.")
+    except HTTPException:
+        pass  # ya existen usuarios
+
+
+def _resolve_model_path(stored_path: str) -> str | None:
+    """Resuelve la ruta del modelo; si la guardada no existe (otro SO/contenedor),
+    busca el mismo archivo dentro de saved_models/."""
+    if os.path.exists(stored_path):
+        return stored_path
+    models_dir = os.path.join(os.path.dirname(__file__), "ml_engine", "saved_models")
+    candidate = os.path.join(models_dir, os.path.basename(stored_path.replace("\\", "/")))
+    return candidate if os.path.exists(candidate) else None
 
 
 @asynccontextmanager
@@ -67,14 +70,14 @@ async def lifespan(app: FastAPI):
     # --- Startup ---
     db = SessionLocal()
     try:
+        _seed_initial_admin(db)
         repo = MlModelVersionRepository(db)
         model_service = MlModelService(repo)
         champion = model_service.get_active_model_version()
 
-        if champion is not None and os.path.exists(champion.model_path):
-            simulator_engine_instance.reload_model_in_memory(
-                model_path=champion.model_path
-            )
+        model_path = _resolve_model_path(champion.model_path) if champion else None
+        if model_path:
+            simulator_engine_instance.reload_model_in_memory(model_path=model_path)
             logger.info(
                 f"✨ [Startup] Champion cargado desde BD: {champion.version_tag}"
             )

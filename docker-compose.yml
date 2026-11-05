@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: hvac_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hvac_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./TP1_BACKEND
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/hvac_db
+      SECRET_KEY: ${SECRET_KEY:-cambia-esta-clave-en-produccion}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      FRONTEND_URL: http://localhost:3000
+      # Crea el administrador inicial en una BD vacía (usuario admin_hvac)
+      FIRST_ADMIN_PASSWORD: ${FIRST_ADMIN_PASSWORD:-Admin12345}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      # Los modelos entrenados persisten entre reinicios (se inicializa con el modelo base)
+      - models:/app/app/ml_engine/saved_models
+
+  frontend:
+    build:
+      context: ./TP1_FRONTEND
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
+  models:
