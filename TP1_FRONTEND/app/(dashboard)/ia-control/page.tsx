@@ -4,8 +4,6 @@ import React, { useState, useEffect } from 'react';
 import {
   CpuChipIcon,
   ArrowPathIcon,
-  AdjustmentsVerticalIcon,
-  BeakerIcon,
   ShieldCheckIcon,
   ServerIcon,
   CheckBadgeIcon,
@@ -15,9 +13,19 @@ import {
 } from '@heroicons/react/24/outline';
 
 // 🚀 CORRECCIÓN 1: Importamos los 2 servicios especializados en lugar del monolito
-import { mlopsService, ModelMetrics } from '@/services/mlopsService';
+import { mlopsService, ModelMetrics, TrainingLogEntry } from '@/services/mlopsService';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { gmpService } from '@/services/gmpService';
 import { useToast } from '@/components/ui/toast';
+
+const FEATURE_LABELS: Record<string, string> = {
+  dryer_power: 'Potencia del secador',
+  outdoor_temp: 'Temp. exterior',
+  outdoor_w: 'Humedad abs. exterior',
+  ahu_temp: 'Temp. UMA',
+  ahu_w: 'Humedad abs. UMA',
+  injection_pressure: 'Presión de inyección',
+};
 
 export default function IAControl() {
 
@@ -27,6 +35,7 @@ export default function IAControl() {
   const [isSavingConfig, setIsSavingConfig] = useState(false);
 
   const [modelStats, setModelStats] = useState<ModelMetrics | null>(null);
+  const [trainingLog, setTrainingLog] = useState<TrainingLogEntry[]>([]);
   const [userRole, setUserRole] = useState<string>("SUPERVISOR");
 
   const [minHum, setMinHum] = useState(40);
@@ -39,6 +48,7 @@ export default function IAControl() {
     }
 
     fetchCurrentMetrics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCurrentMetrics = async () => {
@@ -48,6 +58,12 @@ export default function IAControl() {
       // 🚀 CORRECCIÓN 2: Separación de llamadas a los servicios respectivos
       const metricsData = await mlopsService.getActiveModelMetrics();
       setModelStats(metricsData);
+
+      try {
+        setTrainingLog(await mlopsService.getTrainingLog());
+      } catch (e) {
+        console.error("No se pudo leer el historial de entrenamiento", e);
+      }
 
       const gmpData = await gmpService.getGmpParameters();
       if (gmpData) {
@@ -72,11 +88,24 @@ export default function IAControl() {
 
       // Volvemos a consultar para que las tarjetas se actualicen con el nuevo Champion
       await fetchCurrentMetrics();
-    } catch (error: any) {
-      showToast('error', error.message || 'Fallo crítico durante la ejecución del entrenamiento.');
+    } catch {
+      showToast('error', 'Fallo crítico en el pipeline MLOps');
+      // El motivo del fallo queda registrado: refrescamos el historial
+      try { setTrainingLog(await mlopsService.getTrainingLog()); } catch { /* sin acción */ }
     } finally {
       setIsTraining(false);
     }
+  };
+
+  // Los límites de humedad deben ser un porcentaje físicamente posible (0–100): lo demás no se digita (HU0004-1)
+  const blockInvalidKeys = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault();
+  };
+
+  const handleLimitChange = (raw: string, setter: React.Dispatch<React.SetStateAction<number>>) => {
+    const value = raw === "" ? 0 : parseFloat(raw);
+    if (isNaN(value) || value < 0 || value > 100) return;
+    setter(value);
   };
 
   const handleSaveGmpConfig = async () => {
@@ -93,7 +122,7 @@ export default function IAControl() {
         max_hum_limit: maxHum
       });
       showToast('success', 'Umbrales regulatorios actualizados. Cambio firmado en la pista de auditoría.');
-    } catch (error) {
+    } catch {
       showToast('error', 'Error al guardar las restricciones operacionales.');
     } finally {
       setIsSavingConfig(false);
@@ -101,6 +130,11 @@ export default function IAControl() {
   };
 
   const isAdmin = userRole === "ADMIN";
+
+  const shapData = (modelStats?.feature_importance ?? []).map((f) => ({
+    name: FEATURE_LABELS[f.feature] ?? f.feature,
+    shap: f.shap,
+  }));
 
   if (isLoading) {
     return (
@@ -127,7 +161,7 @@ export default function IAControl() {
             <div className="flex items-center gap-1.5">
               <span className={`w-2 h-2 rounded-full ${isTraining ? 'bg-amber-500 animate-ping' : 'bg-green-500 animate-pulse'}`}></span>
               <span className={`text-xs font-bold ${isTraining ? 'text-amber-600' : 'text-green-600'}`}>
-                {isTraining ? 'TRAINING' : 'ONLINE (8000)'}
+                {isTraining ? 'TRAINING' : 'ONLINE'}
               </span>
             </div>
           </div>
@@ -172,7 +206,7 @@ export default function IAControl() {
                 <div className="p-4 border border-slate-200 rounded-lg bg-white shadow-sm">
                   <span className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Precisión Real (R²)</span>
                   <div className="text-2xl font-black text-slate-800">
-                    {modelStats?.r2_score !== undefined && modelStats?.r2_score !== null ? `${modelStats.r2_score}%` : '87.00%'}
+                    {modelStats?.r2_score !== undefined && modelStats?.r2_score !== null ? `${modelStats.r2_score}%` : '—'}
                   </div>
                 </div>
 
@@ -183,6 +217,9 @@ export default function IAControl() {
                     {/* 🚀 CORRECCIÓN 6: Usamos rmse según el nuevo esquema del ModelMetrics */}
                     {modelStats?.rmse !== undefined && modelStats?.rmse !== null ? modelStats.rmse.toFixed(5) : '0.00'}
                   </div>
+                  {modelStats?.rmse !== undefined && modelStats?.rmse !== null && (
+                    <div className="text-[10px] font-bold text-slate-400 mt-1">MSE: {(modelStats.rmse ** 2).toFixed(5)}</div>
+                  )}
                 </div>
 
                 <div className="p-4 border border-slate-200 rounded-lg bg-white shadow-sm">
@@ -198,20 +235,32 @@ export default function IAControl() {
             {/* MLOps Log */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
               <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Historial de Pipelines (MLOps Log)</h3>
+                <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Historial de Entrenamiento</h3>
                 <span className="text-[10px] text-slate-400">Estado de Sincronización</span>
               </div>
               <div className="divide-y divide-slate-100 max-h-64 overflow-y-auto">
-                <div className="p-4 flex gap-3 hover:bg-slate-50/40 transition-colors">
-                  <CheckBadgeIcon className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <div className="flex-1 md:flex md:justify-between md:items-center">
-                    <div>
-                      <p className="text-xs font-bold text-slate-700">Pipeline de Inferencia Operacional Activo</p>
-                      {/* 🚀 CORRECCIÓN 8: Leemos trained_at del nuevo ModelMetrics */}
-                      <p className="text-[11px] text-slate-400">Último entrenamiento registrado en el servidor: <span className="font-semibold text-slate-600">{modelStats ? modelStats.trained_at : 'Sincronizado'}</span></p>
-                    </div>
+                {trainingLog.length === 0 ? (
+                  <div className="p-4 text-xs text-slate-400">
+                    Sin entrenamientos registrados. Último modelo en producción: <span className="font-semibold text-slate-600">{modelStats ? modelStats.trained_at : 'Sincronizado'}</span>
                   </div>
-                </div>
+                ) : (
+                  trainingLog.map((entry) => (
+                    <div key={entry.id} className="p-4 flex gap-3 hover:bg-slate-50/40 transition-colors">
+                      {entry.status === 'SUCCESS' ? (
+                        <CheckBadgeIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                      ) : (
+                        <ExclamationCircleIcon className="w-5 h-5 text-rose-500 shrink-0" />
+                      )}
+                      <div className="flex-1">
+                        <p className="text-xs font-bold text-slate-700">
+                          {entry.status === 'SUCCESS' ? 'Entrenamiento exitoso' : entry.status === 'REJECTED' ? 'Entrenamiento rechazado' : 'Entrenamiento fallido'}
+                          <span className="ml-2 text-[10px] font-medium text-slate-400">{entry.timestamp} · {entry.user}</span>
+                        </p>
+                        <p className="text-[11px] text-slate-500 break-words">{entry.detail}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -227,10 +276,11 @@ export default function IAControl() {
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Humedad Relativa Mínima (%)</label>
                   <input
-                    type="number"
+                    type="number" min={0} max={100} step="0.1"
                     disabled={!isAdmin}
                     value={minHum}
-                    onChange={(e) => setMinHum(parseInt(e.target.value) || 0)}
+                    onKeyDown={blockInvalidKeys}
+                    onChange={(e) => handleLimitChange(e.target.value, setMinHum)}
                     className={`w-full p-2.5 border rounded-lg text-sm font-bold outline-none transition-all ${isAdmin
                       ? "bg-white border-slate-200 text-slate-700 focus:ring-2 focus:ring-emerald-500"
                       : "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
@@ -240,10 +290,11 @@ export default function IAControl() {
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Humedad Relativa Máxima (%)</label>
                   <input
-                    type="number"
+                    type="number" min={0} max={100} step="0.1"
                     disabled={!isAdmin}
                     value={maxHum}
-                    onChange={(e) => setMaxHum(parseInt(e.target.value) || 0)}
+                    onKeyDown={blockInvalidKeys}
+                    onChange={(e) => handleLimitChange(e.target.value, setMaxHum)}
                     className={`w-full p-2.5 border rounded-lg text-sm font-bold outline-none transition-all ${isAdmin
                       ? "bg-white border-slate-200 text-slate-700 focus:ring-2 focus:ring-emerald-500"
                       : "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
@@ -278,11 +329,39 @@ export default function IAControl() {
               </h3>
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-indigo-100">R² Hold-out (Test Set)</span>
-                  <span className="font-bold">{modelStats ? `${modelStats.r2_score}%` : '87.59%'}</span>
+                  <span className="text-indigo-100">R² Validación (LOSO)</span>
+                  <span className="font-bold">{modelStats ? `${modelStats.r2_score}%` : '—'}</span>
                 </div>
                 <div className="w-full bg-indigo-500 rounded-full h-1.5">
-                  <div className="bg-white h-1.5 rounded-full" style={{ width: modelStats ? `${modelStats.r2_score}%` : '87.59%' }}></div>
+                  <div className="bg-white h-1.5 rounded-full" style={{ width: modelStats ? `${modelStats.r2_score}%` : '—' }}></div>
+                </div>
+
+                <div className="mt-3 p-3 bg-white rounded-lg text-slate-800">
+                  <div className="font-bold uppercase tracking-wider text-[11px] mb-1 text-slate-700">Impacto de variables (SHAP)</div>
+                  <p className="text-slate-500 text-[10px] leading-snug mb-2">
+                    Contribución media |SHAP| de cada variable a la humedad de sala predicha (g/kg).
+                  </p>
+                  {shapData.length === 0 ? (
+                    <div className="p-3 text-center text-[11px] text-slate-400 bg-slate-50 rounded-lg border border-slate-100">
+                      Sin análisis SHAP aún. Se genera al ejecutar un entrenamiento.
+                    </div>
+                  ) : (
+                    <div style={{ height: shapData.length * 34 + 30 }} className="w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={shapData} layout="vertical" margin={{ top: 0, right: 10, bottom: 15, left: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
+                          <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10 }} label={{ value: '|SHAP| medio (g/kg)', position: 'insideBottom', offset: -8, fill: '#64748b', fontSize: 10 }} />
+                          <YAxis type="category" dataKey="name" width={110} axisLine={false} tickLine={false} tick={{ fill: '#475569', fontSize: 10 }} />
+                          <Tooltip cursor={{ fill: '#f8fafc' }} formatter={(v) => [`${Number(v).toFixed(4)} g/kg`, 'Impacto']} />
+                          <Bar dataKey="shap" radius={[0, 4, 4, 0]}>
+                            {shapData.map((_, i) => (
+                              <Cell key={i} fill={i === 0 ? '#4f46e5' : '#a5b4fc'} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

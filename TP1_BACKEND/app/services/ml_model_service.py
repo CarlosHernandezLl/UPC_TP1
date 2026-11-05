@@ -53,6 +53,7 @@ class MlModelService:
         rmse: float,
         batch_id=None,
         status: str = "ACTIVE",
+        feature_importance: Optional[list] = None,
     ) -> MlModelVersion:
         """Registra una nueva inferencia. Si es ACTIVE, promueve a Champion archivando los anteriores."""
         logger.info(
@@ -70,6 +71,7 @@ class MlModelService:
             "rmse": rmse,
             "batch_id": batch_id,
             "status": enum_status,
+            "feature_importance": feature_importance,
         }
 
         # 1. Primero creamos el registro en la base de datos

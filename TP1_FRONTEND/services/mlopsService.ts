@@ -2,6 +2,11 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const getAuthToken = () => typeof window !== "undefined" ? `; ${document.cookie}`.split(`; scada_token=`).pop()?.split(';').shift() || "" : "";
 
+export interface FeatureImportance {
+    feature: string;
+    shap: number;
+}
+
 export interface ModelMetrics {
     version_tag: string;
     r2_score: number;
@@ -9,28 +14,31 @@ export interface ModelMetrics {
     batch_id: string | null;
     trained_at: string;
     status: string;
+    feature_importance?: FeatureImportance[] | null;
 }
 
-export interface ModelHistoryResponse {
-    status: string;
-    data: ModelMetrics[];
-    total_models: number;
+export interface TrainingLogEntry {
+    id: number;
+    status: "SUCCESS" | "FAILED" | "REJECTED";
+    user: string;
+    timestamp: string;
+    detail: string;
 }
 
 export const mlopsService = {
+    async getTrainingLog(): Promise<TrainingLogEntry[]> {
+        const res = await fetch(`${API_URL}/mlops/training-log`, {
+            headers: { "Authorization": `Bearer ${getAuthToken()}` }
+        });
+        if (!res.ok) throw new Error("Error cargando el historial de entrenamiento.");
+        return res.json();
+    },
+
     async getActiveModelMetrics(): Promise<ModelMetrics> {
         const res = await fetch(`${API_URL}/mlops/metrics`, {
             headers: { "Authorization": `Bearer ${getAuthToken()}` }
         });
         if (!res.ok) throw new Error("Error recuperando métricas del Champion.");
-        return res.json();
-    },
-
-    async getModelHistory(): Promise<ModelHistoryResponse> {
-        const res = await fetch(`${API_URL}/mlops/history`, {
-            headers: { "Authorization": `Bearer ${getAuthToken()}` }
-        });
-        if (!res.ok) throw new Error("Error cargando el Model Registry.");
         return res.json();
     },
 

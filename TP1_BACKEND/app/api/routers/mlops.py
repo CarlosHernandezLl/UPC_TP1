@@ -15,8 +15,6 @@ from app.repositories.data_ingestion_repository import DataIngestionRepository
 from app.repositories.ml_model_version_repository import MlModelVersionRepository
 from app.repositories.audit_repository import AuditRepository
 
-from app.ml_engine.simulator_engine import SimulatorEngine
-
 router = APIRouter(prefix="/mlops", tags=["MLOps & Model Registry"])
 
 
@@ -82,6 +80,17 @@ def get_retraining_history(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al leer el historial del Model Registry: {str(e)}",
         )
+
+
+# =================================================================
+# 2.b HISTORIAL DE ENTRENAMIENTOS (éxitos y fallos con su motivo)
+# =================================================================
+@router.get(
+    "/training-log",
+    dependencies=[Depends(check_role(["SUPERVISOR", "AUDITOR", "ADMIN"]))],
+)
+def get_training_log(db: Session = Depends(get_db)):
+    return AuditService(AuditRepository(db)).get_pipeline_history()
 
 
 # =================================================================

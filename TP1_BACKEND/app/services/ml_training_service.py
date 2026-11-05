@@ -5,7 +5,6 @@ from zoneinfo import ZoneInfo
 import numpy as np
 import pandas as pd
 import xgboost as xgb
-from sklearn.model_selection import GroupShuffleSplit
 from sklearn.metrics import r2_score, mean_squared_error
 
 from app.ml_engine.ssd_filter import SSDFilter
@@ -41,6 +40,19 @@ class MLTrainingService:
             "injection_pressure",
         ]
 
+    def _shap_importance(self, model: xgb.XGBRegressor, X: pd.DataFrame) -> list[dict]:
+        """Impacto SHAP medio (|SHAP| promedio, en g/kg de humedad de sala) por variable.
+
+        Usa TreeSHAP exacto de XGBoost (pred_contribs); la última columna es el sesgo y se descarta.
+        """
+        contribs = model.get_booster().predict(xgb.DMatrix(X), pred_contribs=True)
+        mean_abs = np.abs(contribs[:, :-1]).mean(axis=0)
+        ranking = [
+            {"feature": col, "shap": round(float(v), 6)}
+            for col, v in zip(X.columns, mean_abs)
+        ]
+        return sorted(ranking, key=lambda r: r["shap"], reverse=True)
+
     def get_active_model_metrics(self) -> dict:
         """Obtiene las métricas reales y el linaje del modelo activo en producción."""
         active_model = self.model_service.get_active_model_version()
@@ -52,6 +64,7 @@ class MLTrainingService:
                 "batch_id": (
                     str(active_model.batch_id) if active_model.batch_id else None
                 ),
+                "feature_importance": active_model.feature_importance,
                 "trained_at": active_model.trained_at,
                 "status": "ACTIVE_DATABASE_REGISTRY",
             }
@@ -81,7 +94,14 @@ class MLTrainingService:
             f"⚙️ [MLOps] Operador ID={user_id} inició pipeline de reentrenamiento estricto LOSO."
         )
 
-        batch_id, db_records = self.data_service.get_latest_training_batch()
+        try:
+            batch_id, db_records = self.data_service.get_latest_training_batch()
+        except ValueError as e:
+            msg = str(e)
+            self.audit_service.record_action(
+                user_id=user_id, action="ML_RETRAIN_FAILED", resource="MLOPS_PIPELINE", detail=msg
+            )
+            return {"status": "error", "message": msg}
         if not db_records or len(db_records) < 100:
             msg = "El último lote tiene datos insuficientes (<100 filas) para un entrenamiento científico."
             self.audit_service.record_action(
@@ -176,6 +196,7 @@ class MLTrainingService:
             random_state=42,
         )
         model_final.fit(X, y)
+        feature_importance = self._shap_importance(model_final, X)
 
         # 6. Almacenamiento en Disco y Registro Relacional
         base_path = os.path.dirname(__file__)
@@ -194,6 +215,7 @@ class MLTrainingService:
             rmse=round(rmse_real, 6),
             batch_id=batch_id,
             status="ACTIVE",
+            feature_importance=feature_importance,
         )
 
         # 7. Actualización en caliente en memoria RAM
@@ -210,137 +232,9 @@ class MLTrainingService:
             detail=f"New champion model promoted. LOSO R²={r2_real:.2f}%, RMSE={rmse_real:.6f}. Trained on Batch UUID: {batch_id}",
         )
 
-        return {"status": "success", "message": success_msg, "version_tag": version_tag}
-    
-    # def execute_retraining_pipeline(self, user_id: int) -> dict:
-    #     """Orquesta la extracción, filtrado SSD y Quality Gate GxP (Modelo 6 Variables)."""
-    #     logger.info(
-    #         f"⚙️ [MLOps] Operador ID={user_id} inició pipeline de reentrenamiento."
-    #     )
-
-    #     batch_id, db_records = self.data_service.get_latest_training_batch()
-    #     if not db_records or len(db_records) < 100:
-    #         msg = "El último lote tiene datos insuficientes (<100 filas) para un entrenamiento científico."
-    #         self.audit_service.record_action(
-    #             user_id=user_id,
-    #             action="ML_RETRAIN_FAILED",
-    #             resource="MLOPS_PIPELINE",
-    #             detail=msg,
-    #         )
-    #         return {"status": "error", "message": msg}
-
-    #     # Extracción limpia de la base de datos a Pandas
-    #     df_raw = pd.DataFrame(
-    #         [
-    #             {
-    #                 "ts": r.timestamp,
-    #                 "dryer_power": float(r.dryer_power),
-    #                 "outdoor_temp": float(r.outdoor_temp),
-    #                 "outdoor_w": float(r.outdoor_w),
-    #                 "ahu_temp": float(r.ahu_temp),
-    #                 "ahu_w": float(r.ahu_w),
-    #                 "injection_pressure": float(
-    #                     getattr(r, "injection_pressure", 1013.25)
-    #                 ),
-    #                 "room_w": float(r.room_w),
-    #             }
-    #             for r in db_records
-    #         ]
-    #     )
-
-    #     # 1. 🚀 CORRECCIÓN: Filtrado de Estado Estacionario (SSD) directo sobre datos crudos
-    #     df_gold = SSDFilter.extract_stationary_minutes(
-    #         df_raw, patience=10, percentile=0.95
-    #     )
-
-    #     if df_gold.empty or len(df_gold) < 20:
-    #         msg = "No se encontraron ventanas estables bajo el algoritmo SSD en el lote seleccionado."
-    #         self.audit_service.record_action(
-    #             user_id=user_id,
-    #             action="ML_RETRAIN_FAILED",
-    #             resource="MLOPS_PIPELINE",
-    #             detail=msg,
-    #         )
-    #         return {"status": "error", "message": msg}
-
-    #     # 2. 🚀 CORRECCIÓN: Asignación directa (Eliminamos augmentación sintética)
-    #     X = df_gold[self.feature_cols]
-    #     y = df_gold["room_w"]
-
-    #     # 3. División Cronológica por Escalones sin Data Leakage
-    #     gss = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
-    #     train_idx, test_idx = next(gss.split(X, y, groups=df_gold["step_change"]))
-
-    #     X_train, y_train = X.iloc[train_idx], y.iloc[train_idx]
-    #     X_test, y_test = X.iloc[test_idx], y.iloc[test_idx]
-
-    #     # 4. 🚀 CORRECCIÓN: Nuevos hiperparámetros y 6 Restricciones Monótonas
-    #     monotone_constraints = (-1, 0, 1, -1, 1, 0)
-    #     model = xgb.XGBRegressor(
-    #         n_estimators=50,
-    #         max_depth=3,
-    #         learning_rate=0.1,
-    #         reg_lambda=1.0,
-    #         reg_alpha=0.1,
-    #         subsample=0.8,
-    #         colsample_bytree=0.8,
-    #         monotone_constraints=monotone_constraints,
-    #         random_state=42,
-    #     )
-    #     model.fit(X_train, y_train)
-
-    #     preds = model.predict(X_test)
-    #     r2_real = float(r2_score(y_test, preds) * 100.0)
-    #     mse_real = float(mean_squared_error(y_test, preds))
-    #     rmse_real = float(np.sqrt(mse_real))
-
-    #     # 5. GxP Quality Gate
-    #     if r2_real < 70.0:
-    #         reason = f"Reentrenamiento rechazado: R² del nuevo lote ({r2_real:.2f}%) inferior al estándar GxP (70.0%)."
-    #         logger.warning(f"⚠️ {reason}")
-    #         self.audit_service.record_action(
-    #             user_id=user_id,
-    #             action="ML_MODEL_REJECTED",
-    #             resource="MLOPS_PIPELINE",
-    #             detail=f"Challenger model failed quality gate. R²={r2_real:.2f}%, RMSE={rmse_real:.6f}. Batch UUID: {batch_id}",
-    #         )
-    #         return {"status": "rejected", "reason": reason}
-
-    #     # 6. Almacenamiento en Disco y Registro Relacional
-    #     base_path = os.path.dirname(__file__)
-    #     model_dir = os.path.abspath(
-    #         os.path.join(base_path, "..", "ml_engine", "saved_models")
-    #     )
-    #     os.makedirs(model_dir, exist_ok=True)
-
-    #     # Generación de tag único con milisegundos
-    #     version_tag = datetime.now(ZoneInfo("America/Lima")).strftime("v1.%m%d.%H%M%S")
-
-    #     model_file_path = os.path.join(model_dir, f"xgboost_hvac_{version_tag}.json")
-    #     model.save_model(model_file_path)
-
-    #     # Persistencia en BD
-    #     self.model_service.register_new_version(
-    #         version_tag=version_tag,
-    #         model_path=model_file_path,
-    #         r2_score=round(r2_real, 2),
-    #         rmse=round(rmse_real, 6),
-    #         batch_id=batch_id,
-    #         status="ACTIVE",
-    #     )
-
-    #     # 7. Actualización en caliente en memoria RAM
-    #     self.sim_engine.r2_score = round(r2_real, 2)
-    #     self.sim_engine.mse = round(mse_real, 6)
-    #     if hasattr(self.sim_engine, "reload_model_in_memory"):
-    #         self.sim_engine.reload_model_in_memory(model_path=model_file_path)
-
-    #     success_msg = f"Modelo Challenger {version_tag} validado con R²={r2_real:.2f}%. Pesos actualizados en RAM."
-    #     self.audit_service.record_action(
-    #         user_id=user_id,
-    #         action="ML_MODEL_PROMOTED",
-    #         resource="MLOPS_PIPELINE",
-    #         detail=f"New champion model promoted. R²={r2_real:.2f}%, RMSE={rmse_real:.6f}. Trained on Batch UUID: {batch_id}",
-    #     )
-
-    #     return {"status": "success", "message": success_msg, "version_tag": version_tag}
+        return {
+            "status": "success",
+            "message": success_msg,
+            "version_tag": version_tag,
+            "feature_importance": feature_importance,
+        }
