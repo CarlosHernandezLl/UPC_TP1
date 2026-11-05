@@ -1,0 +1,7 @@
+{
+  "name": "hvac-e2e",
+  "private": true,
+  "description": "Pruebas de aceptación (HU/CP P20261007) contra la app levantada con docker compose",
+  "scripts": { "test": "python make_fixtures.py && node run.js" },
+  "dependencies": { "puppeteer-core": "^24.0.0" }
+}
