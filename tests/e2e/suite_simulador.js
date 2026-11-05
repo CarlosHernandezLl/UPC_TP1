@@ -6,7 +6,7 @@ const MSG = {
   ext: 'Por favor, llene las variables de Temperatura y Humeda externa antes de consultar al Gemelo Digital',
   uma: 'Por favor, llene las variables de Temperatura, Humedad y Presion de la UMA antes de consultar al Gemelo Digital',
   pwr: 'Por favor, llene la variable de Potencia antes de consultar al Gemelo Digital',
-  sala: 'Por favor, llene las variables de Temperatura y Humedad actual de la sala antes de consultar al Gemelo Digital',
+  sala: 'Por favor, llene las variables de Humedad Sala Actual (HR %) y Temp. Sala (°C) antes de consultar al Gemelo Digital',
   setpoint: 'Por favor, llene la variable de Humedad objetivo de la sala antes de consultar al Gemelo Digital',
   all: 'Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital',
 };

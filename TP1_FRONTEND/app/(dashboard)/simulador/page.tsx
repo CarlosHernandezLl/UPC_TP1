@@ -139,7 +139,7 @@ export default function Simulator() {
       huMsg: 'Por favor, llene las variables de Temperatura y Humeda externa antes de consultar al Gemelo Digital' },
     { keys: ["tempUma", "humUma", "presionInyeccion"], name: "Temperatura, Humedad y Presión de la UMA",
       huMsg: 'Por favor, llene las variables de Temperatura, Humedad y Presion de la UMA antes de consultar al Gemelo Digital' },
-    { keys: ["humSala", "tempSala"], name: "Temperatura y Humedad actual de la sala" },
+    { keys: ["humSala", "tempSala"], name: "Humedad Sala Actual (HR %) y Temp. Sala (°C)" },
   ];
   const buildMissingMessage = (missing: string[], totalRequired: number): string => {
     if (missing.length === totalRequired) return GENERIC_MISSING_MSG;
