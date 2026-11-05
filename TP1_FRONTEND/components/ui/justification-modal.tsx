@@ -10,6 +10,9 @@ interface JustificationModalProps {
     isSubmitting: boolean;
 }
 
+const MIN_CHARS = 10;
+const MAX_CHARS = 255;
+
 export function JustificationModal({ isOpen, onClose, onConfirm, isSubmitting }: JustificationModalProps) {
     const [text, setText] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -18,8 +21,8 @@ export function JustificationModal({ isOpen, onClose, onConfirm, isSubmitting }:
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (text.trim().length < 10) {
-            setError("Por normativa GxP, debe ingresar una justificación técnica detallada (mínimo 10 caracteres).");
+        if (text.trim().length < MIN_CHARS) {
+            setError(`Por normativa GxP, debe ingresar una justificación técnica detallada (mínimo ${MIN_CHARS} caracteres).`);
             return;
         }
         setError(null);
@@ -57,8 +60,8 @@ export function JustificationModal({ isOpen, onClose, onConfirm, isSubmitting }:
                             Justificación Técnica Obligatoria
                         </label>
                         <textarea
-                            required
                             rows={4}
+                            maxLength={MAX_CHARS}
                             disabled={isSubmitting}
                             placeholder="Ej: Se detectó mantenimiento correctivo en ductos de inyección o riesgo de condensación térmica por humedad externa..."
                             value={text}
@@ -68,6 +71,9 @@ export function JustificationModal({ isOpen, onClose, onConfirm, isSubmitting }:
                             }}
                             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500 font-semibold text-slate-700 placeholder-slate-400 resize-none transition-all disabled:opacity-60"
                         />
+                        <p className={`text-[10px] font-bold mt-1 text-right ${text.trim().length >= MIN_CHARS ? 'text-emerald-600' : 'text-slate-400'}`}>
+                            {text.length}/{MAX_CHARS} caracteres · mínimo {MIN_CHARS}
+                        </p>
                         {error && (
                             <p className="text-[10px] text-rose-600 font-bold mt-1 animate-pulse">⚠️ {error}</p>
                         )}

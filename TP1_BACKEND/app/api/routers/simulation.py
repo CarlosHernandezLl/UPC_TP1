@@ -24,8 +24,6 @@ from app.repositories.simulation_repository import SimulationRepository
 from app.repositories.gmp_repository import GmpRepository
 from app.repositories.audit_repository import AuditRepository
 
-from app.ml_engine.simulator_engine import SimulatorEngine
-
 router = APIRouter(prefix="/simulation", tags=["Gemelo Digital HVAC"])
 
 

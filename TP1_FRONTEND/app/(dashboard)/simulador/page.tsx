@@ -50,7 +50,32 @@ export default function Simulator() {
     fetchActiveGmpLimits();
   }, []);
 
+  // Metadatos de cada variable: etiqueta para mensajes y unidad del rango
+  const FIELD_META: Record<string, { label: string; unit: string }> = {
+    tempExt: { label: "Temp. Exterior", unit: "°C" },
+    humExt: { label: "Humedad Ext.", unit: "% HR" },
+    tempUma: { label: "Temp. UMA", unit: "°C" },
+    humUma: { label: "Hum. UMA", unit: "% HR" },
+    presionInyeccion: { label: "Presión Inyección", unit: "Pa" },
+    pwrActual: { label: "Potencia", unit: "%" },
+    humSala: { label: "Humedad Sala Actual", unit: "% HR" },
+    setpoint: { label: "Humedad Sala Objetivo", unit: "% HR" },
+    tempSala: { label: "Temp. Sala", unit: "°C" },
+  };
+
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const setFieldError = (key: string, message: string | null) => {
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      if (message) next[key] = message;
+      else delete next[key];
+      return next;
+    });
+  };
+
   const handleNumberChange = (
+    key: string,
     value: string,
     setter: React.Dispatch<React.SetStateAction<string>>,
     min: number,
@@ -58,6 +83,7 @@ export default function Simulator() {
   ) => {
     if (value === "") {
       setter("");
+      setFieldError(key, null);
       return;
     }
 
@@ -66,14 +92,74 @@ export default function Simulator() {
 
     if (num >= min && num <= max) {
       setter(value);
+      setFieldError(key, null);
+    } else {
+      // El valor se rechaza, pero se explica el motivo y el rango admitido
+      const meta = FIELD_META[key];
+      setFieldError(key, `Valor fuera de rango. ${meta.label}: de ${min} a ${max} ${meta.unit}.`);
     }
   };
 
+  const renderInput = (
+    key: string,
+    value: string,
+    setter: React.Dispatch<React.SetStateAction<string>>,
+    min: number,
+    max: number,
+    cls: string
+  ) => {
+    const error = fieldErrors[key];
+    const errCls = error ? " border-rose-500 ring-1 ring-rose-400 bg-rose-50/40" : "";
+    return (
+      <>
+        <input
+          id={`field-${key}`}
+          type="number" step="0.5" min={min} max={max} placeholder=""
+          value={value}
+          onChange={(e) => handleNumberChange(key, e.target.value, setter, min, max)}
+          aria-invalid={!!error}
+          className={cls + errCls}
+        />
+        {error && <p className="text-[10px] text-rose-600 font-bold mt-1">{error}</p>}
+      </>
+    );
+  };
+
+  // Mensaje según qué grupo de variables falta (HU0006-2, HU0007-2, HU0008-2); en cualquier otro caso, el genérico
+  const GENERIC_MISSING_MSG = 'Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital';
+  const buildMissingMessage = (missing: string[], totalRequired: number): string => {
+    const within = (group: string[]) => missing.every((k) => group.includes(k));
+    if (missing.length === totalRequired) return GENERIC_MISSING_MSG;
+    if (within(["tempExt", "humExt"]))
+      return 'Por favor, llene las variables de Temperatura y Humeda externa antes de consultar al Gemelo Digital';
+    if (within(["tempUma", "humUma", "presionInyeccion"]))
+      return 'Por favor, llene las variables de Temperatura, Humedad y Presion de la UMA antes de consultar al Gemelo Digital';
+    if (within(["pwrActual"]))
+      return 'Por favor, llene la variable de Potencia antes de consultar al Gemelo Digital';
+    return GENERIC_MISSING_MSG;
+  };
+
   const handleSimulate = async () => {
-    if (!tempExt || !humExt || !tempUma || !humUma || !pwrActual || !humSala || !setpoint || !tempSala || !presionInyeccion) {
-      showToast('error', 'Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital.');
+    const required: [string, string][] = [
+      ["tempExt", tempExt], ["humExt", humExt], ["tempUma", tempUma], ["humUma", humUma],
+      ["presionInyeccion", presionInyeccion], ["pwrActual", pwrActual], ["humSala", humSala],
+      ["setpoint", setpoint], ["tempSala", tempSala],
+    ];
+    const missing = required.filter(([, v]) => v === "").map(([k]) => k);
+    if (missing.length > 0) {
+      // Un resultado previo ya no es válido: reiniciamos la card al estado inicial
+      setResult(null);
+      setActionLogged(false);
+
+      const errors: Record<string, string> = {};
+      missing.forEach((k) => { errors[k] = `Campo obligatorio: ${FIELD_META[k].label}.`; });
+      setFieldErrors(errors);
+      document.getElementById(`field-${missing[0]}`)?.focus();
+
+      showToast('error', buildMissingMessage(missing, required.length));
       return;
     }
+    setFieldErrors({});
 
     setIsCalculating(true);
     setResult(null);
@@ -121,8 +207,8 @@ export default function Simulator() {
         justification: "N/A"
       });
       setActionLogged(true);
-      showToast('success', `Ajuste del ${result.potencia_recomendada}%. Transacción cifrada en Audit Trail.`);
-    } catch (error) {
+      showToast('success', `Recomendación Aplicada. Ajuste del ${result.potencia_recomendada}%. Transacción cifrada en Audit Trail.`);
+    } catch {
       showToast('error', 'No se pudo registrar la telemetría de la acción.');
     }
   };
@@ -156,7 +242,7 @@ export default function Simulator() {
       setActionLogged(true);
       setIsIgnoreModalOpen(false);
       showToast('success', 'Descarte operativo registrado con éxito junto a su sustento técnico.');
-    } catch (error) {
+    } catch {
       showToast('error', 'Fallo del servidor al intentar registrar la bitácora de descarte.');
     } finally {
       setIsLoggingAction(false);
@@ -191,21 +277,11 @@ export default function Simulator() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Temp. Exterior (°C)</label>
-                      <input
-                        type="number" step="0.5" min="0" max="50" placeholder=""
-                        value={tempExt}
-                        onChange={(e) => handleNumberChange(e.target.value, setTempExt, 0, 50)}
-                        className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                      />
+                      {renderInput("tempExt", tempExt, setTempExt, 0, 50, "w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium")}
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Humedad Ext. (HR %)</label>
-                      <input
-                        type="number" step="0.5" min="0" max="100" placeholder=""
-                        value={humExt}
-                        onChange={(e) => handleNumberChange(e.target.value, setHumExt, 0, 100)}
-                        className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                      />
+                      {renderInput("humExt", humExt, setHumExt, 0, 100, "w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium")}
                     </div>
                   </div>
                 </div>
@@ -218,30 +294,15 @@ export default function Simulator() {
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Temp. UMA (°C)</label>
-                      <input
-                        type="number" step="0.5" min="0" max="50" placeholder=""
-                        value={tempUma}
-                        onChange={(e) => handleNumberChange(e.target.value, setTempUma, 0, 50)}
-                        className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                      />
+                      {renderInput("tempUma", tempUma, setTempUma, 0, 50, "w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium")}
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Hum. UMA (HR %)</label>
-                      <input
-                        type="number" step="0.5" min="0" max="100" placeholder=""
-                        value={humUma}
-                        onChange={(e) => handleNumberChange(e.target.value, setHumUma, 0, 100)}
-                        className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                      />
+                      {renderInput("humUma", humUma, setHumUma, 0, 100, "w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium")}
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Presión Inyección (Pa)</label>
-                      <input
-                        type="number" step="0.5" min="0" max="100" placeholder=""
-                        value={presionInyeccion}
-                        onChange={(e) => handleNumberChange(e.target.value, setPresionInyeccion, 0, 100)}
-                        className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                      />
+                      {renderInput("presionInyeccion", presionInyeccion, setPresionInyeccion, 0, 1000, "w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium")}
                     </div>
 
                   </div>
@@ -255,39 +316,19 @@ export default function Simulator() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Potencia Estimada (%)</label>
-                      <input
-                        type="number" step="0.5" min="0" max="100" placeholder=""
-                        value={pwrActual}
-                        onChange={(e) => handleNumberChange(e.target.value, setPwrActual, 0, 100)}
-                        className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                      />
+                      {renderInput("pwrActual", pwrActual, setPwrActual, 0, 100, "w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium")}
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Humedad Sala Actual (HR %)</label>
-                      <input
-                        type="number" step="0.5" min="0" max="100" placeholder=""
-                        value={humSala}
-                        onChange={(e) => handleNumberChange(e.target.value, setHumSala, 0, 100)}
-                        className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                      />
+                      {renderInput("humSala", humSala, setHumSala, 0, 100, "w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium")}
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Humedad Sala Objetivo (HR %)</label>
-                      <input
-                        type="number" step="0.5" min="0" max="100" placeholder=""
-                        value={setpoint}
-                        onChange={(e) => handleNumberChange(e.target.value, setSetpoint, 0, 100)}
-                        className="w-full p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 border-2 border-blue-200 bg-blue-50/50 font-bold text-blue-800"
-                      />
+                      {renderInput("setpoint", setpoint, setSetpoint, 0, 100, "w-full p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 border-2 border-blue-200 bg-blue-50/50 font-bold text-blue-800")}
                     </div>
                     <div>
                       <label className="block text-[11px] font-bold text-slate-500 mb-1">Temp. Sala (°C)</label>
-                      <input
-                        type="number" step="0.5" min="0" max="50" placeholder=""
-                        value={tempSala}
-                        onChange={(e) => handleNumberChange(e.target.value, setTempSala, 0, 50)}
-                        className="w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                      />
+                      {renderInput("tempSala", tempSala, setTempSala, 0, 50, "w-full p-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-medium")}
                     </div>
                   </div>
                 </div>
@@ -311,6 +352,7 @@ export default function Simulator() {
                 <ExclamationTriangleIcon className="w-8 h-8 text-rose-500 shrink-0" />
                 <div>
                   <h4 className="text-rose-800 font-bold text-sm uppercase">Alerta de Riesgo GMP</h4>
+                  <p className="text-rose-600 text-[10px] font-black uppercase tracking-wider">Alerta de incumplimiento de límites</p>
                   <p className="text-rose-700 text-xs mt-1">
                     El setpoint solicitado, o las condiciones de humedad logradas por el modelo,
                     apuntan a una violación del marco regulatorio estricto
@@ -351,7 +393,7 @@ export default function Simulator() {
                         <span className="text-blue-500">✨</span> Explicabilidad del Modelo
                       </p>
                       <p className="text-xs text-slate-600 italic">
-                        "{result.explicacion_gemini}"
+                        &quot;{result.explicacion_gemini}&quot;
                       </p>
                     </div>
                   )}
@@ -366,14 +408,14 @@ export default function Simulator() {
                             onClick={handleApplyRecommendation}
                             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors shadow-md"
                           >
-                            <HandThumbUpIcon className="w-4 h-4" /> SÍ, APLICADA
+                            <HandThumbUpIcon className="w-4 h-4" /> Sí, aplicada
                           </button>
 
                           <button
                             onClick={handleIgnoreRecommendation}
                             className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors"
                           >
-                            <HandThumbDownIcon className="w-4 h-4" /> IGNORAR
+                            <HandThumbDownIcon className="w-4 h-4" /> Ignorar
                           </button>
                         </div>
                       </>

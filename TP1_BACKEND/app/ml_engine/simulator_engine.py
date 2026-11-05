@@ -14,7 +14,6 @@ class SimulatorEngine:
     def __init__(self):
         self.model = xgb.XGBRegressor()
         self.r2_score = None
-        self.mse = None
         self.rmse = None
         self.model_loaded = False
         self.feature_cols = [
@@ -80,6 +79,9 @@ class SimulatorEngine:
         max_gmp_rh_limit: float = 55.0,
     ) -> tuple[float, bool]:
 
+        # La recomendación es siempre un entero entre 0 y 100 (HU011-1)
+        current_power = float(round(current_power))
+
         if not self.model_loaded:
             return current_power, False
 
@@ -93,7 +95,7 @@ class SimulatorEngine:
         )
         w_limite_busqueda = w_objetivo_estricto - safety_margin_gkg
 
-        best_power = float(current_power)
+        best_power = current_power
         power_candidates = np.arange(int(current_power), int(min_power_allowed) - 1, -1)
 
         for p in power_candidates:
