@@ -74,6 +74,12 @@ export default function Simulator() {
     });
   };
 
+  // Cambiar un dato deja obsoleta la recomendación mostrada: se descarta para que no se aplique ni se audite con datos distintos
+  const invalidateResult = () => {
+    setResult(null);
+    setActionLogged(false);
+  };
+
   const handleNumberChange = (
     key: string,
     value: string,
@@ -84,6 +90,7 @@ export default function Simulator() {
     if (value === "") {
       setter("");
       setFieldError(key, null);
+      invalidateResult();
       return;
     }
 
@@ -93,6 +100,7 @@ export default function Simulator() {
     if (num >= min && num <= max) {
       setter(value);
       setFieldError(key, null);
+      invalidateResult();
     } else {
       // El valor se rechaza, pero se explica el motivo y el rango admitido
       const meta = FIELD_META[key];
