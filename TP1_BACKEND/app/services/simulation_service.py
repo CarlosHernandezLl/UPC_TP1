@@ -80,6 +80,8 @@ class SimulationService:
             "potencia_recomendada": ideal_pwr,
             "ahorro_estimado_pct": savings_pct,
             "alerta_gmp": is_gmp_alert,
+            "limite_min_gmp": min_limit,
+            "limite_max_gmp": max_limit,
             "explicacion_gemini": llm_explanation,
         }
 

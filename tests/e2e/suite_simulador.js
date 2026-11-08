@@ -219,6 +219,17 @@ module.exports = async function (browser, ctx) {
       await L.waitText(page, 'El setpoint solicitado, o las condiciones de humedad logradas por el modelo, apuntan a una violación del marco regulatorio estricto de la sala');
     }));
 
+  await cp('CP047b', 'La alerta imprime los límites vigentes aunque se hayan cambiado con la pantalla abierta', () =>
+    L.withSession(browser, async (page) => {
+      await L.api('/config/gmp/', { method: 'PUT', token: tok, json: { min_hum_limit: 40, max_hum_limit: 50 } });
+      await open(page);
+      await L.api('/config/gmp/', { method: 'PUT', token: tok, json: { min_hum_limit: 1, max_hum_limit: 2 } });
+      await L.simFill(page, { pwrActual: 70 });
+      await L.simGenerate(page);
+      await L.waitText(page, 'Alerta de Riesgo GMP');
+      await L.waitText(page, 'Rango permitido: 1% a 2% HR');
+    }));
+
   await cp('CP048', 'Recomendación dentro de los límites GMP: sin alerta', () =>
     L.withSession(browser, async (page) => {
       await L.api('/config/gmp/', { method: 'PUT', token: tok, json: { min_hum_limit: 0, max_hum_limit: 100 } });

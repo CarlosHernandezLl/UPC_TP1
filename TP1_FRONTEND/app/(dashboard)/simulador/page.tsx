@@ -383,7 +383,7 @@ export default function Simulator() {
                     El setpoint solicitado, o las condiciones de humedad logradas por el modelo,
                     apuntan a una violación del marco regulatorio estricto
                     de la sala (<span className="font-black text-rose-900">
-                      Rango permitido: {minHumLimit}% a {maxHumLimit}% HR</span>).
+                      Rango permitido: {result.limite_min_gmp}% a {result.limite_max_gmp}% HR</span>).
                   </p>
                 </div>
               </div>

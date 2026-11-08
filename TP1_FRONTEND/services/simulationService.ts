@@ -18,6 +18,8 @@ export interface SimulationPredictResponse {
     potencia_recomendada: number;
     ahorro_estimado_pct: number;
     alerta_gmp: boolean;
+    limite_min_gmp: number;
+    limite_max_gmp: number;
     explicacion_gemini: string;
 }
 

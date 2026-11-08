@@ -74,4 +74,7 @@ class SimulationPredictResponse(BaseModel):
     potencia_recomendada: float
     ahorro_estimado_pct: float
     alerta_gmp: bool
+    # Límites GMP con los que se evaluó la alerta (los vigentes en BD al momento de predecir)
+    limite_min_gmp: float
+    limite_max_gmp: float
     explicacion_gemini: str
