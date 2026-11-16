@@ -15,7 +15,7 @@ from app.schemas.simulation_schema import (
     SimulationPredictResponse,
 )
 
-from app.services.simulation_service import SimulationService
+from app.services.simulation_service import ModelUnavailableError, SimulationService
 from app.services.gmp_service import GmpService
 from app.services.llm_service import LlmService
 from app.services.audit_service import AuditService
@@ -61,7 +61,13 @@ def predict_hvac_power(
     service: SimulationService = Depends(get_simulation_service),
 ):
     """Devuelve la recomendación del Gemelo Digital y la justificación técnica de Gemini."""
-    return service.predict_optimal_power(payload.model_dump())
+    try:
+        return service.predict_optimal_power(payload.model_dump())
+    except ModelUnavailableError:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="El modelo de IA no está disponible. Reentrene el modelo desde Entrenamiento IA.",
+        )
 
 
 @router.post(

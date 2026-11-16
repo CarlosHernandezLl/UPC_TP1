@@ -206,7 +206,8 @@ export default function Simulator() {
 
       setResult(data);
     } catch (error) {
-      showToast('error', 'Error de conexión con el motor del Gemelo Digital.');
+      // Un error de red es un TypeError; los demás traen el motivo que respondió el servidor (p. ej. modelo no disponible)
+      showToast('error', error instanceof Error && !(error instanceof TypeError) ? error.message : 'Error de conexión con el motor del Gemelo Digital.');
       console.error(error);
     } finally {
       setIsCalculating(false);

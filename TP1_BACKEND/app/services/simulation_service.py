@@ -7,6 +7,10 @@ from app.services.audit_service import AuditService
 logger = logging.getLogger(__name__)
 
 
+class ModelUnavailableError(RuntimeError):
+    """No hay un modelo de IA utilizable en memoria: no se debe responder con una recomendación inventada."""
+
+
 class SimulationService:
     # 🎯 INYECCIÓN DE SERVICIOS: Recibimos los servicios hermanos, no sus repositorios
     def __init__(
@@ -49,6 +53,8 @@ class SimulationService:
             logger.warning(f"⚠️ Usando límites GMP por defecto debido a excepción: {e}")
 
         # 2. Inferencia en XGBoost
+        if not self.simulator_engine.model_loaded:
+            raise ModelUnavailableError("El modelo de IA no está cargado.")
         try:
             ideal_pwr, is_gmp_alert = self.simulator_engine.recomendar_potencia(
                 current_power=current_pwr,
@@ -65,7 +71,8 @@ class SimulationService:
             if current_pwr > ideal_pwr:
                 savings_pct = round(((current_pwr - ideal_pwr) / current_pwr) * 100, 1)
         except Exception as e:
-            logger.error(f"❌ Fallo en XGBoost: {e}. Se mantiene potencia actual.")
+            logger.error(f"❌ Fallo en XGBoost: {e}")
+            raise ModelUnavailableError(f"El modelo de IA no pudo calcular la recomendación: {e}") from e
 
         # 3. Delegar justificación al SERVICIO de LLM
         llm_explanation = self.llm_service.generate_engineering_justification(

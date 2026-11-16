@@ -37,7 +37,10 @@ export const simulationService = {
             headers: { "Content-Type": "application/json", "Authorization": `Bearer ${getAuthToken()}` },
             body: JSON.stringify(data),
         });
-        if (!res.ok) throw new Error("Error al consultar el Gemelo Digital");
+        if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            throw new Error(typeof body.detail === "string" ? body.detail : "Error al consultar el Gemelo Digital");
+        }
         return res.json();
     },
 
