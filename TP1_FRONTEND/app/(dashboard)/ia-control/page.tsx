@@ -131,6 +131,16 @@ export default function IAControl() {
 
   const isAdmin = userRole === "ADMIN";
 
+  // El simulador usa el modelo en RAM: si no es el Champion registrado, se avisa para reentrenar
+  const inMemory = modelStats?.modelo_en_memoria;
+  const memoryWarning = !inMemory || !modelStats
+    ? null
+    : !inMemory.cargado
+      ? 'No hay un modelo cargado en memoria: el simulador no podrá generar recomendaciones. Reentrene el modelo.'
+      : modelStats.version_tag !== 'NONE' && inMemory.version_tag !== modelStats.version_tag
+        ? `El simulador usa ${inMemory.version_tag === 'base' ? 'el modelo base' : `la versión ${inMemory.version_tag}`}, no el Champion ${modelStats.version_tag} (su archivo no se pudo cargar). Reentrene el modelo para restaurarlo.`
+        : null;
+
   const shapData = (modelStats?.feature_importance ?? []).map((f) => ({
     name: FEATURE_LABELS[f.feature] ?? f.feature,
     shap: f.shap,
@@ -171,6 +181,12 @@ export default function IAControl() {
 
           {/* Columna Izquierda: Entrenamiento */}
           <div className="lg:col-span-2 space-y-6">
+            {memoryWarning && (
+              <div role="alert" className="flex gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                <ExclamationCircleIcon className="w-5 h-5 text-amber-600 shrink-0" />
+                <p className="text-xs text-amber-800 font-medium leading-relaxed">{memoryWarning}</p>
+              </div>
+            )}
             <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">

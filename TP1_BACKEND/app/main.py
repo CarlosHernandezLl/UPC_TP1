@@ -65,6 +65,31 @@ def _resolve_model_path(stored_path: str) -> str | None:
     return candidate if os.path.exists(candidate) else None
 
 
+def _read_text(path: str) -> str:
+    with open(path, encoding="utf-8") as f:
+        return f.read()
+
+
+def _load_champion(model_service: MlModelService, champion) -> bool:
+    """Carga el Champion en RAM: primero desde la BD (sobrevive a discos efímeros), si no desde el archivo.
+
+    Si solo existe el archivo, se copia a la BD para que el modelo no vuelva a depender del disco.
+    """
+    engine = simulator_engine_instance
+    blob = champion.model_blob
+    if blob and engine.reload_model_from_json(blob, version_tag=champion.version_tag):
+        return True
+
+    path = _resolve_model_path(champion.model_path)
+    if path and engine.reload_model_in_memory(
+        path, version_tag=champion.version_tag, origin="archivo"
+    ):
+        if not blob:
+            model_service.store_model_blob(champion.id, _read_text(path))
+        return True
+    return False
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # --- Startup ---
@@ -75,15 +100,12 @@ async def lifespan(app: FastAPI):
         model_service = MlModelService(repo)
         champion = model_service.get_active_model_version()
 
-        model_path = _resolve_model_path(champion.model_path) if champion else None
-        if model_path:
-            simulator_engine_instance.reload_model_in_memory(model_path=model_path)
-            logger.info(
-                f"✨ [Startup] Champion cargado desde BD: {champion.version_tag}"
-            )
+        if champion and _load_champion(model_service, champion):
+            logger.info(f"[Startup] Champion {champion.version_tag} cargado ({simulator_engine_instance.loaded_origin}).")
         else:
-            logger.warning(
-                "⚠️ [Startup] No hay Champion válido en BD; usando modelo base de fallback."
+            logger.error(
+                "[Startup] No se pudo cargar el Champion (sin contenido en BD ni archivo); "
+                "se usa el modelo base. Reentrene el modelo desde Entrenamiento IA."
             )
     except Exception as e:
         logger.error(

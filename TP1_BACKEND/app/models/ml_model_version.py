@@ -1,8 +1,8 @@
 from enum import Enum as PyEnum
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from sqlalchemy import Column, Integer, String, Float, DateTime, Enum, JSON
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Float, DateTime, Enum, JSON, Text
+from sqlalchemy.orm import deferred, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from app.core.database import Base
 
@@ -23,6 +23,8 @@ class MlModelVersion(Base):
     rmse = Column(Float)
     # Impacto SHAP medio por variable: [{"feature": str, "shap": float}, ...] ordenado de mayor a menor
     feature_importance = Column(JSON, nullable=True)
+    # Contenido JSON del modelo XGBoost: el Champion no depende del disco del servidor (deferred: no se lee en cada consulta)
+    model_blob = deferred(Column(Text, nullable=True))
     trained_at = Column(
         DateTime(timezone=True), default=lambda: datetime.now(ZoneInfo("America/Lima"))
     )

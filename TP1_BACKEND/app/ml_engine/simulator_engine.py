@@ -16,6 +16,8 @@ class SimulatorEngine:
         self.r2_score = None
         self.rmse = None
         self.model_loaded = False
+        self.loaded_version: str | None = None
+        self.loaded_origin: str | None = None
         self.feature_cols = [
             "dryer_power", 
             "outdoor_temp",
@@ -32,9 +34,47 @@ class SimulatorEngine:
         """
         base_path = os.path.dirname(__file__)
         model_path = os.path.join(base_path, "saved_models", "xgboost_hvac_v1.json")
-        self.reload_model_in_memory(model_path)
+        self.reload_model_in_memory(model_path, version_tag="base", origin="modelo base")
 
-    def reload_model_in_memory(self, model_path: str = None) -> bool:
+    def _align_feature_names(self) -> None:
+        """Los modelos antiguos usan otros nombres de variable (mismo orden): se renombran a los vigentes."""
+        booster = self.model.get_booster()
+        if (
+            booster.num_features() == len(self.feature_cols)
+            and list(booster.feature_names or []) != self.feature_cols
+        ):
+            booster.feature_names = list(self.feature_cols)
+
+    def loaded_model_info(self) -> dict:
+        """Qué modelo está realmente en RAM (para mostrarlo en /mlops/metrics)."""
+        return {
+            "cargado": self.model_loaded,
+            "version_tag": self.loaded_version,
+            "origen": self.loaded_origin,
+        }
+
+    def reload_model_from_json(
+        self, raw_model: str, version_tag: str | None = None, origin: str = "base de datos"
+    ) -> bool:
+        """Carga el modelo desde su contenido JSON (almacenado en la BD, sin depender del disco)."""
+        try:
+            self.model.load_model(bytearray(raw_model.encode("utf-8")))
+            self._align_feature_names()
+            self.model_loaded = True
+            self.loaded_version, self.loaded_origin = version_tag, origin
+            logger.info(f"[SimulatorEngine] Modelo {version_tag} cargado desde {origin}.")
+            return True
+        except Exception as e:
+            logger.error(f"[SimulatorEngine] No se pudo cargar el modelo desde {origin}: {e}")
+            self.model_loaded = False
+            return False
+
+    def reload_model_in_memory(
+        self,
+        model_path: str = None,
+        version_tag: str | None = None,
+        origin: str = "archivo",
+    ) -> bool:
         """Carga o recarga pesos XGBoost en caliente sin reiniciar el servidor FastAPI."""
         try:
             if not model_path:
@@ -45,7 +85,9 @@ class SimulatorEngine:
 
             if os.path.exists(model_path):
                 self.model.load_model(model_path)
+                self._align_feature_names()
                 self.model_loaded = True
+                self.loaded_version, self.loaded_origin = version_tag, origin
                 logger.info(
                     f"✨ [SimulatorEngine] Modelo XGBoost (12 Variables) cargado en RAM desde: {model_path}"
                 )
@@ -124,9 +166,11 @@ class SimulatorEngine:
         e_final = (1013.50 * k_final) / (1.0 + k_final)
         hr_final_sim = (e_final / es_sala) * 100.0
 
-        is_gmp_alert = bool(
-            hr_final_sim < min_gmp_rh_limit or hr_final_sim > max_gmp_rh_limit
-        )
+        # Alerta si la humedad lograda por el modelo O el setpoint solicitado salen de la banda GMP
+        def outside_band(rh: float) -> bool:
+            return rh < min_gmp_rh_limit or rh > max_gmp_rh_limit
+
+        is_gmp_alert = outside_band(hr_final_sim) or outside_band(target_setpoint)
         return best_power, is_gmp_alert
 
 simulator_engine_instance = SimulatorEngine()

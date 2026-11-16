@@ -67,6 +67,7 @@ class MLTrainingService:
                 "feature_importance": active_model.feature_importance,
                 "trained_at": active_model.trained_at,
                 "status": "ACTIVE_DATABASE_REGISTRY",
+                "modelo_en_memoria": self.sim_engine.loaded_model_info(),
             }
 
         if (
@@ -206,6 +207,8 @@ class MLTrainingService:
         version_tag = datetime.now(ZoneInfo("America/Lima")).strftime("v1.%m%d.%H%M%S")
         model_file_path = os.path.join(model_dir, f"xgboost_hvac_{version_tag}.json")
         model_final.save_model(model_file_path)
+        with open(model_file_path, encoding="utf-8") as f:
+            model_blob = f.read()
 
         # Persistencia en BD
         self.model_service.register_new_version(
@@ -216,13 +219,16 @@ class MLTrainingService:
             batch_id=batch_id,
             status="ACTIVE",
             feature_importance=feature_importance,
+            model_blob=model_blob,
         )
 
         # 7. Actualización en caliente en memoria RAM
         self.sim_engine.r2_score = round(r2_real, 2)
         self.sim_engine.rmse = round(rmse_real, 6)
         if hasattr(self.sim_engine, "reload_model_in_memory"):
-            self.sim_engine.reload_model_in_memory(model_path=model_file_path)
+            self.sim_engine.reload_model_in_memory(
+                model_path=model_file_path, version_tag=version_tag, origin="entrenamiento"
+            )
 
         success_msg = f"Modelo Challenger {version_tag} validado (LOSO) con R²={r2_real:.2f}%. Pesos actualizados en RAM."
         self.audit_service.record_action(

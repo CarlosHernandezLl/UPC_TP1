@@ -31,6 +31,17 @@ class MlModelVersionRepository:
             .first()
         )
 
+    def set_model_blob(self, version_id: int, raw_model: str) -> None:
+        """Guarda el contenido del modelo en una versión que aún no lo tenía."""
+        try:
+            self.db.query(MlModelVersion).filter(MlModelVersion.id == version_id).update(
+                {"model_blob": raw_model}
+            )
+            self.db.commit()
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise e
+
     def get_all_versions(self) -> List[MlModelVersion]:
         """🚀 OBLIGATORIO PARA EL FRONTEND: Retorna el historial completo ordenado para la tabla web."""
         return (

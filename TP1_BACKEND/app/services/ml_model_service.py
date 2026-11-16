@@ -16,6 +16,9 @@ class MlModelService:
         """Consulta cuál es el modelo Champion operativo actual en la base de datos."""
         return self.repository.get_champion_model()
 
+    def store_model_blob(self, version_id: int, raw_model: str) -> None:
+        self.repository.set_model_blob(version_id, raw_model)
+
     def get_model_history(self) -> List[dict]:
         """Formatea el historial de modelos para alimentar la tabla en la pantalla de Next.js."""
         models = self.repository.get_all_versions()
@@ -54,6 +57,7 @@ class MlModelService:
         batch_id=None,
         status: str = "ACTIVE",
         feature_importance: Optional[list] = None,
+        model_blob: Optional[str] = None,
     ) -> MlModelVersion:
         """Registra una nueva inferencia. Si es ACTIVE, promueve a Champion archivando los anteriores."""
         logger.info(
@@ -72,6 +76,7 @@ class MlModelService:
             "batch_id": batch_id,
             "status": enum_status,
             "feature_importance": feature_importance,
+            "model_blob": model_blob,
         }
 
         # 1. Primero creamos el registro en la base de datos

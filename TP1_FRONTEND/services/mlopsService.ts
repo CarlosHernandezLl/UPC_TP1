@@ -15,6 +15,7 @@ export interface ModelMetrics {
     trained_at: string;
     status: string;
     feature_importance?: FeatureImportance[] | null;
+    modelo_en_memoria?: { cargado: boolean; version_tag: string | null; origen: string | null };
 }
 
 export interface TrainingLogEntry {
