@@ -10,7 +10,7 @@ const only = process.argv.slice(2); // p.ej.: node run.js auth_users simulador
   try {
     ctx.adminToken = await L.apiLogin(process.env.E2E_ADMIN || 'admin_hvac', process.env.E2E_ADMIN_PASS || 'Admin12345');
     await L.ensureUsers(ctx.adminToken);
-    const suites = ['auth_users', 'ingesta_ml', 'simulador', 'dashboard_audit'];
+    const suites = ['auth_users', 'ingesta_ml', 'simulador', 'modelo', 'dashboard_audit'];
     for (const name of suites) {
       if (only.length && !only.includes(name)) continue;
       await require(`./suite_${name}`)(browser, ctx);

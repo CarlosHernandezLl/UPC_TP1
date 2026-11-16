@@ -106,31 +106,34 @@ module.exports = async function (browser, ctx) {
   });
 
   console.log('\n[HU0014–HU0015] Ahorro económico');
-  let diffBase;
-  await cp('CP042', 'Operador excede la recomendada (80 % vs 60 %): + 20 pp × 1,5 kWh × tarifa 0,15 = + $4.50', () =>
+  // El Dashboard usa una ventana móvil de las últimas 24 aplicadas: se verifica la fórmula sobre esa ventana,
+  // no un incremento (que depende de qué fila sale de la ventana).
+  const expectedKwh = (points) => +(points.reduce((acc, p) => acc + Math.max(0, p.real - p.ideal), 0) * 1.5).toFixed(1);
+
+  await cp('CP042', 'Operador excede la recomendada (80 % vs 60 %): 20 pp × 1,5 kWh × tarifa 0,15 = $4.50 por esa recomendación', () =>
     L.withSession(browser, async (page) => {
-      const d0 = await dash(sup);
       const r = await L.api('/simulation/log-action', { method: 'POST', token: sup, json: { ...BODY, current_power: 80, recommended_power: 60, applied_power: 60, action: 'RECOMMENDATION_APPLIED' } });
       eq(r.status, 201, 'registro de la decisión');
       const d1 = await dash(sup);
-      eq(+(d1.kpi_diferencial - d0.kpi_diferencial).toFixed(1), 30, 'incremento de kWh');
+      const last = d1.auditData[d1.auditData.length - 1];
+      eq(`${last.real}/${last.ideal}`, '80/60', 'último punto de la gráfica (estimada/recomendada)');
+      eq(d1.kpi_diferencial, expectedKwh(d1.auditData), 'kWh del Dashboard = Σ exceso × 1,5');
+      eq(+((80 - 60) * 1.5 * 0.15).toFixed(2), 4.5, 'aporte de esa recomendación (20 pp × 1,5 × $0.15)');
       await L.loginAs(page, 'GERENTE');
       await L.goto(page, '/dashboard');
       await L.waitText(page, 'Ahorro Potencial (Periodo)');
-      const body = await L.bodyText(page);
-      eq(money(body), +(d1.kpi_diferencial * 0.15).toFixed(2), 'monto mostrado');
-      eq(+(money(body) - +(d0.kpi_diferencial * 0.15)).toFixed(2), 4.5, 'incremento del monto');
-      diffBase = d1.kpi_diferencial;
+      eq(money(await L.bodyText(page)), +(d1.kpi_diferencial * 0.15).toFixed(2), 'monto mostrado');
     }));
 
-  await cp('CP043', 'Operador sigue o mejora la recomendación (igual o menor): no suma ahorro', async () => {
-    const d0 = await dash(sup);
+  await cp('CP043', 'Operador sigue o mejora la recomendación (igual o menor): esa simulación aporta 0', async () => {
     for (const [cur, rec] of [[60, 60], [50, 60]]) {
       const r = await L.api('/simulation/log-action', { method: 'POST', token: sup, json: { ...BODY, current_power: cur, recommended_power: rec, applied_power: rec, action: 'RECOMMENDATION_APPLIED' } });
       eq(r.status, 201, 'registro');
     }
     const d1 = await dash(sup);
-    eq(d1.kpi_diferencial, d0.kpi_diferencial, 'kWh tras seguir/mejorar la recomendación');
+    const [a, b] = d1.auditData.slice(-2);
+    check(a.real <= a.ideal && b.real <= b.ideal, 'los dos registros nuevos deben ser iguales o mejores que la recomendación');
+    eq(d1.kpi_diferencial, expectedKwh(d1.auditData), 'esas simulaciones no suman exceso (diferencial = 0 para el registro)');
   });
 
   await cp('CP044', 'Costo kWh 5.0: el ahorro pasa a Costo × Diferencial Energético', () =>

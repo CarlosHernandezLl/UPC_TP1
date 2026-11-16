@@ -11,8 +11,8 @@ Viven en su propia carpeta para no añadir dependencias al proyecto.
 ```bash
 cd tests/e2e
 npm install
-npm test                  # todo: genera fixtures y ejecuta los 64 casos
-node run.js simulador     # una suite: auth_users | ingesta_ml | simulador | dashboard_audit
+npm test                  # todo: genera fixtures y ejecuta los 70 casos
+node run.js simulador     # una suite: auth_users | ingesta_ml | simulador | modelo | dashboard_audit
 ```
 
 Variables opcionales: `E2E_BASE`, `E2E_API`, `CHROME_PATH`, `E2E_ADMIN`, `E2E_ADMIN_PASS` (por defecto `admin_hvac` / `Admin12345`).

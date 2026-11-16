@@ -230,6 +230,16 @@ module.exports = async function (browser, ctx) {
       await L.waitText(page, 'Rango permitido: 1% a 2% HR');
     }));
 
+  await cp('CP047c', 'Objetivo de humedad fuera de los límites (60 % con límites 40–55): alerta aunque el resultado simulado quede dentro', () =>
+    L.withSession(browser, async (page) => {
+      await L.api('/config/gmp/', { method: 'PUT', token: tok, json: { min_hum_limit: 40, max_hum_limit: 55 } });
+      await open(page);
+      await L.simFill(page, { pwrActual: 70, setpoint: 60 });
+      await L.simGenerate(page);
+      await L.waitText(page, 'Alerta de Riesgo GMP');
+      await L.waitText(page, 'Rango permitido: 40% a 55% HR');
+    }));
+
   await cp('CP048', 'Recomendación dentro de los límites GMP: sin alerta', () =>
     L.withSession(browser, async (page) => {
       await L.api('/config/gmp/', { method: 'PUT', token: tok, json: { min_hum_limit: 0, max_hum_limit: 100 } });
