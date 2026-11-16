@@ -8,7 +8,7 @@ Método: la app se levantó con `docker compose up --build` y se ejecutó una su
 | | |
 |---|---|
 | Criterios de aceptación | **59 de 59 IMPLEMENTADOS** |
-| Casos de prueba ejecutados | **64 de 64 pasan** (los 59 CP + variantes: CP001b, CP003b, CP010b, CP023b, CP041b) |
+| Casos de prueba ejecutados | **70 de 70 pasan** (los 59 CP + variantes: CP001b, CP003b, CP010b, CP023b, CP041b, CP047b, CP047c + 4 de disponibilidad del modelo MOD1–MOD4) |
 | Navegador probado | Chrome (sin ventana). Firefox, Edge y Safari no se probaron |
 
 Antes de esta revisión (análisis del 2026-10-04) había 37 implementados, 16 parciales, 4 que difieren y 2 sin implementar.
@@ -138,7 +138,7 @@ Los dos archivos no coinciden en algunos textos. Se siguió la **HU** (el requis
 docker compose up --build -d
 cd tests/e2e
 npm install          # una sola vez (puppeteer-core, aislado del proyecto)
-npm test             # genera los archivos de prueba y ejecuta los 64 casos
-node run.js simulador   # una suite: auth_users | ingesta_ml | simulador | dashboard_audit
+npm test             # genera los archivos de prueba y ejecuta los 70 casos
+node run.js simulador   # una suite: auth_users | ingesta_ml | simulador | modelo | dashboard_audit
 ```
 El resultado queda en `tests/e2e/resultados.json`. La suite entrena el modelo tres veces y carga datasets, por lo que tarda varios minutos y deja datos en la BD.

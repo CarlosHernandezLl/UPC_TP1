@@ -32,7 +32,7 @@ El operador ingresa las condiciones de la sala limpia y de la UMA (unidad maneja
 | Reportes | reportlab (PDF), csv |
 | Frontend | Next.js 16.1.6 (App Router), React 19, TypeScript 5, Tailwind CSS 4, Recharts 3, Heroicons |
 | BD | PostgreSQL 17 (zona horaria `America/Lima`) |
-| Despliegue | Docker Compose (db + backend + frontend). El frontend también estuvo publicado en Vercel (`https://upc-tp-1-sigma.vercel.app`) |
+| Despliegue | Local: Docker Compose (db + backend + frontend). Nube: frontend en **Vercel** (`https://upc-tp-1-sigma.vercel.app`), backend en **Render** y BD PostgreSQL en **Supabase** (ver §5) |
 
 ---
 
@@ -101,7 +101,7 @@ Frontend: `NEXT_PUBLIC_API_URL` (URL base de la API). Se **incrusta en el build*
 ### 3.3 Arranque (`app/main.py`)
 - El esquema lo gestiona **solo Alembic** (`alembic upgrade head` en el `CMD` del Dockerfile); ya no se usa `create_all`.
 - `lifespan`: (1) si hay `FIRST_ADMIN_PASSWORD` y la BD está vacía, crea el admin y los límites GMP por defecto (40–55 %, setpoint 49); (2) consulta el modelo **Champion** en BD y lo carga en RAM; si no existe o su archivo no se encuentra, usa el modelo base `saved_models/xgboost_hvac_v1.json`.
-- `_resolve_model_path` tolera rutas guardadas en otro sistema operativo o contenedor (busca el mismo archivo dentro de `saved_models/`).
+- El Champion se carga **primero desde `model_blob` en la BD** y, si no lo tiene, desde el archivo (`_resolve_model_path` tolera rutas de otro sistema operativo o contenedor); cuando solo existía el archivo, se copia a la BD para que sobreviva a discos efímeros. Si no hay Champion utilizable, queda el modelo base de respaldo y `/mlops/metrics` lo informa.
 - CORS: `localhost:3000`, `192.168.0.100:3000` y `FRONTEND_URL`.
 - Logging a `logs/app.log` (nivel ERROR). Health check: `GET /`.
 
@@ -112,7 +112,7 @@ Frontend: `NEXT_PUBLIC_API_URL` (URL base de la API). Se **incrusta en el build*
 | `users` | Usuarios y roles | `username` (único), `hashed_password`, `role` (ADMIN/SUPERVISOR/AUDITOR/GERENTE), `is_active` (soft delete) |
 | `hvac_historical_data` | Telemetría minuto a minuto | `timestamp`, `batch_id` (UUID), `outdoor_temp/w`, `ahu_temp/w`, `injection_pressure`, `dryer_power`, `room_temp/rh/w`, `is_clean` |
 | `data_ingestion_logs` | Linaje de cargas | `batch_id`, `data_range`, `record_count`, `status` (SINCRONIZADO / ERROR COLUMNAS / ERROR FORMATO) |
-| `ml_model_versions` | Model Registry | `version_tag` (`v1.MMDD.HHMMSS`), `model_path`, `batch_id`, `r2_score`, `rmse`, **`feature_importance` (JSON, SHAP)**, `status` (ACTIVE=Champion / ARCHIVED) |
+| `ml_model_versions` | Model Registry | `version_tag` (`v1.MMDD.HHMMSS`), `model_path`, `batch_id`, `r2_score`, `rmse`, **`feature_importance` (JSON, SHAP)**, `status` (ACTIVE=Champion / ARCHIVED), **`model_blob`** (contenido JSON del modelo; el Champion no depende del disco) |
 | `simulation_logs` | Decisiones del operador | entradas ambientales, `current_power`, `recommended_power`, `applied_power`, `action`, `justification`, `model_version_id` |
 | `audit_trail` | Pista de auditoría GxP | `user_id`, `action`, `resource`, `detail`, `ip_address`, `created_at` |
 | `gmp_parameters` | Límites regulatorios de HR | `min_hum_limit`, `max_hum_limit`, `default_setpoint`, `updated_by` |
@@ -145,9 +145,9 @@ El frontend solo oculta opciones del menú; la autorización real está en el ba
 | `GET /data/ingestion/history` | SUPERVISOR | Historial de ingestas |
 | `GET /config/gmp/` | cualquier autenticado | Límites GMP vigentes |
 | `PUT /config/gmp/` | ADMIN | Actualiza límites (audita `GMP_LIMITS_UPDATE`) |
-| `POST /simulation/predict` | SUPERVISOR | Recomendación de potencia + explicación Gemini |
+| `POST /simulation/predict` | SUPERVISOR | Recomendación de potencia + explicación Gemini; **503** si no hay un modelo de IA utilizable |
 | `POST /simulation/log-action` | SUPERVISOR | Registra decisión (APPLIED / OVERRIDDEN) + auditoría |
-| `GET /mlops/metrics` | SUPERVISOR, AUDITOR | Métricas del Champion, incluida la importancia SHAP |
+| `GET /mlops/metrics` | SUPERVISOR, AUDITOR | Métricas del Champion, importancia SHAP y `modelo_en_memoria` (versión y origen del modelo que usa el simulador) |
 | `GET /mlops/history` | SUPERVISOR, AUDITOR | Historial de versiones |
 | `GET /mlops/training-log` | SUPERVISOR, AUDITOR | Entrenamientos exitosos, rechazados y fallidos con su motivo |
 | `POST /mlops/retrain` | ADMIN | Ejecuta el pipeline de reentrenamiento |
@@ -200,8 +200,12 @@ El token JWT lleva un `jti` único. `POST /auth/logout` lo registra en `revoked_
 ### 3.8 Eventos de auditoría
 `ACCESS_DENIED`, `GMP_LIMITS_UPDATE`, `RECOMMENDATION_APPLIED`, `RECOMMENDATION_OVERRIDDEN`, `ML_RETRAIN_FAILED`, `ML_MODEL_REJECTED`, `ML_MODEL_PROMOTED`, `USER_LOGOUT`, `USER_CREATED`, `USER_UPDATED`, `USER_DELETED` y los registros manuales (`MANUAL_AUDIT`). La gestión de usuarios (alta, edición, baja) **aún no genera eventos** de auditoría.
 
-### 3.9 Modelos ML guardados
-`app/ml_engine/saved_models/` contiene el modelo base versionado (`xgboost_hvac_v1.json`, `xgboost_metadata.json`). Los modelos entrenados en runtime (`xgboost_hvac_v1.MMDD.HHMMSS.json`) **ya no se versionan en git** (`.gitignore`) y en Docker viven en el volumen `models`.
+### 3.9 Modelos ML guardados y disponibilidad
+- El **Champion vive en la BD** (`ml_model_versions.model_blob`, JSON de XGBoost) y también como archivo `saved_models/xgboost_hvac_<tag>.json`. Al arrancar se carga desde la BD, de modo que un reinicio o redespliegue no obliga a reentrenar.
+- `app/ml_engine/saved_models/` conserva el modelo base versionado (`xgboost_hvac_v1.json`, `xgboost_metadata.json`) como respaldo. Los modelos entrenados en runtime **no se versionan en git**; en Docker local viven en el volumen `models`.
+- El cargador renombra las variables de modelos antiguos (`potencia_secador`, `temp_ext`… → `dryer_power`, `outdoor_temp`…, mismo orden), por lo que el modelo base ya produce recomendaciones válidas.
+- Si no hay ningún modelo utilizable, `/simulation/predict` responde **503** con un mensaje claro en vez de devolver la potencia ingresada con 0 % de ahorro. *IA Control* avisa cuando el modelo en memoria no es el Champion registrado.
+- Tras desplegar esta versión por primera vez, un Champion que ya no tenga archivo ni contenido en la BD exige **un reentrenamiento** (el contenido se guarda desde ese momento).
 
 ---
 
@@ -283,6 +287,15 @@ No ejecute a la vez `npm run dev` y el contenedor del frontend: ambos usan el pu
 
 ---
 
+### Nube: Vercel + Render + Supabase
+| Servicio | Configuración |
+|---|---|
+| **Supabase** (PostgreSQL) | Usar su cadena de conexión como `DATABASE_URL` en Render (si hay *pooler*, usar el modo de sesión o la conexión directa para que Alembic funcione) |
+| **Render** (backend, Docker) | Build con `TP1_BACKEND/Dockerfile`; el `CMD` ejecuta `alembic upgrade head` y luego uvicorn en el puerto 8000. Variables: `DATABASE_URL`, `SECRET_KEY` (larga y aleatoria), `GEMINI_API_KEY`, `FRONTEND_URL` (URL de Vercel, para CORS) y `FIRST_ADMIN_PASSWORD` (solo para crear el admin en una BD vacía) |
+| **Vercel** (frontend) | Directorio raíz `TP1_FRONTEND`; variable `NEXT_PUBLIC_API_URL` con la URL pública del backend en Render (se fija en el build: redesplegar si cambia) |
+
+El disco de Render es efímero: por eso el modelo se guarda en la BD (Supabase). Un servicio gratuito de Render se duerme y arranca en frío; al despertar recarga el Champion desde la BD. Si se ejecutan varias instancias, cada una carga el modelo al arrancar (un reentrenamiento en una instancia no actualiza la RAM de las otras hasta reiniciarlas).
+
 ## 6. Flujo operativo típico
 
 1. **Supervisor** carga los 3 archivos en *Ingesta* → se crea un lote.
@@ -304,7 +317,7 @@ No ejecute a la vez `npm run dev` y el contenedor del frontend: ambos usan el pu
 
 - Todo el trabajo reciente está **sin commitear** (último commit: `d023488`). Incluye: Dockerfiles y `docker-compose.yml`, migraciones Alembic 0001–0003, `.env.example`, limpieza de código no usado y las funciones descritas en este documento.
 - `TP1_BACKEND/.env` está marcado como borrado del índice de git, pero **sigue en el historial**: las claves que contiene deben considerarse comprometidas (ver §9).
-- **Pruebas**: `tests/e2e` automatiza los casos de `docs/P20261007_CP.xlsx` contra la app en Docker (Chrome + API): **64 de 64 pasan**. No hay pruebas unitarias del backend ni del frontend.
+- **Pruebas**: `tests/e2e` automatiza los casos de `docs/P20261007_CP.xlsx` contra la app en Docker (Chrome + API), más casos de disponibilidad del modelo (`suite_modelo.js`). No hay pruebas unitarias del backend ni del frontend.
 - **Historias de usuario**: `docs/ESTADO_IMPLEMENTACION.md` re-evalúa los 59 criterios de `docs/P20261007_HU.xlsx`: **59 implementados**, con los conflictos de texto entre HU y CP y lo pendiente fuera de los Excel.
 
 ---
@@ -321,7 +334,7 @@ No ejecute a la vez `npm run dev` y el contenedor del frontend: ambos usan el pu
 - Los modelos entrenados dejaron de versionarse; en Docker van a un volumen.
 - El token JWT se invalida en el servidor al cerrar sesión.
 - La firma térmica usa datos estacionarios y unidades correctas.
-- Los 59 criterios de las HU están implementados y los 64 casos de la suite de aceptación pasan: ingesta con `.xlsx` y fechas parciales, dashboard solo con recomendaciones aplicadas, auditoría de usuarios, filtro de fechas y exportación CSV/PDF.
+- Los 59 criterios de las HU están implementados y los 70 casos de la suite de aceptación pasan: ingesta con `.xlsx` y fechas parciales, dashboard solo con recomendaciones aplicadas, auditoría de usuarios, filtro de fechas y exportación CSV/PDF.
 
 **Seguridad (pendiente)**
 1. **Rotar secretos**: el `.env` anterior (con `SECRET_KEY='supersecretkey'`, contraseña de BD y claves de API) sigue en el historial de git. Rotar las claves y, si el repositorio se comparte, limpiar el historial.
