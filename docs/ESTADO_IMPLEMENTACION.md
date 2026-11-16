@@ -8,7 +8,7 @@ Método: la app se levantó con `docker compose up --build` y se ejecutó una su
 | | |
 |---|---|
 | Criterios de aceptación | **59 de 59 IMPLEMENTADOS** |
-| Casos de prueba ejecutados | **70 de 70 pasan** (los 59 CP + variantes: CP001b, CP003b, CP010b, CP023b, CP041b, CP047b, CP047c + 4 de disponibilidad del modelo MOD1–MOD4) |
+| Casos de prueba ejecutados | **71 de 71 pasan** (los 59 CP + variantes: CP001b, CP003b, CP010b, CP023b, CP041b, CP045b, CP047b, CP047c + 4 de disponibilidad del modelo MOD1–MOD4) |
 | Navegador probado | Chrome (sin ventana). Firefox, Edge y Safari no se probaron |
 
 Antes de esta revisión (análisis del 2026-10-04) había 37 implementados, 16 parciales, 4 que difieren y 2 sin implementar.
@@ -66,7 +66,7 @@ Antes de esta revisión (análisis del 2026-10-04) había 37 implementados, 16 p
 | HU0014-2 | CP043 | IMPLEMENTADO | CP043 | Aplicada ≤ recomendada → diferencial 0. |
 | HU0014-3 | CP059 | IMPLEMENTADO | CP059 | Recalcula al instante al cambiar la tarifa (0.15 → 0.20). |
 | HU0015-1 | CP044 | IMPLEMENTADO | CP044 | Ahorro = Diferencial × costo kWh. |
-| HU0015-2 | CP045 | IMPLEMENTADO | CP045 | No se puede digitar "-"; tope de 5 USD/kWh. |
+| HU0015-2 | CP045 | IMPLEMENTADO | CP045 | No se puede digitar "-", el costo debe ser mayor que 0 (vacío o 0 se rechazan y se conserva el último valor válido) y tiene un tope de 5 USD/kWh. |
 | HU0016-1 | CP046 | IMPLEMENTADO | CP046 | Dispersión humedad (g/kg) vs potencia (%) con puntos estacionarios históricos. |
 | HU0017-1 | CP047 | IMPLEMENTADO | CP047 | "Alerta de Riesgo GMP" con el texto de la HU y el rótulo "Alerta de incumplimiento" del CP. |
 | HU0017-2 | CP048 | IMPLEMENTADO | CP048 | Sin alerta dentro de los límites. |
@@ -138,7 +138,7 @@ Los dos archivos no coinciden en algunos textos. Se siguió la **HU** (el requis
 docker compose up --build -d
 cd tests/e2e
 npm install          # una sola vez (puppeteer-core, aislado del proyecto)
-npm test             # genera los archivos de prueba y ejecuta los 70 casos
+npm test             # genera los archivos de prueba y ejecuta los 71 casos
 node run.js simulador   # una suite: auth_users | ingesta_ml | simulador | modelo | dashboard_audit
 ```
 El resultado queda en `tests/e2e/resultados.json`. La suite entrena el modelo tres veces y carga datasets, por lo que tarda varios minutos y deja datos en la BD.

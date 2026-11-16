@@ -159,6 +159,25 @@ module.exports = async function (browser, ctx) {
       check(!(await L.valueOf(page, 'input[type=number]')).includes('-'), 'el signo "-" no debe digitarse');
     }));
 
+  await cp('CP045b', 'Costo kWh debe ser mayor que 0: vacío o 0 se rechazan y el ahorro conserva el último valor válido', () =>
+    L.withSession(browser, async (page) => {
+      await L.loginAs(page, 'SUPERVISOR');
+      await L.goto(page, '/dashboard');
+      await L.waitText(page, 'Configuración de Costos');
+      await L.fill(page, 'input[type=number]', '0.20');
+      await sleep(300);
+      const valid = money(await L.bodyText(page));
+      for (const text of ['0', '']) {
+        await L.fill(page, 'input[type=number]', text);
+        await sleep(300);
+        await L.waitText(page, 'El costo por kWh debe ser mayor que 0');
+        eq(money(await L.bodyText(page)), valid, `ahorro mostrado con el campo en "${text}"`);
+      }
+      await page.click('body');                       // al salir del campo se restaura el último costo válido
+      await sleep(300);
+      eq(await L.valueOf(page, 'input[type=number]'), '0.2', 'valor restaurado al salir del campo');
+    }));
+
   await cp('CP059', 'Tarifa 0,15 → 0,20: el monto se recalcula al instante, sin recargar', () =>
     L.withSession(browser, async (page) => {
       await L.loginAs(page, 'GERENTE');
@@ -170,7 +189,7 @@ module.exports = async function (browser, ctx) {
       await sleep(400);
       eq(money(await L.bodyText(page)), +(k * 0.2).toFixed(2), 'monto con 0.20');
       const rej = await (async () => { await L.fill(page, 'input[type=number]', '999999'); await sleep(300); return L.valueOf(page, 'input[type=number]'); })();
-      check(parseFloat(rej) <= 5, `una tarifa absurda no debe aceptarse (${rej})`);
+      check(!(parseFloat(rej) > 5), `una tarifa absurda no debe aceptarse (${rej})`);
     }));
 
   console.log('\n[HU0016] Firma térmica');

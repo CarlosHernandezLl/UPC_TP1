@@ -1,0 +1,6962 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+		xmlns:w="urn:schemas-microsoft-com:office:word"
+		xmlns="http://www.w3.org/TR/REC-html40">
+		<head><meta charset="utf-8"></head><body><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		28497	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		fallo	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-11-01 23:44	</td>
+	<td>
+		2026-11-01 23:44	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >C_ESTABRIDIS_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		Opera	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP055	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		2	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP055: No se ve el módulo de Dashboard con usuario Supervisor	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Funciona bien el login con el usuario supervisor, pero en los módulos solo se puede visualizar &quot;Ingesta de datos&quot; y &quot;Simulador de Ahorro&quot;; no se observa &quot;Dashboard&quot;.<br />
+<br />
+	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		image.png (133,278 bytes) <span class="italic-small">2026-11-01 23:44</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=11739&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=11739&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		28474	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		fallo	</td>
+	<td>
+		aleatorio	</td>
+	<td>
+		2026-11-01 23:16	</td>
+	<td>
+		2026-11-01 23:16	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >C_ESTABRIDIS_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		Opera	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		normal	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP013	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		3	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP013:	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Al dar click en Finalizar Sesión, la sesión actual se cierra y redirige al login, pero al dar atrás en el navegador, se vuelve a mostrar la sesión abierta con el dashboard y demás funcionalidades, como si no se hubiera cerrado sesión hace un momento.<br />
+He probado varias veces y no sucede todas las veces, pero sí sucede.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		28462	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		bloqueo	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-11-01 23:04	</td>
+	<td>
+		2026-11-01 23:04	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >C_ESTABRIDIS_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		Opera	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP010	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP010: Falta de nuevos datasets	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		No se puede ejecutar este caso de prueba porque no se han brindado nuevos conjuntos de datos.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		28445	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		fallo	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-11-01 22:45	</td>
+	<td>
+		2026-11-01 22:45	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >C_ESTABRIDIS_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		Opera	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP009	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		3	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP009: Datos del modelo no se actualizan	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Con respecto a los datos del modelo que aparecen en la tarjeta analítica, el R^2 y el Error Promedio permanecen igual antes de re-entrenar el modelo y después de re-entrenarlo, es decir, no se actualizan esos datos.<br />
+	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		27974	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		funcionalidad	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-11-01 18:54	</td>
+	<td>
+		2026-11-01 18:54	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >L_BALICCO_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		EDGE	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP020	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		SUGERENCIA	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP23: rebocación exitosa	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Todo conforme, igualmente como sugerencia tengan cuidado en seleccionar a quien van a rebocar el usuario para evitar peridad de datos o errores con la información	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		Ir al menu lateral y asignar a usuarios y registrar un nuevo usuario 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		image.png (120,895 bytes) <span class="italic-small">2026-11-01 18:54</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=11468&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=11468&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		27970	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		funcionalidad	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-11-01 18:44	</td>
+	<td>
+		2026-11-01 18:54	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >L_BALICCO_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		EDGE	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP020	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		SUGERENCIA	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP22: Validacion exitosa	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Listo estimados todo conforme, Una sugerecia mantengan esa funcion limitada para ciertas personas pero si alguien busca registrarse no olviden darle la opcion de cambiar contraseña de usuario. 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		Ir al menu lateral y asignar a usuarios y registrar un nuevo usuario 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		image.png (209,498 bytes) <span class="italic-small">2026-11-01 18:44</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=11464&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=11464&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		27969	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		funcionalidad	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-11-01 18:39	</td>
+	<td>
+		2026-11-01 18:44	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >L_BALICCO_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		EDGE	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP020	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		SUGERENCIA	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP21: Validacion exitosa	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Listo estimados todo conforme, Una sugerecia si van a modificar aglo no lo afecten todo esta conforme	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		Ir al menu lateral y asignar a usuarios y registrar un nuevo usuario 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		image.png (49,522 bytes) <span class="italic-small">2026-11-01 18:39</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=11463&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=11463&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		27967	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		funcionalidad	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-11-01 18:31	</td>
+	<td>
+		2026-11-01 18:39	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >L_BALICCO_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		EDGE	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP020	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP20: Error en la valiación	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Ustedes mencionan que debe salir error por la duplicidad de datos en su aplicación sin embargo hay duplicidad de datos lo que indica que no hay una validacion adecuada relacionada a los usuarios. Corrigan eso o validen porque no puede haber 2 usuarios con el mismo nombre.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		Ir al menu lateral y asignar a usuarios y registrar un nuevo usuario 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción del Sistema	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		27945	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		menor	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-11-01 18:13	</td>
+	<td>
+		2026-11-01 18:24	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >L_BALICCO_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		EDGE	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		SI  	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP018	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		SUGERENCIA	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP018: Ok cumple segun los requeirimentos de us caso de prueba	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Si, cumple segun lo mencionado sugeriria tal vez poner un buscador o filtors para que alla acceso a esa informacion y no se generen problemas a futuro. Pero todo ok 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		Ingresa en el menu lateral a la opcion de  auditoria 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción del Sistema	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		27962	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		menor	</td>
+	<td>
+		no se ha intentado	</td>
+	<td>
+		2026-11-01 18:22	</td>
+	<td>
+		2026-11-01 18:24	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >L_BALICCO_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		EDGE	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		SI  	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP019	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		SUGERENCIA	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP019: todo conforme	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Cumple estrictamente con el paso a paso de lo que proponen y no hay dificultades ni nada, sugiero que tal vez puedan colocar la opcion de asignar mas seguridad o un generador de contraseñas pero cumple. 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		Ingresar a auditoria y registrar un nuevo ususario.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción del Sistema	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		image.png (142,378 bytes) <span class="italic-small">2026-11-01 18:22</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=11458&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=11458&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		25256	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		bloqueo	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-29 23:38	</td>
+	<td>
+		2026-11-01 18:24	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >L_BALICCO_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		CHROME	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 01	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP017	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		SUGERENCIA	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP17: Todo Ok	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Todo listo igual que en las observaciones anterirores ya se ha solucionado el problema no hay problemas. 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		Ingresar a la opcion de entrenaimento con IA y agregar la información	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+		nada mas que añadir	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		25252	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		bloqueo	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-29 23:35	</td>
+	<td>
+		2026-11-01 18:24	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >L_BALICCO_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		CHROME	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 01	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP015	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		SUGERENCIA	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP15: Conforme se puede apreciar claramente que cumple con lo estimado	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Se muestra la pantalla con secciones de &quot;Entrenamiento del Modelo&quot;, &quot;Límites de Seguridad&quot;, &quot;Historial de entrenamientos&quot;, Aviso del Sistema &quot;El límite mínimo de humedad no puede ser mayor o igual al límite máximo&quot;. Ambos criterios funcionales y listos. 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		Ingresar a entrmeinto IA y agregar valores 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+		nada mas que añadir	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		25254	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		funcionalidad	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-29 23:37	</td>
+	<td>
+		2026-11-01 18:23	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >L_BALICCO_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		CHROME	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 01	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP016	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		SUGERENCIA	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP16: Todo conforme	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Todo conforme a la hora de asignar los valores de los numeros relacionados a la humedad 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		Ingresar al entrenmiento de IA  y seleccionar los valores 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+		nada mas que añadir	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		25243	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		bloqueo	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-29 23:26	</td>
+	<td>
+		2026-11-01 18:23	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >L_BALICCO_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		CHROME	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 01	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		SUGERENCIA	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP14: Todo conforme	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Lo han hecho bien siguiendo sus requerimiento y validacion en los numeros asignenle una fucnion para escribir en lugar de asignar con botones.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		Ingresar a la opcion de entrenamiento de IA y asignarle los valores 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+		nada mas que añadir	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción del Sistema	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		image.png (87,821 bytes) <span class="italic-small">2026-10-29 23:26</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8536&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8536&amp;type=bug</a><br />image-2.png (171,970 bytes) <span class="italic-small">2026-11-01 17:59</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=11432&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=11432&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+			Notas	</td>
+</tr>
+	<tr>
+	<td width="12%">
+				(0016978)
+			<br />
+				<span >L_BALICCO_9014_G3</span>&#160;&#160;&#160;
+			<br />
+				2026-11-01 17:59&#160;&#160;&#160;
+							</td>
+	<td>
+			</td>
+		</tr>
+		<tr class="spacer"><td colspan="2"></td></tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		27376	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		fallo	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-11-01 08:02	</td>
+	<td>
+		2026-11-01 13:31	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >J_VELASQUE_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		CHROME	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		10	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP059	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		6	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP059 - El campo de tarifa eléctrica permite ingresar valores excesivamente elevados sin advertencia.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Durante la ejecución del CP059, se ingresó una tarifa eléctrica de 999999999999 USD/kWh. El sistema aceptó el valor y calculó un ahorro potencial de $40,499,999,999,959.50, sin mostrar advertencias.<br />
+Aunque el cálculo matemático es correcto, se recomienda establecer límites razonables para la tarifa eléctrica o mostrar una advertencia ante valores atípicos, a fin de evitar proyecciones económicas poco realistas.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción del Sistema	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		Captura de pantalla 2026-11-01 080138.png (74,774 bytes) <span class="italic-small">2026-11-01 08:02</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10922&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10922&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		27375	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		ajuste	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-11-01 08:00	</td>
+	<td>
+		2026-11-01 08:36	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >J_VELASQUE_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		EDGE	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		10	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP015	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		6	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		Omitir incidencia	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Omitir incidencia	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción del Sistema	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		Captura de pantalla 2026-11-01 075728.png (454,698 bytes) <span class="italic-small">2026-11-01 08:00</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10921&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10921&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		26874	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		mayor	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-31 20:55	</td>
+	<td>
+		2026-10-31 20:55	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >G_FLORES_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		CHROME	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP038	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP038: El Dashboard no actualiza el Diferencial Energético ni el gráfico de auditoría tras aplicar recomendación	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Al ejecutar el caso de prueba CP038, se genera una recomendación de potencia del 60% en el Simulador de Ahorro y se confirma mediante el botón &quot;SÍ, APLICADA&quot;, obteniendo la confirmación en pantalla (&quot;AUDITORÍA REGISTRADA&quot;).<br />
+<br />
+Sin embargo, al navegar al módulo &quot;DASHBOARD&quot;, la sección &quot;Diferencial Energético&quot; y el gráfico &quot;Auditoría Estacionaria: Consumo Real vs. Recomendación IA&quot; no reflejan el ajuste recién aplicado:<br />
+- El gráfico muestra puntos históricos estáticos (hasta S-11).<br />
+- La tarjeta &quot;MÉTRICA DE AJUSTE (R²)&quot; permanece en 0%.<br />
+- El valor de &quot;DIFERENCIAL ENERGÉTICO&quot; se mantiene fijo en 40.5 kWh sin recalcular el impacto del nuevo ajuste registrado.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		1. Ingresar al módulo &quot;Simulador de Optimización Energética&quot;.<br />
+2. Completar las variables operativas y pulsar &quot;Generar Recomendación&quot; (obteniendo 60%).<br />
+3. Hacer clic en &quot;SÍ, APLICADA&quot; y verificar que el estado cambie a &quot;AUDITORÍA REGISTRADA&quot;.<br />
+4. Dirigirse al menú lateral y seleccionar &quot;DASHBOARD&quot;.<br />
+5. Observar las métricas de &quot;Diferencial Energético&quot; y el gráfico &quot;Consumo Real vs. Recomendación IA&quot;.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		Captura de pantalla 2026-10-31 195204.png (82,407 bytes) <span class="italic-small">2026-10-31 20:55</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10144&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10144&amp;type=bug</a><br />Captura de pantalla 2026-10-31 195214.png (89,035 bytes) <span class="italic-small">2026-10-31 20:55</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10145&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10145&amp;type=bug</a><br />Captura de pantalla 2026-10-31 195303.png (117,131 bytes) <span class="italic-small">2026-10-31 20:55</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10146&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10146&amp;type=bug</a><br />Captura de pantalla 2026-10-31 195312.png (105,846 bytes) <span class="italic-small">2026-10-31 20:55</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10147&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10147&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		26836	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		menor	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-31 20:19	</td>
+	<td>
+		2026-10-31 20:19	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >G_FLORES_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		CHROME	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP037	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP037: Falta de indicador de longitud o límites de caracteres en modal de Justificación Técnica Obligatoria	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Al ejecutar el caso de prueba CP037 y pulsar en &quot;IGNORAR&quot;, el sistema despliega correctamente la ventana modal &quot;CONTROL DE DESVÍO OPERACIONAL&quot; para registrar el sustento técnico.<br />
+<br />
+Sin embargo, el área de texto no cuenta con un contador visual de caracteres mínimos/máximos ni retroalimentación en tiempo real que indique al operador los requisitos de extensión requeridos para cumplir formalmente con la auditoría FDA 21 CFR Part 11 descrita en el diálogo.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		1. Ingresar al módulo &quot;Simulador de Optimización Energética&quot;.<br />
+2. Completar los parámetros operativos y hacer clic en &quot;Generar Recomendación&quot;.<br />
+3. En la tarjeta de resultado, hacer clic en el botón &quot;IGNORAR&quot;.<br />
+4. Visualizar el modal emergente &quot;CONTROL DE DESVÍO OPERACIONAL&quot;.<br />
+5. Observar que el campo de texto de justificación carece de contador de caracteres o especificación de longitud permitida.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		Captura de pantalla 2026-10-31 191227.png (181,088 bytes) <span class="italic-small">2026-10-31 20:19</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10124&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10124&amp;type=bug</a><br />Captura de pantalla 2026-10-31 191210.png (81,748 bytes) <span class="italic-small">2026-10-31 20:19</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10125&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10125&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		26824	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		menor	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-31 20:04	</td>
+	<td>
+		2026-10-31 20:04	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >G_FLORES_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		CHROME	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP035	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP035: Persistencia del card de recomendación previo al fallar la validación por campos vacíos	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Al ejecutar el caso de prueba CP035 dejando todos los campos del simulador vacíos tras una ejecución previa exitosa y pulsar en &quot;Generar Recomendación&quot;, el sistema muestra correctamente la alerta de advertencia (&quot;Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital&quot;).<br />
+<br />
+Sin embargo, el card inferior de &quot;Potencia Recomendada IA&quot; no se oculta ni reinicia su estado al modo inicial (&quot;Esperando entrada de datos...&quot;), manteniendo visible el resultado de la simulación anterior (60%), lo que puede inducir a confusión al operador respecto a la validez de los datos mostrados.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		1. Realizar una simulación previa válida para generar el card de Potencia Recomendada IA.<br />
+2. Limpiar todos los campos del formulario dejándolos vacíos.<br />
+3. Hacer clic en &quot;Generar Recomendación&quot;.<br />
+4. Observar que, aunque aparece la alerta de campos vacíos, el card inferior sigue mostrando la recomendación del cálculo anterior.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		Captura de pantalla 2026-10-31 183955.png (92,826 bytes) <span class="italic-small">2026-10-31 20:04</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10113&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10113&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		26774	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		menor	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-31 19:25	</td>
+	<td>
+		2026-10-31 19:25	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >G_FLORES_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		CHROME	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP033	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP033: Ausencia de resaltado visual en los campos obligatorios incompletos	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Al ejecutar el caso de prueba CP033 omitiendo datos de entrada obligatorios en el formulario del Simulador y presionar &quot;Generar Recomendación&quot;, el sistema muestra la alerta en la esquina inferior derecha (&quot;Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital&quot;).<br />
+<br />
+No obstante, la interfaz no resalta en color rojo el borde de las cajas de texto vacías ni coloca el foco en la primera casilla incompleta, lo que dificulta al operador identificar rápidamente qué dato específico le falta ingresar.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		1. Ingresar al módulo &quot;Simulador de Optimización Energética&quot;.<br />
+2. Dejar casillas de operación obligatorias vacías.<br />
+3. Hacer clic en el botón &quot;Generar Recomendación&quot;.<br />
+4. Observar la alerta en la esquina inferior derecha y notar que los campos vacíos no reciben ningún estilo de error visual ni enfoque.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		Captura de pantalla 2026-10-31 181813.png (96,470 bytes) <span class="italic-small">2026-10-31 19:25</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10070&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10070&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		26731	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		menor	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-31 19:12	</td>
+	<td>
+		2026-10-31 19:12	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >G_FLORES_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		CHROME	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP032	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP032: Falta de aviso visual explicativo al restringir valores en Humedad Sala Objetivo	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Al ejecutar el caso de prueba CP032 en el campo &quot;Humedad Sala Objetivo (HR %)&quot;, el sistema restringe correctamente valores fuera del límite (impidiendo completar el valor 110 al bloquear el último dígito).<br />
+<br />
+Sin embargo, el sistema no despliega ningún mensaje de validación visual, tooltip o etiqueta que informe al usuario que el valor excede el límite y que el rango admitido es de 0% a 100%.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		1. Ingresar al módulo &quot;Simulador de Optimización Energética&quot;.<br />
+2. Ubicarse en el campo &quot;Humedad Sala Objetivo (HR %)&quot;.<br />
+3. Intentar ingresar el valor 110.<br />
+4. Observar que el teclado se bloquea sin mostrar alerta o mensaje visual de rango inválido.<br />
+5. Ingresar el valor válido 55 y comprobar que el sistema procesa la recomendación.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		Captura de pantalla 2026-10-31 180343.png (81,174 bytes) <span class="italic-small">2026-10-31 19:12</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10051&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10051&amp;type=bug</a><br />Captura de pantalla 2026-10-31 180436.png (84,593 bytes) <span class="italic-small">2026-10-31 19:12</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10052&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10052&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		26720	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		menor	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-31 19:10	</td>
+	<td>
+		2026-10-31 19:10	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >G_FLORES_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		EDGE	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		10	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP031	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP031: Validación genérica de variables al omitir campos obligatorios de sala	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Al ejecutar el caso de prueba CP031 dejando vacíos los campos de estado de sala (&quot;Humedad Sala Actual (HR %)&quot; y &quot;Temp. Sala (°C)&quot;) y pulsar en &quot;Generar Recomendación&quot;, el sistema bloquea la consulta pero emite un aviso genérico global: &quot;Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital&quot;.<br />
+<br />
+No se resaltan visualmente los campos específicos faltantes ni se especifica cuáles son las variables de sala requeridas para poder procesar la simulación.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		1. Iniciar sesión con rol Administrador/Supervisor.<br />
+2. Ingresar al módulo &quot;Simulador de Optimización Energética&quot;.<br />
+3. Completar las variables de entorno exterior, UMA, potencia estimada y humedad objetivo.<br />
+4. Dejar los campos &quot;Humedad Sala Actual (HR %)&quot; y &quot;Temp. Sala (°C)&quot; vacíos.<br />
+5. Hacer clic en &quot;Generar Recomendación&quot;.<br />
+6. Observar que se bloquea la consulta y se muestra la alerta genérica en la esquina inferior derecha.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción del Sistema	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		Captura de pantalla 2026-10-31 175555.png (92,881 bytes) <span class="italic-small">2026-10-31 19:10</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10044&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10044&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		26715	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		menor	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-31 19:09	</td>
+	<td>
+		2026-10-31 19:09	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >G_FLORES_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		CHROME	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP031	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP031: Validación genérica de variables al omitir campos obligatorios de sala	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Al ejecutar el caso de prueba CP031 dejando vacíos los campos de estado de sala (&quot;Humedad Sala Actual (HR %)&quot; y &quot;Temp. Sala (°C)&quot;) y pulsar en &quot;Generar Recomendación&quot;, el sistema bloquea la consulta pero emite un aviso genérico global: &quot;Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital&quot;.<br />
+<br />
+No se resaltan visualmente los campos específicos faltantes ni se especifica cuáles son las variables de sala requeridas para poder procesar la simulación.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		1. Iniciar sesión con rol Administrador/Supervisor.<br />
+2. Ingresar al módulo &quot;Simulador de Optimización Energética&quot;.<br />
+3. Completar las variables de entorno exterior, UMA, potencia estimada y humedad objetivo.<br />
+4. Dejar los campos &quot;Humedad Sala Actual (HR %)&quot; y &quot;Temp. Sala (°C)&quot; vacíos.<br />
+5. Hacer clic en &quot;Generar Recomendación&quot;.<br />
+6. Observar que se bloquea la consulta y se muestra la alerta genérica en la esquina inferior derecha.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción del Sistema	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		Captura de pantalla 2026-10-31 175555.png (92,881 bytes) <span class="italic-small">2026-10-31 19:09</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10042&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=10042&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		26561	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		menor	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-31 18:50	</td>
+	<td>
+		2026-10-31 18:50	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >G_FLORES_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		EDGE	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		10	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP030	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP030: Ausencia de mensaje de advertencia visual al exceder límites de rango en campos de sala	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Al ejecutar el caso de prueba CP030 ingresando valores fuera de los rangos permitidos (temperatura mayor a 50 °C y humedad mayor a 100%), el sistema bloquea la entrada por teclado e impide colocar el valor completo.<br />
+<br />
+Sin embargo, no se muestra ningún mensaje de validación visual, texto de ayuda o alerta en pantalla que informe al usuario que el valor fue rechazado y cuál es el rango válido admitido (0 a 50 °C y 0 a 100% HR).	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		1. Ingresar al módulo &quot;Simulador de Optimización Energética&quot;.<br />
+2. En el campo &quot;Temp. Sala (°C)&quot; intentar ingresar el valor 60.<br />
+3. En el campo &quot;Humedad Sala Actual (HR %)&quot; intentar ingresar el valor 110.<br />
+4. Observar que el campo bloquea los dígitos pero no despliega ningún mensaje de advertencia o retroalimentación visual al usuario.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción del Sistema	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		imagen_2026-10-31_173618919.png (65,325 bytes) <span class="italic-small">2026-10-31 18:50</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=9850&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=9850&amp;type=bug</a><br />imagen_2026-10-31_173647945.png (72,401 bytes) <span class="italic-small">2026-10-31 18:50</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=9851&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=9851&amp;type=bug</a><br />image.png (81,612 bytes) <span class="italic-small">2026-10-31 18:50</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=9852&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=9852&amp;type=bug</a><br />imagen_2026-10-31_173837906.png (70,950 bytes) <span class="italic-small">2026-10-31 18:50</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=9853&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=9853&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		26368	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		menor	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-31 18:25	</td>
+	<td>
+		2026-10-31 18:25	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >G_FLORES_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		EDGE	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		10	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP029	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP029: Mensaje de error genérico al omitir la variable de potencia estimada	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Al ejecutar el caso de prueba CP029 dejando el campo &quot;Potencia Estimada (%)&quot; vacío e ingresando el resto de variables operativas, el sistema muestra la alerta genérica: &quot;Por favor, llene todas las variables de operación antes de consultar al Gemelo Digital&quot;.<br />
+<br />
+De acuerdo a la especificación del caso de prueba, el sistema debe validar específicamente el campo ausente y emitir el mensaje: &quot;Por favor, llene la variable de Potencia antes de consultar al Gemelo Digital&quot;, permitiendo identificar con precisión al usuario qué variable requiere completar.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+		1. Iniciar sesión con rol Administrador/Supervisor en el sistema.<br />
+2. Ingresar al módulo &quot;Simulador de Optimización Energética&quot;.<br />
+3. Ingresar valores válidos en todas las variables de entorno y sala, dejando el campo &quot;Potencia Estimada (%)&quot; vacío.<br />
+4. Hacer clic en el botón &quot;Generar Recomendación&quot;.<br />
+5. Observar el mensaje de alerta mostrado en la esquina inferior derecha.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción del Sistema	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		Captura de pantalla 2026-10-31 171201.png (63,867 bytes) <span class="italic-small">2026-10-31 18:25</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=9520&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=9520&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		25319	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		fallo	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-30 00:49	</td>
+	<td>
+		2026-10-30 00:49	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >C_ESTABRIDIS_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		Opera	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP008	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP008: No valida correctamente los límites ingresados	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		En este caso de prueba se indica ingresar los valores 30 (min) y 60 (max), pero al presionar &quot;Disparar Entrenamiento&quot;, no sale ningún mensaje de error, más bien sale una alerta de &quot;Operación Exitosa&quot;, y en el Historial de Pipelines no se visualiza el registro del entrenamiento erróneo.<br />
+Esto no concuerda con lo que se indica en Resultados Esperados, ya que dice que debe salir un mensaje de error &quot;Fallo crítico en el pipeline MLOps&quot; y debe visualizarse el entrenamiento erróneo en el Historial de Pipelines.<br />
+<br />
+	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		image.png (115,693 bytes) <span class="italic-small">2026-10-30 00:49</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8618&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8618&amp;type=bug</a><br />image-2.png (116,826 bytes) <span class="italic-small">2026-10-30 00:49</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8619&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8619&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		25316	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		ajuste	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-30 00:41	</td>
+	<td>
+		2026-10-30 00:41	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >C_ESTABRIDIS_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		Opera	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		alta	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP007	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		SUGERENCIA	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		2	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP007: Cambiar nombre de sección &quot;Historial de Pipelines (MLOps Log)&quot;	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Todo funciona correctamente, pero se sugiere corregir el nombre de la sección &quot;Historial de Pipelines (MLOps Log)&quot;, ya que en este caso de prueba dice que se llama &quot;Historial de Entrenamiento&quot;. Se recomienda esto porque puede generar confusión en los usuarios.<br />
+<br />
+	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		image.png (110,844 bytes) <span class="italic-small">2026-10-30 00:41</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8614&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8614&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		25301	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		fallo	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-30 00:21	</td>
+	<td>
+		2026-10-30 00:28	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >C_ESTABRIDIS_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		Opera	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP002	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		5	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP002: No se registra el error en Historial de Procesamiento	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Seguí los pasos: Alteré el archivo DATOS_PLC, borrando la columna f209postsecador, y subí este archivo (renombrado), junto con los otros dos archivos sin alterar (como indica el caso de prueba).<br />
+-&gt; Le di click al botón Procesar e Inyectar y sí salió la alerta de Error (aunque no especifica a qué se debió este error, pone un mensaje general que se visualiza también para otros tipos de errores), pero no se registró la transacción fallida en la tabla de Historial de Procesamiento.<br />
+	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		image.png (166,151 bytes) <span class="italic-small">2026-10-30 00:21</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8597&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8597&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		25308	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		funcionalidad	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-30 00:28	</td>
+	<td>
+		2026-10-30 00:28	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >C_ESTABRIDIS_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		Opera	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u20211B988_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		inmediata	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP005	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		OBSERVACION	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		2	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP005: Alerta de error sin especificar	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Aparece la alerta de error, pero no especifica lo que debería &quot;La fecha de fin debe ser mayor a la fecha de inicio&quot;.<br />
+	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		image.png (118,481 bytes) <span class="italic-small">2026-10-30 00:28</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8604&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8604&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr><br style="mso-special-character: line-break; page-break-before: always" /><table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="6">
+		Ver detalles de la incidencia	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr class="bold">
+	<td width="16%">
+		Id.:	</td>
+	<td width="16%">
+		Categoría:	</td>
+	<td width="16%">
+		Gravedad:	</td>
+	<td width="16%">
+		Reproducibilidad:	</td>
+	<td width="16%">
+		Fecha de envío:	</td>
+	<td width="16%">
+		Última actualización:	</td>
+</tr>
+<tr>
+	<td>
+		25292	</td>
+	<td>
+		[PROY_9014_GRUPO_03_P20261007] CASOS DE PRUEBA	</td>
+	<td>
+		menor	</td>
+	<td>
+		siempre	</td>
+	<td>
+		2026-10-30 00:07	</td>
+	<td>
+		2026-10-30 00:07	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Informador:	</td>
+	<td>
+		<span >C_ESTABRIDIS_9014_G3</span>	</td>
+	<td class="bold">
+		Plataforma:	</td>
+	<td>
+		Opera	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Asignada a:	</td>
+	<td>
+		<span >P20261007_u201924912_9014_G3</span>	</td>
+	<td class="bold">
+		SO:	</td>
+	<td>
+		WINDOWS	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Prioridad:	</td>
+	<td>
+		normal	</td>
+	<td class="bold">
+		Versión de SO:	</td>
+	<td>
+		11	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Estado:	</td>
+	<td>
+		nueva	</td>
+	<td class="bold">
+		Versión del producto:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Compilación del Producto:	</td>
+	<td>
+			</td>
+	<td class="bold">
+		Resolución:	</td>
+	<td>
+		abierta	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Proyección:	</td>
+	<td>
+		ninguna	</td>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		Tiempo estimado:	</td>
+	<td>
+		ninguno	</td>
+	<td class="bold">
+		Resuelta en versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+
+</tr>
+<tr>
+	<td class="bold">
+		&#160;
+	</td>
+	<td>
+		&#160;
+	</td>
+	<td class="bold">
+		Prevista para versión:	</td>
+	<td>
+			</td>
+	<td colspan="2">&#160;</td>
+</tr>
+<tr>
+	<td class="bold">
+		DEFECTO_EVADIDO:	</td>
+	<td colspan="5">
+		 No	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Etapa de Revisión:	</td>
+	<td colspan="5">
+		 1ra. Pruebas Funcionales 	</td>
+</tr>
+<tr>
+	<td class="bold">
+		GRUPO:	</td>
+	<td colspan="5">
+		GRUPO 03	</td>
+</tr>
+<tr>
+	<td class="bold">
+		SECCION:	</td>
+	<td colspan="5">
+		9014	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_HU_CP:	</td>
+	<td colspan="5">
+		CP003	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TIPO_INCIDENCIA:	</td>
+	<td colspan="5">
+		SUGERENCIA	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDF_TESTER:	</td>
+	<td colspan="5">
+		4	</td>
+</tr>
+<tr>
+	<td class="bold">
+		TMDR_PROGRAMADOR:	</td>
+	<td colspan="5">
+		1	</td>
+</tr>
+<tr class="spacer" >
+	<td colspan="6"></td>
+</tr>
+<tr>
+	<td class="bold">
+		Resumen:	</td>
+	<td colspan="5">
+		CP003: Sugerencia	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Descripción:	</td>
+	<td colspan="5">
+		Funciona correctamente. Solo se sugiere que la alerta se pueda visualizar por más tiempo, porque desaparece muy rápido.	</td>
+</tr>
+<tr>
+	<td class="bold">
+		Pasos para reproducir:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Información adicional:	</td>
+	<td colspan="5">
+			</td>
+</tr>
+<tr>
+	<td class="bold">
+		Archivos adjuntos:	</td>
+	<td colspan="5">
+		image.png (137,495 bytes) <span class="italic-small">2026-10-30 00:07</span><br /><a href="https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8587&amp;type=bug" rel="noopener">https://advanced-technology.pe/mantis_rcerda20242/file_download.php?file_id=8587&amp;type=bug</a>	</td>
+</tr>
+
+<tr class="spacer"><td colspan="6"></td></tr>
+</table>
+
+
+<table class="table table-striped table-bordered table-condensed no-margin small">
+<tr>
+	<td class="bold" colspan="2">
+		No hay notas asociadas a esta incidencia.	</td>
+</tr>
+</table>
+
+
+
+<hr>	<script type="text/javascript" src="/mantis_rcerda20242/js/bootstrap-3.4.1.min.js"></script>
+	<script type="text/javascript" src="/mantis_rcerda20242/js/moment-with-locales-2.29.4.min.js"></script>
+	<script type="text/javascript" src="/mantis_rcerda20242/js/bootstrap-datetimepicker-4.17.47.min.js"></script>
+	<script type="text/javascript" src="/mantis_rcerda20242/js/typeahead.jquery-1.3.4.min.js"></script>
+	<script type="text/javascript" src="/mantis_rcerda20242/js/list-2.3.1.min.js"></script>
+	<script type="text/javascript" src="/mantis_rcerda20242/js/ace.min.js"></script>
+</body>
+</html>

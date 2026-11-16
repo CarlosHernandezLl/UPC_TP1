@@ -18,7 +18,9 @@ const MAX_KWH_COST = 5; // USD/kWh, tope razonable para evitar proyecciones irre
 
 export default function Dashboard() {
   const [tariffWarning, setTariffWarning] = useState<string | null>(null);
+  // kwhCost es el último costo válido (> 0) y es el que usa el cálculo; kwhInput es lo que el usuario está escribiendo
   const [kwhCost, setKwhCost] = useState(0.15);
+  const [kwhInput, setKwhInput] = useState('0.15');
   const [isClient, setIsClient] = useState(false);
 
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
@@ -42,6 +44,25 @@ export default function Dashboard() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const parsedInput = parseFloat(kwhInput);
+  const kwhInputIsValid = !isNaN(parsedInput) && parsedInput > 0 && parsedInput <= MAX_KWH_COST;
+
+  // El costo por kWh debe ser positivo (> 0): vacío o 0 no se acepta y el cálculo conserva el último valor válido
+  const handleKwhChange = (raw: string) => {
+    const v = parseFloat(raw);
+    if (!isNaN(v) && v > MAX_KWH_COST) {
+      setTariffWarning(`La tarifa máxima permitida es ${MAX_KWH_COST} USD/kWh. Verifique el valor ingresado.`);
+      return;
+    }
+    setKwhInput(raw);
+    if (isNaN(v) || v <= 0) {
+      setTariffWarning('El costo por kWh debe ser mayor que 0.');
+      return;
+    }
+    setTariffWarning(v > 1 ? 'Valor atípico: la tarifa supera 1 USD/kWh. Verifique que sea correcta.' : null);
+    setKwhCost(v);
   };
 
   if (!isClient) return null;
@@ -157,19 +178,13 @@ export default function Dashboard() {
                 <div className="relative">
                   <span className="absolute inset-y-0 left-3 flex items-center text-slate-400 font-bold">$</span>
                   <input
-                    type="number" step="0.01" min="0" max={MAX_KWH_COST}
-                    value={kwhCost}
+                    type="number" step="0.01" min="0.01" max={MAX_KWH_COST}
+                    value={kwhInput}
+                    aria-invalid={!kwhInputIsValid}
                     onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
-                    onChange={(e) => {
-                      const v = Math.max(0, parseFloat(e.target.value) || 0);
-                      if (v > MAX_KWH_COST) {
-                        setTariffWarning(`La tarifa máxima permitida es ${MAX_KWH_COST} USD/kWh. Verifique el valor ingresado.`);
-                        return;
-                      }
-                      setTariffWarning(v > 1 ? 'Valor atípico: la tarifa supera 1 USD/kWh. Verifique que sea correcta.' : null);
-                      setKwhCost(v);
-                    }}
-                    className="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-700 transition-all"
+                    onChange={(e) => handleKwhChange(e.target.value)}
+                    onBlur={() => { if (!kwhInputIsValid) { setKwhInput(String(kwhCost)); setTariffWarning(null); } }}
+                    className={`w-full pl-8 pr-4 py-3 bg-slate-50 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-700 transition-all ${kwhInputIsValid ? 'border-slate-200' : 'border-rose-500'}`}
                   />
                 </div>
                 {tariffWarning && <p className="text-[10px] text-amber-600 font-bold mt-2">{tariffWarning}</p>}

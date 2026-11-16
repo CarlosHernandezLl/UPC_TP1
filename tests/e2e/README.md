@@ -11,7 +11,7 @@ Viven en su propia carpeta para no añadir dependencias al proyecto.
 ```bash
 cd tests/e2e
 npm install
-npm test                  # todo: genera fixtures y ejecuta los 70 casos
+npm test                  # todo: genera fixtures y ejecuta los 71 casos
 node run.js simulador     # una suite: auth_users | ingesta_ml | simulador | modelo | dashboard_audit
 ```
 

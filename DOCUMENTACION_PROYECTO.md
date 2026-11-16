@@ -334,7 +334,7 @@ El disco de Render es efímero: por eso el modelo se guarda en la BD (Supabase).
 - Los modelos entrenados dejaron de versionarse; en Docker van a un volumen.
 - El token JWT se invalida en el servidor al cerrar sesión.
 - La firma térmica usa datos estacionarios y unidades correctas.
-- Los 59 criterios de las HU están implementados y los 70 casos de la suite de aceptación pasan: ingesta con `.xlsx` y fechas parciales, dashboard solo con recomendaciones aplicadas, auditoría de usuarios, filtro de fechas y exportación CSV/PDF.
+- Los 59 criterios de las HU están implementados y los 71 casos de la suite de aceptación pasan: ingesta con `.xlsx` y fechas parciales, dashboard solo con recomendaciones aplicadas, auditoría de usuarios, filtro de fechas y exportación CSV/PDF.
 
 **Seguridad (pendiente)**
 1. **Rotar secretos**: el `.env` anterior (con `SECRET_KEY='supersecretkey'`, contraseña de BD y claves de API) sigue en el historial de git. Rotar las claves y, si el repositorio se comparte, limpiar el historial.
